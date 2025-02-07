@@ -1,28 +1,5 @@
 import { Chain, Network } from '../../dto'
 
-export interface NativeTransferFeeEstimationDetails {
-  chain: Chain
-  from: string
-  to: string
-  contractAddress?: string
-  amount: string
-  data?: string
-}
-
-export interface EstimationsApi {
-  error: string
-  contractAddress: string
-  data: {
-    gasLimit: string
-    estimations: {
-      safe: string
-      standard: string
-      fast: string
-      baseFee: string
-    }
-  }
-}
-
 export interface CurrentEvmFee {
   chain: Network
   gasPrice: {

@@ -11,12 +11,14 @@ import { Rates } from '../rate'
 import { Token } from '../token'
 import { TatumSdkChain } from './tatum'
 import { ZkSyncRpcSuite } from '../../dto/rpc/ZkSyncRpcSuite'
+import { AmmV2Evm } from '../amm-v2'
 
 export abstract class BaseEvm extends TatumSdkChain {
   rpc: EvmBasedRpcSuite
   fee: FeeEvm
   ipfs: Ipfs
   rates: Rates
+  ammV2: AmmV2Evm
 
   constructor(id: string) {
     super(id)
@@ -24,6 +26,7 @@ export abstract class BaseEvm extends TatumSdkChain {
     this.fee = Container.of(id).get(FeeEvm)
     this.ipfs = Container.of(id).get(Ipfs)
     this.rates = Container.of(id).get(Rates)
+    this.ammV2 = Container.of(id).get(AmmV2Evm)
   }
 }
 

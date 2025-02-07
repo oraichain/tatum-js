@@ -3,22 +3,23 @@ import { SolanaRpcSuite, TezosRpcInterface, TronRpcSuite, XrpRpcInterface } from
 import { AlgorandAlgodRpcSuite } from '../../dto/rpc/AlgorandAlgodRpcSuite'
 import { AlgorandIndexerRpcSuite } from '../../dto/rpc/AlgorandIndexerRpcSuite'
 import { CardanoRpcSuite } from '../../dto/rpc/CardanoRpcSuite'
+import { CasperRpcSuite } from '../../dto/rpc/CasperRpcSuite'
+import { CosmosRpcSuite } from '../../dto/rpc/CosmosRpcSuite'
 import { EosRpcSuite } from '../../dto/rpc/EosRpcSuite'
 import { IotaRpcSuite } from '../../dto/rpc/IotaRpcSuite'
 import { KadenaRpcInterface } from '../../dto/rpc/KadenaRpcSuite'
 import { RostrumRpcInterface } from '../../dto/rpc/RostrumRpcSuite'
 import { StellarRpcSuite } from '../../dto/rpc/StellarRpcSuite'
+import { TonRpcSuite } from '../../dto/rpc/ton/TonRpcSuite'
 import { CONFIG, Utils } from '../../util'
 import { Address, AddressTezos, AddressTron } from '../address'
+import { AmmV2Cosmos } from '../amm-v2'
 import { Ipfs } from '../ipfs'
 import { Nft, NftTezos } from '../nft'
 import { Notification } from '../notification'
 import { Rates } from '../rate'
 import { Token } from '../token'
 import { TatumSdkChain } from './tatum'
-import { CosmosRpcSuite } from '../../dto/rpc/CosmosRpcSuite'
-import { CasperRpcSuite } from '../../dto/rpc/CasperRpcSuite'
-import { TonRpcSuite } from '../../dto/rpc/ton/TonRpcSuite'
 
 export abstract class BaseOther extends TatumSdkChain {
   ipfs: Ipfs
@@ -176,10 +177,12 @@ export class CardanoRosetta extends BaseOther {
 
 export class CosmosRosetta extends BaseOther {
   rpc: CosmosRpcSuite
+  ammV2: AmmV2Cosmos
 
   constructor(id: string) {
     super(id)
     this.rpc = Utils.getRpc<CosmosRpcSuite>(id, Container.of(id).get(CONFIG))
+    this.ammV2 = Container.of(id).get(AmmV2Cosmos)
   }
 }
 

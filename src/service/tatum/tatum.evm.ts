@@ -1,8 +1,11 @@
 import { Container } from 'typedi'
 import { EvmBasedBeaconRpcSuite, EvmBasedRpcSuite } from '../../dto'
 import { NativeEvmBasedRpcSuite } from '../../dto/rpc/NativeEvmBasedRpcInterface'
+import { ZkSyncRpcSuite } from '../../dto/rpc/ZkSyncRpcSuite'
 import { CONFIG, Utils } from '../../util'
 import { Address } from '../address'
+import { AmmV2Evm } from '../amm-v2'
+import { BridgeEvm } from '../bridge'
 import { FeeEvm } from '../fee'
 import { Ipfs } from '../ipfs'
 import { Nft } from '../nft'
@@ -10,8 +13,6 @@ import { Notification } from '../notification'
 import { Rates } from '../rate'
 import { Token } from '../token'
 import { TatumSdkChain } from './tatum'
-import { ZkSyncRpcSuite } from '../../dto/rpc/ZkSyncRpcSuite'
-import { AmmV2Evm } from '../amm-v2'
 
 export abstract class BaseEvm extends TatumSdkChain {
   rpc: EvmBasedRpcSuite
@@ -19,6 +20,7 @@ export abstract class BaseEvm extends TatumSdkChain {
   ipfs: Ipfs
   rates: Rates
   ammV2: AmmV2Evm
+  bridge: BridgeEvm
 
   constructor(id: string) {
     super(id)
@@ -27,6 +29,7 @@ export abstract class BaseEvm extends TatumSdkChain {
     this.ipfs = Container.of(id).get(Ipfs)
     this.rates = Container.of(id).get(Rates)
     this.ammV2 = Container.of(id).get(AmmV2Evm)
+    this.bridge = Container.of(id).get(BridgeEvm)
   }
 }
 
@@ -106,7 +109,6 @@ export class ZkSync extends TatumSdkChain {
     this.rates = Container.of(id).get(Rates)
   }
 }
-
 
 // Full support for chains
 export class Ethereum extends FullEvm {

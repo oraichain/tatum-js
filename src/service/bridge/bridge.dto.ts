@@ -1,12 +1,20 @@
-import { Event } from '@cosmjs/stargate'
-
 export interface CosmosTransferToRemoteData {
-  message: any
-  events: Event[]
+  txHash: string
 }
 
 export interface EvmTransferToRemoteData {
   evmMessage: any
 }
 
-export interface TransferToRemoteResponse {}
+export interface TransferToRemoteResponse {
+  /**
+   * address of local chain
+   */
+  fromAddress: string
+  /**
+   * address of remote chain
+   */
+  toAddress: string
+  bridgeAmount: string
+  feeAmount: string
+}

@@ -14,6 +14,7 @@ import { TonRpcSuite } from '../../dto/rpc/ton/TonRpcSuite'
 import { CONFIG, Utils } from '../../util'
 import { Address, AddressTezos, AddressTron } from '../address'
 import { AmmV2Cosmos } from '../amm-v2'
+import { BridgeCosmos } from '../bridge'
 import { Ipfs } from '../ipfs'
 import { Nft, NftTezos } from '../nft'
 import { Notification } from '../notification'
@@ -178,11 +179,13 @@ export class CardanoRosetta extends BaseOther {
 export class CosmosRosetta extends BaseOther {
   rpc: CosmosRpcSuite
   ammV2: AmmV2Cosmos
+  bridge: BridgeCosmos
 
   constructor(id: string) {
     super(id)
     this.rpc = Utils.getRpc<CosmosRpcSuite>(id, Container.of(id).get(CONFIG))
     this.ammV2 = Container.of(id).get(AmmV2Cosmos)
+    this.bridge = Container.of(id).get(BridgeCosmos)
   }
 }
 

@@ -1,3 +1,5 @@
+import { Event, QueryClient, TxExtension, setupTxExtension } from '@cosmjs/stargate'
+import { Tendermint37Client } from '@cosmjs/tendermint-rpc'
 import { Container, Service } from 'typedi'
 
 import { TatumConnector } from '../../connector'
@@ -12,10 +14,21 @@ import { CosmosTransferToRemoteData, EvmTransferToRemoteData, TransferToRemoteRe
 export class BridgeCosmos {
   private readonly connector: TatumConnector
   private readonly config: TatumConfig
+  private queryClient: QueryClient & TxExtension
 
   constructor(private readonly id: string) {
     this.connector = Container.of(this.id).get(TatumConnector)
     this.config = Container.of(this.id).get(CONFIG)
+  }
+
+  /**
+   * set up query client
+   * @param rpcUrl
+   */
+  async setupQueryClient(rpcUrl: string) {
+    const cometClient = await Tendermint37Client.connect(rpcUrl)
+
+    this.queryClient = QueryClient.withExtensions(cometClient, setupTxExtension)
   }
 
   /**
@@ -24,10 +37,69 @@ export class BridgeCosmos {
   async parseTransferToRemote(
     data: CosmosTransferToRemoteData,
   ): Promise<ResponseDto<TransferToRemoteResponse>> {
+    let returnData: TransferToRemoteResponse = {} as any
+    let error = null
+    let status = Status.SUCCESS
+
+    try {
+      const txRes = await this.queryClient.tx.getTx(data.txHash)
+      const events = txRes.txResponse ? txRes.txResponse.events : []
+      const wasmEvents: Event[] = []
+
+      for (const event of events) {
+        if (event.type === 'wasm') {
+          wasmEvents.push(event)
+        }
+      }
+
+      const bridgeWasmEvent = wasmEvents.find((event) => {
+        for (const attribute of event.attributes) {
+          if (
+            attribute.key === '_contract_address' &&
+            attribute.value === 'orai195269awwnt5m6c843q6w7hp8rt0k7syfu9de4h0wz384slshuzps8y7ccm'
+          ) {
+            return event
+          }
+        }
+
+        return undefined
+      })
+
+      if (bridgeWasmEvent) {
+        let feeAmount: number = 0
+
+        for (const attribute of bridgeWasmEvent.attributes) {
+          switch (attribute.key) {
+            case 'sender':
+              console.log(attribute.value)
+              returnData.fromAddress = attribute.value
+              break
+            case 'receiver':
+              returnData.toAddress = attribute.value
+              break
+            case 'amount':
+              returnData.bridgeAmount = attribute.value
+              break
+            case 'token_fee':
+            case 'relayer_fee':
+              feeAmount += Number(attribute.value)
+              break
+            default:
+              break
+          }
+        }
+
+        returnData.feeAmount = feeAmount.toString()
+      }
+    } catch (err: any) {
+      error = err
+      status = Status.ERROR
+    }
+
     return {
-      data: {},
-      error: undefined,
-      status: Status.SUCCESS,
+      data: returnData,
+      error,
+      status,
     }
   }
 }

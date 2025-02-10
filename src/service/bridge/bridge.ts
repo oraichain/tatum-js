@@ -1,11 +1,13 @@
 import { Event, QueryClient, TxExtension, setupTxExtension } from '@cosmjs/stargate'
 import { Tendermint37Client } from '@cosmjs/tendermint-rpc'
+import { Interface, JsonRpcProvider } from 'ethers'
 import { Container, Service } from 'typedi'
 
 import { TatumConnector } from '../../connector'
 import { CONFIG, ResponseDto, Status } from '../../util'
 import { TatumConfig } from '../tatum'
 import { CosmosTransferToRemoteData, EvmTransferToRemoteData, TransferToRemoteResponse } from './bridge.dto'
+import { GravityAbi } from './helpers'
 
 @Service({
   factory: (data: { id: string }) => new BridgeCosmos(data.id),
@@ -111,6 +113,7 @@ export class BridgeCosmos {
 export class BridgeEvm {
   private readonly connector: TatumConnector
   private readonly config: TatumConfig
+  private queryClient: JsonRpcProvider
 
   constructor(private readonly id: string) {
     this.connector = Container.of(this.id).get(TatumConnector)
@@ -118,13 +121,40 @@ export class BridgeEvm {
   }
 
   /**
+   * set up query client
+   * @param rpcUrl
+   */
+  async setupQueryClient(rpcUrl: string) {
+    this.queryClient = new JsonRpcProvider(rpcUrl)
+  }
+
+  /**
    * Parse Transfer To Remote msg
    */
   async parseTransferToRemote(data: EvmTransferToRemoteData): Promise<ResponseDto<TransferToRemoteResponse>> {
+    let returnData: TransferToRemoteResponse = {} as any
+    let error = null
+    let status = Status.SUCCESS
+
+    try {
+      const gravityInterface = new Interface(GravityAbi)
+      const txRes = await this.queryClient.getTransaction(data.txHash)
+      if (txRes) {
+        const decodedData = gravityInterface.parseTransaction({ data: txRes.data })
+
+        returnData.fromAddress = txRes.from
+        returnData.toAddress = txRes.to!
+        returnData.bridgeAmount = decodedData?.args[2]
+      }
+    } catch (err: any) {
+      error = err
+      status = Status.ERROR
+    }
+
     return {
-      data: {},
-      error: undefined,
-      status: Status.SUCCESS,
+      data: returnData,
+      error,
+      status,
     }
   }
 }

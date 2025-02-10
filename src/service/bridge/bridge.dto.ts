@@ -3,7 +3,7 @@ export interface CosmosTransferToRemoteData {
 }
 
 export interface EvmTransferToRemoteData {
-  evmMessage: any
+  txHash: string
 }
 
 export interface TransferToRemoteResponse {

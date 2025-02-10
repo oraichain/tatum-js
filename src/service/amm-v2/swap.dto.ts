@@ -5,16 +5,40 @@ export interface OraiSwapData {
   events: readonly Event[]
 }
 
-export interface OraiSwapResponse {
-  contractAddress: string
-  fromAddress: string
-  poolKey: string
-  x_to_y: string
-  amountIn: string
-  amountOut: string
-  currentTick: string
-  currentSqrtPrice: string
-  liquidity: string
+export interface OraiSwapOperations {
+  contractAddress?: string
+  sender?: string
+  receiver?: string
+  askAsset?: string
+  offerAsset?: string
+  offerAmount?: string
+  returnAmount?: string
+}
+
+export interface SwapAction {
+  _contract_address: string,
+  action: string[],
+  denom_in: string,
+  denom_out: string,
+  msg_index: string
+}
+
+export interface PostSwapAction {
+  _contract_address: string,
+  action: string[],
+  post_swap_action_amount_out: string,
+  post_swap_action_denom_out: string,
+  msg_index: string
+}
+
+export interface SwapAndAction {
+  swapAction?: SwapAction,
+  postSwapAction?: PostSwapAction
+}
+
+export interface OraiSwapAndActionResponse {
+  operations: OraiSwapOperations[],
+  postAction: SwapAndAction,
 }
 
 export interface EvmSwapData {
@@ -23,7 +47,7 @@ export interface EvmSwapData {
 
 export interface EvmSwapResponse {}
 
-export type SwapResponse = OraiSwapResponse | EvmSwapResponse;
+export type SwapResponse = | EvmSwapResponse | OraiSwapOperations[];
 
 // export interface SwapResponse {
 //   /**

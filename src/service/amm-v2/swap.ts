@@ -2,10 +2,11 @@ import { Container, Service } from 'typedi'
 import { TatumConnector } from '../../connector'
 import { CONFIG, ResponseDto, Status } from '../../util'
 import { TatumConfig } from '../tatum'
-import { OraiSwapData, EvmSwapData, SwapResponse, OraiSwapResponse } from './swap.dto'
+import { OraiSwapData, EvmSwapData, SwapResponse, OraiSwapOperations, OraiSwapAndActionResponse, SwapAction, PostSwapAction } from './swap.dto'
 import { Event, Attribute } from '@cosmjs/stargate'
 
 const ORAI_SWAP_CONTRACT_ADDRESS = "orai10s0c75gw5y5eftms5ncfknw6lzmx0dyhedn75uz793m8zwz4g8zq4d9x9a"
+const ORAI_SWAP_AND_ACTION_CONTRACT_ADDRESS = "orai1yglsm0u2x3xmct9kq3lxa654cshaxj9j5d9rw5enemkkkdjgzj7sr3gwt0"
 
 @Service({
   factory: (data: { id: string }) => new AmmV2Cosmos(data.id),
@@ -26,73 +27,24 @@ export class AmmV2Cosmos {
   async parseSwap(data: OraiSwapData): Promise<ResponseDto<SwapResponse>> {
     const evs = data.events.filter(
       (e: Event) =>
-        e.type=== 'wasm' &&
-        e.attributes.some(
-            (attr) =>
-              attr.key === "_contract_address" &&
-              attr.value === ORAI_SWAP_CONTRACT_ADDRESS
-                
-          ) &&
+        e.type === 'wasm' &&
         e.attributes.some(
           (attr) => attr.key === "action" && attr.value === "swap"
         )
     );
     
-    let res: OraiSwapResponse = {
-      contractAddress: '',
-      fromAddress: '',
-      poolKey: '',
-      x_to_y: '',
-      amountIn: '',
-      amountOut: '',
-      currentTick: '',
-      currentSqrtPrice: '',
-      liquidity: '',
-    };
+    let res: OraiSwapOperations[] = [];
 
     if (Array.isArray(evs)) {
       for (let ev of evs) {
-        for (let attr of ev.attributes) {
-          switch(attr.key) {
-            case "_contract_address": {
-              res.contractAddress = attr.value
-              break;
-            }
-            case "sender": {
-              res.fromAddress = attr.value;
-              break;
-            }
-            case "pool_key": {
-              res.poolKey = attr.value;
-              break;
-            }
-            case "x_to_y": {
-              res.x_to_y = attr.value;
-              break;
-            }
-            case "amount_in": {
-              res.amountIn = attr.value;
-              break;
-            }
-            case "amount_out": {
-              res.amountOut = attr.value;
-              break;
-            }
-            case "current_tick": {
-              res.currentTick = attr.value;
-              break;
-            }
-            case "current_sqrt_price": {
-              res.currentSqrtPrice = attr.value
-              break;
-            }
-            case "liquidity": {
-              res.liquidity = attr.value;
-              break;
-            }
-            default:
-              break;
-          }
+        if (ev.attributes.some((attr) => 
+          attr.key === "_contract_address" && attr.value === ORAI_SWAP_CONTRACT_ADDRESS
+        )) {
+          let op = await this.parseSwapCw20(ev)
+          res.push(op)
+        } else {
+          let op = await this.parseSwapNative(ev)
+          res.push(op)
         }
       }
     }
@@ -103,7 +55,148 @@ export class AmmV2Cosmos {
       status: Status.SUCCESS,
     }
   }
+
+  async parseSwapAndAction(data: OraiSwapData): Promise<ResponseDto<SwapResponse>> {
+    let op = ((await this.parseSwap(data)).data as OraiSwapOperations[])
+
+    const evs = data.events.filter(
+      (e: Event) =>
+        e.type === 'wasm' &&
+        e.attributes.some(
+          (attr) => attr.key === "_contract_address" && attr.value === ORAI_SWAP_AND_ACTION_CONTRACT_ADDRESS
+        )
+    );
+
+    const swapAction = evs.find(
+      (e: Event) =>
+        e.attributes.some(
+          (attr) => attr.key === "action" && attr.value === "execute_user_swap"
+        )
+    )?.attributes.reduce((obj: { [key: string]: any }, attr: Attribute) => {
+      if (attr.key in obj) {
+        obj[attr.key] = [obj[attr.key], attr.value];
+        return obj;
+      }
+      obj[attr.key] = attr.value;
+      return obj;
+    }, {} as any) || {};
+
+    const postSwapAction = evs.find(
+      (e: Event) =>
+        e.attributes.some(
+          (attr) => attr.key === "action" && attr.value === "execute_post_swap_action"
+        )
+    )?.attributes.reduce((obj: { [key: string]: any }, attr: Attribute) => {
+      if (attr.key in obj) {
+        obj[attr.key] = [obj[attr.key], attr.value];
+        return obj;
+      }
+      obj[attr.key] = attr.value;
+      return obj;
+    }, {} as any) || {};
+
+    const res: OraiSwapAndActionResponse = {
+      operations: op,
+      postAction: {
+        swapAction: swapAction as SwapAction,
+        postSwapAction: postSwapAction as PostSwapAction,
+      },
+    }
+
+    return {
+      data: res,
+      error: undefined,
+      status: Status.SUCCESS,
+    }
+  }
+
+  private async parseSwapNative(event: Event): Promise<OraiSwapOperations> {
+    let res: OraiSwapOperations = {};
+    for (let attr of event.attributes) {
+      switch(attr.key) {
+        case "_contract_address": {
+          res.contractAddress = attr.value;
+          break;
+        }
+        case "sender": {
+          res.sender = attr.value;
+          break;
+        }
+        case "receiver": {
+          res.receiver = attr.value;
+          break;
+        }
+        case "offer_asset": {
+          res.offerAsset = attr.value;
+          break;
+        }
+        case "ask_asset": {
+          res.askAsset = attr.value;
+          break;
+        } 
+        case "offer_amount": {
+          res.offerAmount = attr.value;
+          break;
+        }
+        case "return_amount": {
+          res.returnAmount = attr.value;
+          break;
+        }
+       
+        default:
+          break;
+        }
+      }
+    return res
+  }
+
+  private async parseSwapCw20(event: Event): Promise<OraiSwapOperations> {
+    let res: OraiSwapOperations = {};
+    let x_to_y: boolean = false;
+    let poolKey: string[] = [];
+    for (let attr of event.attributes) {
+      switch(attr.key) {
+        case "_contract_address": {
+          res.contractAddress = attr.value;
+          break;
+        }
+        case "sender": {
+          res.sender = attr.value;
+          res.receiver = attr.value;
+          break;
+        }
+        case "amount_in": {
+          res.offerAmount = attr.value;
+          break;
+        }
+        case "amount_out": {
+          res.returnAmount = attr.value;
+          break;
+        }
+        case "pool_key": {
+          poolKey = attr.value.split("-");
+          break;
+        }
+        case "x_to_y": {
+          x_to_y = JSON.parse(attr.value);
+          break;
+        }
+        default:
+          break;
+        }
+      }
+
+      if (x_to_y === true) {
+        res.offerAsset = poolKey[0]
+        res.askAsset = poolKey[1];
+      } else {
+        res.offerAsset = poolKey[1];
+        res.askAsset = poolKey[0];
+      }
+      return res
+  }
 }
+
 
 @Service({
   factory: (data: { id: string }) => {

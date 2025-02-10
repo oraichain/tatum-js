@@ -57,7 +57,7 @@ export class AmmV2Cosmos {
   }
 
   async parseSwapAndAction(data: OraiSwapData): Promise<ResponseDto<SwapResponse>> {
-    let op = ((await this.parseSwap(data)).data as OraiSwapOperations[])
+    let ops = ((await this.parseSwap(data)).data as OraiSwapOperations[])
 
     const evs = data.events.filter(
       (e: Event) =>
@@ -96,7 +96,7 @@ export class AmmV2Cosmos {
     }, {} as any) || {};
 
     const res: OraiSwapAndActionResponse = {
-      operations: op,
+      operations: ops,
       postAction: {
         swapAction: swapAction as SwapAction,
         postSwapAction: postSwapAction as PostSwapAction,

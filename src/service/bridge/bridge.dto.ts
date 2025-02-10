@@ -5,4 +5,8 @@ export interface CosmosTransferToRemoteData {
   events: Event[]
 }
 
+export interface EvmTransferToRemoteData {
+  evmMessage: any
+}
+
 export interface TransferToRemoteResponse {}

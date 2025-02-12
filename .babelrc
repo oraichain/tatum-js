@@ -1,0 +1,11 @@
+{
+    "plugins": [
+      ["module-resolver", {
+        "root": ["./src"],
+        "alias": {
+          "server": "./src/server",
+          "service": "./src/service",
+        }
+      }]
+    ]
+  }

@@ -1,6 +1,7 @@
 import express from 'express'
 
 import ping from './ping'
+import swapContract from "./swapContract"
 
 const router = express.Router()
 
@@ -12,6 +13,10 @@ const defaultRoutes: Array<{
     path: '/ping',
     route: ping,
   },
+  {
+    path: '/swap-contract',
+    route: swapContract
+  }
 ]
 
 defaultRoutes.forEach((route) => {

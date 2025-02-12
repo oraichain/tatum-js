@@ -6,6 +6,8 @@ import mongoSanitize from 'express-mongo-sanitize'
 import helmet from 'helmet'
 import http from 'http'
 
+import './services/tatum'
+
 import env from './configs/env'
 import morgan from './configs/morgan'
 import xss from './configs/xss'

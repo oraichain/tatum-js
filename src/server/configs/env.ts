@@ -5,6 +5,7 @@ const envVarSchema = Joi.object()
   .keys({
     NODE_ENV: Joi.string().valid('production', 'development', 'test').required(),
     PORT: Joi.number().default(8000),
+    RPC_URL: Joi.string().default('https://rpc.orai.io'),
   })
   .unknown()
 
@@ -17,4 +18,5 @@ if (error) {
 export default {
   env: envVars.NODE_ENV,
   port: envVars.PORT,
+  rpcUrl: envVars.RPC_URL,
 }

@@ -1,18 +1,16 @@
-import { CosmosRosetta, TatumSDK, Network } from "../../../service"
+import { oraichainTatum } from '../../services/tatum'
 
 const swap = async (sender: string, typeUrl: string, value: string) => {
-  console.log(sender, typeUrl, value)
+    console.log(sender, typeUrl, value)
 
-  const tatumCosmos = await TatumSDK.init<CosmosRosetta>({network: Network.COSMOS_ROSETTA})
-  await tatumCosmos.simulate.setupQueryClient("https://rpc.orai.io")
   const v = Uint8Array.from(Buffer.from(value, 'base64'))
   const msgs = [
     {
       typeUrl: typeUrl,
-      value: v
-    }
+      value: v,
+    },
   ]
-  const res = await tatumCosmos.simulate.simulate(sender, msgs)
+  const res = await oraichainTatum.simulate.simulate(sender, msgs)
   console.log(res.result?.events)
   return
 }

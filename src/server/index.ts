@@ -9,6 +9,7 @@ import http from 'http'
 import env from './configs/env'
 import morgan from './configs/morgan'
 import xss from './configs/xss'
+import appRoutes from './routes'
 import errorHandler from './utils/error'
 
 const app = express()
@@ -54,7 +55,7 @@ app.use(compression())
 app.use(cookiePaser())
 
 // routes here
-// app.use("/trading-trustworthy", appRoutes);
+app.use('/multichain-parser/v1', appRoutes)
 
 // error handler
 app.use(errorHandler)

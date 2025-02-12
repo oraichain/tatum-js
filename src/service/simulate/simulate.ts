@@ -1,4 +1,4 @@
-import { TatumConnector } from "src/connector"
+import { TatumConnector } from "../../connector"
 import { TatumConfig } from "../tatum"
 import Container, { Service } from "typedi"
 import { CONFIG, ResponseDto, Status } from '../../util'

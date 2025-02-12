@@ -31,6 +31,7 @@
     "pack-all": "yarn build-all && yarn pack"
   },
   "dependencies": {
+    "@cosmjs/cosmwasm-stargate": "^0.33.0",
     "@cosmjs/stargate": "^0.33.0",
     "@cosmjs/tendermint-rpc": "^0.33.0",
     "@types/compression": "^1.7.5",

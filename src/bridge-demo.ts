@@ -1,19 +1,35 @@
+import { toUtf8 } from '@cosmjs/encoding';
 import { CosmosRosetta, Ethereum, Network, TatumSDK } from './service'
+import { MsgUpdateAdmin, MsgExecuteContract } from "cosmjs-types/cosmwasm/wasm/v1/tx";
+
 
 const main = async () => {
   const tatumCosmos = await TatumSDK.init<CosmosRosetta>({ network: Network.COSMOS_ROSETTA })
-  await tatumCosmos.bridge.setupQueryClient('https://rpc.orai.io')
-  const cosmosBridge = await tatumCosmos.bridge.parseTransferToRemote({
-    txHash: '5EE7C328AF892ED0C4CF05A6A9BAD694CFD520AE87DF948003BDC276F4028D99',
-  })
-  console.log('cosmos bridge: ', cosmosBridge)
-
-  const tatumEvm = await TatumSDK.init<Ethereum>({ network: Network.BINANCE_SMART_CHAIN })
-  await tatumEvm.bridge.setupQueryClient('https://binance.llamarpc.com')
-  const evmBridge = await tatumEvm.bridge.parseTransferToRemote({
-    txHash: '0x916f1ca34518efea3b0d43cdf8335937c68bb2ad3fd90293fc05f4f93955dea0',
-  })
-  console.log('evm bridge: ', evmBridge)
+  await tatumCosmos.simulate.setupQueryClient("https://rpc.orai.io")
+    const res = await tatumCosmos.simulate.simulate(
+      "orai1qpuundpvtymcyq3cmcty3udf2zy0m509w4kg8w",
+      [
+      {
+        typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
+        value: MsgExecuteContract.encode({
+          sender: "orai1qpuundpvtymcyq3cmcty3udf2zy0m509w4kg8w",
+          contract: "orai15un8msx3n5zf9ahlxmfeqd2kwa5wm0nrpxer304m9nd5q6qq0g6sku5pdd",
+          msg: toUtf8(
+            JSON.stringify({
+              increase_allowance: {
+                amount: "100000000000000",
+                spender:
+                  "orai10s0c75gw5y5eftms5ncfknw6lzmx0dyhedn75uz793m8zwz4g8zq4d9x9a",
+              },
+            })
+          ),
+          funds: [],
+        }).finish(),
+      },
+    ]
+    )
+  
+    console.log(res)
 }
 
 main()

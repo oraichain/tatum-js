@@ -21,6 +21,7 @@ import { Notification } from '../notification'
 import { Rates } from '../rate'
 import { Token } from '../token'
 import { TatumSdkChain } from './tatum'
+import { SimulateCosmos } from '../simulate'
 
 export abstract class BaseOther extends TatumSdkChain {
   ipfs: Ipfs
@@ -180,12 +181,14 @@ export class CosmosRosetta extends BaseOther {
   rpc: CosmosRpcSuite
   ammV2: AmmV2Cosmos
   bridge: BridgeCosmos
+  simulate: SimulateCosmos
 
   constructor(id: string) {
     super(id)
     this.rpc = Utils.getRpc<CosmosRpcSuite>(id, Container.of(id).get(CONFIG))
     this.ammV2 = Container.of(id).get(AmmV2Cosmos)
     this.bridge = Container.of(id).get(BridgeCosmos)
+    this.simulate = Container.of(id).get(SimulateCosmos)
   }
 }
 

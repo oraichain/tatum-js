@@ -4,6 +4,10 @@ import { CONFIG, ResponseDto, Status } from '../../util'
 import { TatumConfig } from '../tatum'
 import { OraiSwapData, EvmSwapData, SwapResponse, OraiSwapOperations, OraiSwapAndActionResponse, SwapAction, PostSwapAction } from './swap.dto'
 import { Event, Attribute } from '@cosmjs/stargate'
+import { MsgExecuteContract } from "cosmjs-types/cosmwasm/wasm/v1/tx";
+import { IndexedTx } from "@cosmjs/stargate";
+import { Tx } from "cosmjs-types/cosmos/tx/v1beta1/tx";
+import { SimulateRequest } from 'cosmjs-types/cosmos/tx/v1beta1/service'
 
 const ORAI_SWAP_CONTRACT_ADDRESS = "orai10s0c75gw5y5eftms5ncfknw6lzmx0dyhedn75uz793m8zwz4g8zq4d9x9a"
 const ORAI_SWAP_AND_ACTION_CONTRACT_ADDRESS = "orai1yglsm0u2x3xmct9kq3lxa654cshaxj9j5d9rw5enemkkkdjgzj7sr3gwt0"

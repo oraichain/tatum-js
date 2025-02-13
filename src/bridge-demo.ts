@@ -75,8 +75,9 @@ const main = async () => {
     const val = (new TextDecoder).decode(ms.msg)
     const message = JSON.parse(val)
     // Get the name of the first element (first key)
+    const action = Object.keys(message)[0]
     
-    console.log(res1)
+    console.log(action)
 
     // console.log(res)
 }

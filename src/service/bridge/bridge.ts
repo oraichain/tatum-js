@@ -36,19 +36,15 @@ export class BridgeCosmos {
   /**
    * Parse Transfer To Remote msg
    */
-  async parseTransferToRemote(
-    data: CosmosTransferToRemoteData,
-  ): Promise<ResponseDto<TransferToRemoteResponse>> {
+  parseTransferToRemote(data: CosmosTransferToRemoteData): ResponseDto<TransferToRemoteResponse> {
     let returnData: TransferToRemoteResponse = {} as any
     let error = null
     let status = Status.SUCCESS
 
     try {
-      const txRes = await this.queryClient.tx.getTx(data.txHash)
-      const events = txRes.txResponse ? txRes.txResponse.events : []
       const wasmEvents: Event[] = []
 
-      for (const event of events) {
+      for (const event of data.events) {
         if (event.type === 'wasm') {
           wasmEvents.push(event)
         }

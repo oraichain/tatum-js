@@ -15,7 +15,7 @@ const parser = tryCatchAsync(async (req, res, _next) => {
       // TODO: need to handle
       break
     case MSG_TYPE.COSMWASM_MSG:
-      data = parserService.parseCosmwasm({ sender, typeUrl, value }, typeMsg[3])
+      data = await parserService.parseCosmwasm({ sender, typeUrl, value }, typeMsg[3])
       break
     default:
       break

@@ -11,3 +11,5 @@ coverage
 jest-junit.xml
 
 /logs
+
+.yarn

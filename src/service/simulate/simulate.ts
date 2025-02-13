@@ -38,8 +38,7 @@ export class SimulateCosmos {
 
 public async getAccount(searchAddress: string): Promise<Account | null> {
     try {
-      const account = await this.queryClient!.auth.account(searchAddress);
-      console.log(account)
+      const account = await this.queryClient?.auth.account(searchAddress);
       return account ? accountFromAny(account) : null;
     } catch (error: any) {
       if (/rpc error: code = NotFound/i.test(error.toString())) {
@@ -51,7 +50,7 @@ public async getAccount(searchAddress: string): Promise<Account | null> {
 
   public async simulate(sender: string, messages: Any[]): Promise<SimulateResponse> {   
     const accountFromSender = (await this.getAccount(sender))!
-
+    console.log(accountFromSender.sequence)
     return this.queryClient?.tx.simulate(
         messages,
         undefined,

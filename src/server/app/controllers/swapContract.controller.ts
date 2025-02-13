@@ -6,8 +6,7 @@ import swapContractService from '../services/swapContract.service'
 const swap = tryCatchAsync(async (req, res, _next) => {
   const { sender, typeUrl, value } = req.body
 
-  const data = swapContractService.swap(sender, typeUrl, value)
-
+  const data = await swapContractService.swap(sender, typeUrl, value)
   res.status(httpStatus.OK).json({
     message: 'Parse swap successfully!',
     data: data,

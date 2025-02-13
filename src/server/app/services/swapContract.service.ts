@@ -1,7 +1,8 @@
+import { SwapResponse } from '../../../service/amm-v2'
 import { oraichainTatum } from '../../services/tatum'
 
-const swap = async (sender: string, typeUrl: string, value: string) => {
-    console.log(sender, typeUrl, value)
+const swap = async (sender: string, typeUrl: string, value: string): Promise<SwapResponse> => {
+  console.log(sender, typeUrl, value)
 
   const v = Uint8Array.from(Buffer.from(value, 'base64'))
   const msgs = [
@@ -11,8 +12,10 @@ const swap = async (sender: string, typeUrl: string, value: string) => {
     },
   ]
   const res = await oraichainTatum.simulate.simulate(sender, msgs)
-  console.log(res.result?.events)
-  return
+
+  const parserRes = await oraichainTatum.ammV2.parseSwapAndAction({events: res.result!.events, message: res.result?.data})
+  
+  return parserRes.data
 }
 
 export default {

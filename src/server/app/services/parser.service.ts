@@ -1,9 +1,10 @@
+import { fromBase64, fromUtf8 } from '@cosmjs/encoding'
 import { MsgExecuteContract } from 'cosmjs-types/cosmwasm/wasm/v1/tx'
-import {fromUtf8, fromBase64} from '@cosmjs/encoding'
-import { COSMOS_NETWORKS } from 'src/dto'
+
 import { oraichainTatum } from '../../../server/services/tatum'
 import { ORAI_CONTRACT } from '../../constant/contractAddress'
 import { COSMWASM_MSG_TYPE, SWAP_EXECUTE_TYPE } from '../../constant/msgType'
+import { parseBridgeContract } from '../../services/parseBridge'
 
 export type ParseInput = {
   sender: string
@@ -38,6 +39,7 @@ const handleParseCosmwasmExecuteContract = async (input: ParseInput): Promise<an
       data = await handleParseSwapContract(input.sender, input.typeUrl, value, action)
       break
     case ORAI_CONTRACT.BRIDGE:
+      data = await parseBridgeContract(input.sender, input.typeUrl, value, action)
       break
     default:
       break
@@ -95,28 +97,28 @@ const handleParseSwapContract = async (
 
 function decodeNestedObject(obj: any): any {
   if (Array.isArray(obj)) {
-    return obj.map(decodeNestedObject);
+    return obj.map(decodeNestedObject)
   } else if (typeof obj === 'object' && obj !== null) {
-    const newObj: any = {};
+    const newObj: any = {}
     for (const key in obj) {
       if (Object.prototype.hasOwnProperty.call(obj, key)) {
         if (key === 'msg') {
           if (obj[key] instanceof Uint8Array) {
-            newObj[key] = decodeNestedObject(JSON.parse(fromUtf8(obj[key])));
+            newObj[key] = decodeNestedObject(JSON.parse(fromUtf8(obj[key])))
           } else if (typeof obj[key] === 'string') {
-            newObj[key] = decodeNestedObject(JSON.parse(fromUtf8(fromBase64(obj[key]))));
+            newObj[key] = decodeNestedObject(JSON.parse(fromUtf8(fromBase64(obj[key]))))
           } else {
-            newObj[key] = decodeNestedObject(obj[key]); // Handle nested msg objects
+            newObj[key] = decodeNestedObject(obj[key]) // Handle nested msg objects
           }
         } else {
-          newObj[key] = decodeNestedObject(obj[key]);
+          newObj[key] = decodeNestedObject(obj[key])
           // console.log(newObj[key])
         }
       }
     }
-    return newObj;
+    return newObj
   }
-  return obj;
+  return obj
 }
 
 /**

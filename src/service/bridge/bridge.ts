@@ -69,7 +69,6 @@ export class BridgeCosmos {
         for (const attribute of bridgeWasmEvent.attributes) {
           switch (attribute.key) {
             case 'sender':
-              console.log(attribute.value)
               returnData.fromAddress = attribute.value
               break
             case 'receiver':

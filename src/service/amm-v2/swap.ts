@@ -28,7 +28,8 @@ export class AmmV2Cosmos {
   /**
    * Get balance of all tokens for a given Tezos address.
    */
-  async parseSwap(data: OraiSwapData): Promise<ResponseDto<SwapResponse>> {
+  async parseSwap(data: OraiSwapData): Promise<SwapResponse> {
+    // decode events
     const evs = data.events.filter(
       (e: Event) =>
         e.type === 'wasm' &&
@@ -37,7 +38,7 @@ export class AmmV2Cosmos {
         )
     );
     
-    let res: OraiSwapOperations[] = [];
+    let ops: OraiSwapOperations[] = [];
 
     if (Array.isArray(evs)) {
       for (let ev of evs) {
@@ -45,73 +46,38 @@ export class AmmV2Cosmos {
           attr.key === "_contract_address" && attr.value === ORAI_SWAP_CONTRACT_ADDRESS
         )) {
           let op = await this.parseSwapCw20(ev)
-          res.push(op)
+          ops.push(op)
         } else {
           let op = await this.parseSwapNative(ev)
-          res.push(op)
+          ops.push(op)
         }
       }
     }
-          
-    return {
-      data: res,
-      error: undefined,
-      status: Status.SUCCESS,
+
+    let res: SwapResponse = {
+      fromAddress: data.sender,
+      toAddress: data.sender!,
+      inAsset: ops[0].offerAsset!,
+      inAmount: ops[0].offerAmount!,
+      outAsset: ops[ops.length-1].askAsset!,
+      outAmount: ops[ops.length-1].returnAmount!
     }
+
+    return res
   }
 
-  async parseSwapAndAction(data: OraiSwapData): Promise<ResponseDto<SwapResponse>> {
-    let ops = ((await this.parseSwap(data)).data as OraiSwapOperations[])
+  async parseSwapAndAction(data: OraiSwapData): Promise<SwapResponse> {
+    // decode events
+    let swapInfo = await this.parseSwap(data)
 
-    const evs = data.events.filter(
-      (e: Event) =>
-        e.type === 'wasm' &&
-        e.attributes.some(
-          (attr) => attr.key === "_contract_address" && attr.value === ORAI_SWAP_AND_ACTION_CONTRACT_ADDRESS
-        )
-    );
-
-    const swapAction = evs.find(
-      (e: Event) =>
-        e.attributes.some(
-          (attr) => attr.key === "action" && attr.value === "execute_user_swap"
-        )
-    )?.attributes.reduce((obj: { [key: string]: any }, attr: Attribute) => {
-      if (attr.key in obj) {
-        obj[attr.key] = [obj[attr.key], attr.value];
-        return obj;
-      }
-      obj[attr.key] = attr.value;
-      return obj;
-    }, {} as any) || {};
-
-    const postSwapAction = evs.find(
-      (e: Event) =>
-        e.attributes.some(
-          (attr) => attr.key === "action" && attr.value === "execute_post_swap_action"
-        )
-    )?.attributes.reduce((obj: { [key: string]: any }, attr: Attribute) => {
-      if (attr.key in obj) {
-        obj[attr.key] = [obj[attr.key], attr.value];
-        return obj;
-      }
-      obj[attr.key] = attr.value;
-      return obj;
-    }, {} as any) || {};
-
-    const res: OraiSwapAndActionResponse = {
-      operations: ops,
-      postAction: {
-        swapAction: swapAction as SwapAction,
-        postSwapAction: postSwapAction as PostSwapAction,
-      },
+    // decode messages
+    if (data.message != null) {
+      const msg = MsgExecuteContract.decode(data.message[0].value)
+      const msgValue = (new TextDecoder).decode(msg.msg)
+      swapInfo.toAddress = JSON.parse(msgValue).swap_and_action.post_swap_action
     }
 
-    return {
-      data: res,
-      error: undefined,
-      status: Status.SUCCESS,
-    }
+    return swapInfo
   }
 
   private async parseSwapNative(event: Event): Promise<OraiSwapOperations> {
@@ -220,18 +186,18 @@ export class AmmV2Evm {
   /**
    * Get balance of all tokens for a given Tezos address.
    */
-  async parseSwap(data: EvmSwapData): Promise<ResponseDto<SwapResponse>> {
-    return {
-      data: {
-        decimals: 6,
-        fromAddress: 'evm',
-        toAddress: 'evm',
-        inAmount: '1',
-        outAmount: '1',
-        minimumReceive: '1',
-      },
-      error: undefined,
-      status: Status.SUCCESS,
-    }
-  }
+  // async parseSwap(data: EvmSwapData): Promise<ResponseDto<SwapResponse>> {
+  //   return {
+  //     data: {
+  //       decimals: 6,
+  //       fromAddress: 'evm',
+  //       toAddress: 'evm',
+  //       inAmount: '1',
+  //       outAmount: '1',
+  //       minimumReceive: '1',
+  //     },
+  //     error: undefined,
+  //     status: Status.SUCCESS,
+  //   }
+  // }
 }

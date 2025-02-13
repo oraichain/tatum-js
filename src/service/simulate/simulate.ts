@@ -48,14 +48,21 @@ public async getAccount(searchAddress: string): Promise<Account | null> {
     }
   }
 
-  public async simulate(sender: string, messages: Any[]): Promise<SimulateResponse> {   
+  public async simulate(sender: string, messages: Any[]): Promise<ResponseDto<SimulateResponse>> {   
     const accountFromSender = (await this.getAccount(sender))!
     console.log(accountFromSender.sequence)
-    return this.queryClient?.tx.simulate(
-        messages,
-        undefined,
-        accountFromSender.pubkey!,
-        accountFromSender.sequence,
+
+    const data = await this.queryClient?.tx.simulate(
+      messages,
+      undefined,
+      accountFromSender.pubkey!,
+      accountFromSender.sequence,
     )!
+    
+    return {
+      data: data,
+      error: undefined,
+      status: Status.SUCCESS,
+    }
   }
 }

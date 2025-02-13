@@ -7,3 +7,8 @@ export const MSG_TYPE = {
 export const COSMWASM_MSG_TYPE = {
   EXECUTE_CONTRACT: 'MsgExecuteContract',
 }
+
+export const COSMWASM_EXECUTE_TYPE = {
+  SWAP: 'swap',
+  SWAP_AND_ACTION: 'swap_and_action',
+}

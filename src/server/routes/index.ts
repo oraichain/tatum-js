@@ -1,7 +1,8 @@
 import express from 'express'
 
+import parser from './parser'
 import ping from './ping'
-import swapContract from "./swapContract"
+import swapContract from './swapContract'
 
 const router = express.Router()
 
@@ -15,8 +16,12 @@ const defaultRoutes: Array<{
   },
   {
     path: '/swap-contract',
-    route: swapContract
-  }
+    route: swapContract,
+  },
+  {
+    path: '/parser',
+    route: parser,
+  },
 ]
 
 defaultRoutes.forEach((route) => {

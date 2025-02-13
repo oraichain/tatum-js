@@ -23,7 +23,7 @@ const parseCosmwasm = async (input: ParseInput, msgType: string) => {
 }
 
 const handleParseCosmwasmExecuteContract = async (input: ParseInput): Promise<any> => {
-  let res
+  let response
   const value = Uint8Array.from(Buffer.from(input.value, 'base64'))
   const rawMsg = MsgExecuteContract.decode(value)
   const executeMsg = JSON.parse((new TextDecoder).decode(rawMsg.msg))
@@ -39,12 +39,12 @@ const handleParseCosmwasmExecuteContract = async (input: ParseInput): Promise<an
   switch(action) {
     case COSMWASM_EXECUTE_TYPE.SWAP: {
       const simRes = await oraichainTatum.simulate.simulate(input.sender, msgs)
-      res = await oraichainTatum.ammV2.parseSwap({sender: input.sender, events: simRes.data.result!.events, message: msgs})
+      response = await oraichainTatum.ammV2.parseSwap({sender: input.sender, events: simRes.data.result!.events, message: msgs})
       break
     }
     case COSMWASM_EXECUTE_TYPE.SWAP_AND_ACTION: {
       const simRes = await oraichainTatum.simulate.simulate(input.sender, msgs)
-      res = await oraichainTatum.ammV2.parseSwapAndAction({sender: input.sender, events: simRes.data.result!.events, message: msgs})
+      response = await oraichainTatum.ammV2.parseSwapAndAction({sender: input.sender, events: simRes.data.result!.events, message: msgs})
       break
     }
     default:
@@ -52,7 +52,7 @@ const handleParseCosmwasmExecuteContract = async (input: ParseInput): Promise<an
   }
 
   
-  return res
+  return {action, response}
 }
 
 export default {

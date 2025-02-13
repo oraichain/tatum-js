@@ -13,9 +13,9 @@ const swap = async (sender: string, typeUrl: string, value: string): Promise<Swa
   ]
   const res = await oraichainTatum.simulate.simulate(sender, msgs)
 
-  const parserRes = await oraichainTatum.ammV2.parseSwapAndAction({events: res.result!.events, message: res.result?.data})
+  const parserRes = await oraichainTatum.ammV2.parseSwapAndAction({sender: sender, events: res.data.result!.events, message: msgs})
   
-  return parserRes.data
+  return parserRes
 }
 
 export default {

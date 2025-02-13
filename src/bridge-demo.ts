@@ -67,19 +67,16 @@ const main = async () => {
       msgs
     )
 
-    console.log(Buffer.from(msgs[0].value).toString('base64'))
+    // console.log(Buffer.from(msgs[0].value).toString('base64'))
 
-    const res1 = await tatumCosmos.ammV2.parseSwapAndAction({events: res.result!.events, message: msgs})
-    console.log(res1.data)
-
+    const res1 = await tatumCosmos.ammV2.parseSwapAndAction({sender: "orai1qpuundpvtymcyq3cmcty3udf2zy0m509w4kg8w", events: res.data.result!.events, message: msgs})
     const ms = MsgExecuteContract.decode(msgs[0].value)
 
     const val = (new TextDecoder).decode(ms.msg)
     const message = JSON.parse(val)
     // Get the name of the first element (first key)
-const firstKey = Object.keys(message)[0];
-console.log(firstKey)
-
+    
+    console.log(res1)
 
     // console.log(res)
 }

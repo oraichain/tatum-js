@@ -1,6 +1,7 @@
 import { Event } from '@cosmjs/stargate'
 
 export interface OraiSwapData {
+  sender: string
   message: any
   events: readonly Event[]
 }
@@ -28,6 +29,7 @@ export interface PostSwapAction {
   action: string[],
   post_swap_action_amount_out: string,
   post_swap_action_denom_out: string,
+  receiver: string,
   msg_index: string
 }
 
@@ -47,22 +49,26 @@ export interface EvmSwapData {
 
 export interface EvmSwapResponse {}
 
-export type SwapResponse = | EvmSwapResponse | OraiSwapOperations[];
+export interface SwapResponse {
+  /**
+   * Blockchain address of the balance.
+   */
+  fromAddress?: string
+  /**
+   * Blockchain address of the balance.
+   */
+  toAddress?: string
+  inAsset: string
+  inAmount: string
+  outAsset: string
+  outAmount: string
+  minimumReceive?: string
+  /**
+   * Decimals of the asset. Valid for native and fungible tokens. For tokens, only when readable from the contract `decimals()` method.
+   */
+  decimals?: number
+}
 
-// export interface SwapResponse {
-//   /**
-//    * Blockchain address of the balance.
-//    */
-//   fromAddress: string
-//   /**
-//    * Blockchain address of the balance.
-//    */
-//   toAddress: string
-//   inAmount: string
-//   outAmount: string
-//   minimumReceive: string
-//   /**
-//    * Decimals of the asset. Valid for native and fungible tokens. For tokens, only when readable from the contract `decimals()` method.
-//    */
-//   decimals: number
-// }
+
+// export type SwapResponse = | EvmSwapResponse | OraiSwapOperations[];
+

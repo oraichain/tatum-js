@@ -167,6 +167,32 @@ export class AmmV2Cosmos {
   }
 }
 
+function decodeNestedObject(obj: any): any {
+  if (Array.isArray(obj)) {
+    return obj.map(decodeNestedObject);
+  } else if (typeof obj === 'object' && obj !== null) {
+    const newObj: any = {};
+    for (const key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        if (key === 'msg') {
+          if (obj[key] instanceof Uint8Array) {
+            newObj[key] = decodeNestedObject(JSON.parse(fromUtf8(obj[key])));
+          } else if (typeof obj[key] === 'string') {
+            newObj[key] = decodeNestedObject(JSON.parse(fromUtf8(fromBase64(obj[key]))));
+          } else {
+            newObj[key] = decodeNestedObject(obj[key]); // Handle nested msg objects
+          }
+        } else {
+          newObj[key] = decodeNestedObject(obj[key]);
+          // console.log(newObj[key])
+        }
+      }
+    }
+    return newObj;
+  }
+  return obj;
+}
+
 
 @Service({
   factory: (data: { id: string }) => {

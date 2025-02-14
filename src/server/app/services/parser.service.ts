@@ -1,10 +1,9 @@
-import { fromBase64, fromUtf8 } from '@cosmjs/encoding'
 import { MsgExecuteContract } from 'cosmjs-types/cosmwasm/wasm/v1/tx'
-import { COSMOS_NETWORKS } from 'src/dto'
-import { oraichainTatum } from '../../services/tatum'
 import { ORAI_CONTRACT } from '../../constant/contractAddress'
 import { COSMWASM_MSG_TYPE, SWAP_EXECUTE_TYPE } from '../../constant/msgType'
 import { parseBridgeContract } from '../../services/parseBridge'
+import { parseSwapContract } from '../../services/parseSwap'
+import { oraichainTatum } from '../../services/tatum'
 
 export type ParseInput = {
   sender: string
@@ -36,12 +35,12 @@ const handleParseCosmwasmExecuteContract = async (input: ParseInput): Promise<an
 
   switch (contractAddress) {
     case ORAI_CONTRACT.SWAP: {
-      data = await handleParseSwapContract(input.sender, input.typeUrl, value, action);
-      break;
+      data = await parseSwapContract(input.sender, input.typeUrl, value, action)
+      break
     }
-    case "orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh": {
-      data = await handleParseSwapContract(input.sender, input.typeUrl, value, action);
-      break;
+    case 'orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh': {
+      data = await parseSwapContract(input.sender, input.typeUrl, value, action)
+      break
     }
     case ORAI_CONTRACT.BRIDGE:
       data = await parseBridgeContract(input.sender, input.typeUrl, value, action)
@@ -51,53 +50,6 @@ const handleParseCosmwasmExecuteContract = async (input: ParseInput): Promise<an
   }
 
   return data
-}
-
-const handleParseSwapContract = async (
-  sender: string,
-  typeUrl: string,
-  value: Uint8Array,
-  action: string,
-) => {
-  let response
-  const msgs = [
-    {
-      typeUrl,
-      value,
-    },
-  ]
-
-  const simRes = await oraichainTatum.simulate.simulate(sender, msgs)
-  console.log(simRes)
-  switch (action) {
-    case SWAP_EXECUTE_TYPE.SWAP: {
-      response = await oraichainTatum.ammV2.parseSwap({
-        sender: sender,
-        events: simRes.data.result!.events,
-        message: msgs,
-      })
-      break
-    }
-    case SWAP_EXECUTE_TYPE.SWAP_AND_ACTION: {
-      response = await oraichainTatum.ammV2.parseSwapAndAction({
-        sender: sender,
-        events: simRes.data.result!.events,
-        message: msgs,
-      })
-      break
-    }
-    case SWAP_EXECUTE_TYPE.SEND: {
-      response = await oraichainTatum.ammV2.parseSend({
-        sender: sender,
-        events: simRes.data.result!.events,
-        message: msgs,
-      })
-      break
-    }
-    default:
-      break
-  }
-  return { action, response }
 }
 
 export default {

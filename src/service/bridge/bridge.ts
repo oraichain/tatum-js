@@ -18,7 +18,7 @@ export class BridgeCosmos {
   private readonly connector: TatumConnector
   private readonly config: TatumConfig
   private queryClient: QueryClient & TxExtension
-  private tokenInfo: TokenInfoCosmos
+  tokenInfo: TokenInfoCosmos
 
   constructor(private readonly id: string) {
     this.connector = Container.of(this.id).get(TatumConnector)

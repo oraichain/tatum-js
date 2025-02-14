@@ -27,7 +27,7 @@ export const parseUsdtCw20 = async ({ sender, typeUrl, value, action }: ParseInp
 
   switch (action) {
     case USDT_CW20_EXECUTE_TYPE.SEND:
-      response = await handleParseSend(sendContract, msgs, simRes.data.result.events)
+      response = await handleParseSend(sender, sendContract, msgs, simRes.data.result.events)
       break
     default:
       break
@@ -36,7 +36,7 @@ export const parseUsdtCw20 = async ({ sender, typeUrl, value, action }: ParseInp
   return { action, response }
 }
 
-const handleParseSend = async (contract: string, message: SimulateMsg[], events: Event[]) => {
+const handleParseSend = async (sender: string, contract: string, message: SimulateMsg[], events: Event[]) => {
   let response
 
   switch (contract) {
@@ -45,6 +45,9 @@ const handleParseSend = async (contract: string, message: SimulateMsg[], events:
         message,
         events,
       })
+      break
+    case ORAI_CONTRACT.SWAP:
+      response = await oraichainTatum.ammV2.parseSend({ message, events, sender })
       break
     default:
       break

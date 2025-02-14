@@ -2,7 +2,7 @@ import { Event } from '@cosmjs/stargate'
 
 export interface OraiSwapData {
   sender: string
-  message: any
+  message?: any
   events: readonly Event[]
 }
 

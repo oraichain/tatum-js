@@ -78,6 +78,26 @@ export class AmmV2Cosmos {
     return swapInfo
   }
 
+  parseSend(data: OraiSwapData): SwapResponse {
+    let response: SwapResponse = {} as any
+    const rawMsg = MsgExecuteContract.decode(data.message[0].value)
+    const action = objectToMap(decodeNestedObject(rawMsg))
+    const actionName = action[0]
+    const actionData = action[1]
+
+    switch(actionName) {
+      case "swap_and_action": {
+        response = this.parseSwapAndAction({sender: data.sender, events: data.events})
+        response.toAddress = actionData.post_swap_action
+        break;
+      }
+      default:
+        break;
+    }
+
+    return response
+}
+
   private parseSwapNative(event: Event): OraiSwapOperations {
     let res: OraiSwapOperations = {}
     for (let attr of event.attributes) {
@@ -182,7 +202,6 @@ function decodeNestedObject(obj: any): any {
           }
         } else {
           newObj[key] = decodeNestedObject(obj[key]);
-          // console.log(newObj[key])
         }
       }
     }
@@ -190,6 +209,45 @@ function decodeNestedObject(obj: any): any {
   }
   return obj;
 }
+
+function objectToMap(obj: any): [string, any] {
+  let response: [string, any] = ["", {}];
+
+  function recursiveHelper(input: any, parentKey: string = '') {
+    if (Array.isArray(input)) {
+      // If input is an array, iterate through each element and recurse
+      input.forEach((item, index) => {
+        recursiveHelper(item, `${parentKey}[${index}]`);
+      });
+    } else if (typeof input === 'object' && input !== null) {
+      // If input is an object, iterate through its properties
+      Object.entries(input).forEach(([key, value]) => {
+        // Create a new key by combining parentKey and current key
+        let newKey: string = "";
+        let isContinue: boolean = true;
+        switch(key) {
+          case "swap_and_action":
+            newKey = "swap_and_action"
+            isContinue = false
+            response = [key, value]
+            break
+          default:
+            newKey = parentKey ? `${parentKey}.${key}` : key;
+            break;
+        }        
+        // Recursively call the function for nested structures
+        
+        if (typeof value === 'object' && isContinue) {
+          recursiveHelper(value, newKey);
+        }
+      });
+    }
+  }
+
+  recursiveHelper(obj); // Start recursion
+  return response;
+}
+
 @Service({
   factory: (data: { id: string }) => {
     return new AmmV2Evm(data.id)

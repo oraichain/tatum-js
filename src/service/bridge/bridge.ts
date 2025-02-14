@@ -6,6 +6,7 @@ import { Container, Service } from 'typedi'
 import { TatumConnector } from '../../connector'
 import { CONFIG, ResponseDto, Status } from '../../util'
 import { TatumConfig } from '../tatum'
+import { TokenInfoCosmos } from '../token-info/tokenInfo'
 import { CosmosTransferToRemoteData, EvmTransferToRemoteData, TransferToRemoteResponse } from './bridge.dto'
 import { GravityAbi } from './helpers'
 
@@ -17,10 +18,12 @@ export class BridgeCosmos {
   private readonly connector: TatumConnector
   private readonly config: TatumConfig
   private queryClient: QueryClient & TxExtension
+  private tokenInfo: TokenInfoCosmos
 
   constructor(private readonly id: string) {
     this.connector = Container.of(this.id).get(TatumConnector)
     this.config = Container.of(this.id).get(CONFIG)
+    this.tokenInfo = Container.of(this.id).get(TokenInfoCosmos)
   }
 
   /**
@@ -36,17 +39,36 @@ export class BridgeCosmos {
   /**
    * Parse Transfer To Remote msg
    */
-  parseTransferToRemote(data: CosmosTransferToRemoteData): ResponseDto<TransferToRemoteResponse> {
+  async parseTransferToRemote(
+    data: CosmosTransferToRemoteData,
+  ): Promise<ResponseDto<TransferToRemoteResponse>> {
     let returnData: TransferToRemoteResponse = {} as any
     let error = null
     let status = Status.SUCCESS
 
     try {
       const wasmEvents: Event[] = []
+      let tokenId: string = 'orai'
 
       for (const event of data.events) {
         if (event.type === 'wasm') {
           wasmEvents.push(event)
+        }
+      }
+
+      if (wasmEvents.length > 1) {
+        const tokenWasmEvent = wasmEvents.find((event) => {
+          for (const attribute of event.attributes) {
+            if (attribute.key === 'action' && attribute.value === 'send') {
+              return event
+            }
+          }
+
+          return undefined
+        })
+
+        if (tokenWasmEvent) {
+          tokenId = tokenWasmEvent.attributes.find((attr) => attr.key === '_contract_address')?.value!
         }
       }
 
@@ -87,6 +109,7 @@ export class BridgeCosmos {
         }
 
         returnData.feeAmount = feeAmount.toString()
+        returnData.tokenInfo = (await this.tokenInfo.getTokenInfo({ tokenId })).data
       }
     } catch (err: any) {
       error = err

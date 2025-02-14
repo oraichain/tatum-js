@@ -1,9 +1,10 @@
+import { fromBase64, fromUtf8 } from '@cosmjs/encoding'
 import { MsgExecuteContract } from 'cosmjs-types/cosmwasm/wasm/v1/tx'
-import {fromUtf8, fromBase64} from '@cosmjs/encoding'
 import { COSMOS_NETWORKS } from 'src/dto'
 import { oraichainTatum } from '../../services/tatum'
 import { ORAI_CONTRACT } from '../../constant/contractAddress'
 import { COSMWASM_MSG_TYPE, SWAP_EXECUTE_TYPE } from '../../constant/msgType'
+import { parseBridgeContract } from '../../services/parseBridge'
 
 export type ParseInput = {
   sender: string
@@ -43,6 +44,7 @@ const handleParseCosmwasmExecuteContract = async (input: ParseInput): Promise<an
       break;
     }
     case ORAI_CONTRACT.BRIDGE:
+      data = await parseBridgeContract(input.sender, input.typeUrl, value, action)
       break
     default:
       break
@@ -97,17 +99,6 @@ const handleParseSwapContract = async (
   }
   return { action, response }
 }
-
-/**
- * 
- * {
-  "send": {
-    "contract": "orai1yglsm0u2x3xmct9kq3lxa654cshaxj9j5d9rw5enemkkkdjgzj7sr3gwt0",
-    "amount": "199353",
-    "msg": "eyJzd2FwX2FuZF9hY3Rpb24iOnsiYWZmaWxpYXRlcyI6W10sIm1pbl9hc3NldCI6eyJuYXRpdmUiOnsiYW1vdW50IjoiNDg1MTMiLCJkZW5vbSI6Im9yYWkifX0sInBvc3Rfc3dhcF9hY3Rpb24iOnsidHJhbnNmZXIiOnsidG9fYWRkcmVzcyI6Im9yYWkxcXB1dW5kcHZ0eW1jeXEzY21jdHkzdWRmMnp5MG01MDl3NGtnOHcifX0sInRpbWVvdXRfdGltZXN0YW1wIjoxNzM5NDM1NTc3MDAwMDAwMDAwLCJ1c2VyX3N3YXAiOnsic3dhcF9leGFjdF9hc3NldF9pbiI6eyJzd2FwX3ZlbnVlX25hbWUiOiJvcmFpZGV4Iiwib3BlcmF0aW9ucyI6W3siZGVub21faW4iOiJvcmFpMTJoemp4Zmg3N3dsNTcyZ2R6Y3QyZnh2MmFyeGN3aDZneWtjN3FoIiwiZGVub21fb3V0Ijoib3JhaTE1dW44bXN4M241emY5YWhseG1mZXFkMmt3YTV3bTBucnB4ZXIzMDRtOW5kNXE2cXEwZzZza3U1cGRkIiwicG9vbCI6Im9yYWkxMmh6anhmaDc3d2w1NzJnZHpjdDJmeHYyYXJ4Y3doNmd5a2M3cWgtb3JhaTE1dW44bXN4M241emY5YWhseG1mZXFkMmt3YTV3bTBucnB4ZXIzMDRtOW5kNXE2cXEwZzZza3U1cGRkLTUwMDAwMDAwMC0xMCJ9LHsiZGVub21faW4iOiJvcmFpMTV1bjhtc3gzbjV6ZjlhaGx4bWZlcWQya3dhNXdtMG5ycHhlcjMwNG05bmQ1cTZxcTBnNnNrdTVwZGQiLCJkZW5vbV9vdXQiOiJvcmFpMWx1czBmMHJoeDhzMDNnZGxseDJuNnZoa21mMDUzNmR2NTd3ZmdlIiwicG9vbCI6Im9yYWkxNXVuOG1zeDNuNXpmOWFobHhtZmVxZDJrd2E1d20wbnJweGVyMzA0bTluZDVxNnFxMGc2c2t1NXBkZC1vcmFpMWx1czBmMHJoeDhzMDNnZGxseDJuNnZoa21mMDUzNmR2NTd3ZmdlLTMwMDAwMDAwMDAtMTAwIn0seyJkZW5vbV9pbiI6Im9yYWkxbHVzMGYwcmh4OHMwM2dkbGx4Mm42dmhrbWYwNTM2ZHY1N3dmZ2UiLCJkZW5vbV9vdXQiOiJvcmFpIiwicG9vbCI6Im9yYWkxbTZxNWs1bnIyZWg4cTByZHJmNTd3cjdwaGs3dXZscGc3bXdmdjUifV19fX19"
-  }
-}
- */
 
 export default {
   parseCosmwasm,

@@ -14,3 +14,6 @@ export const SWAP_EXECUTE_TYPE = {
   SEND: 'send',
 }
 
+export const BRIDGE_EXECUTE_TYPE = {
+  TRANSFER_TO_REMOTE: 'transfer_to_remote',
+}

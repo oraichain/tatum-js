@@ -110,6 +110,10 @@ export class BridgeCosmos {
 
         returnData.feeAmount = feeAmount.toString()
         returnData.tokenInfo = (await this.tokenInfo.getTokenInfo({ tokenId })).data
+        returnData.bridgeAmount = (
+          (Number(returnData.bridgeAmount) / Math.pow(10, 18)) *
+          Math.pow(10, returnData.tokenInfo.decimal)
+        ).toString()
       }
     } catch (err: any) {
       error = err

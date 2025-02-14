@@ -1,10 +1,10 @@
 import httpStatus from 'http-status'
 
-import { BRIDGE_EXECUTE_TYPE } from '../constant/msgType'
+import { SWAP_EXECUTE_TYPE } from '../constant/msgType'
 import HttpException from '../utils/exception'
 import { oraichainTatum } from './tatum'
 
-export const parseBridgeContract = async (
+export const parseSwapContract = async (
   sender: string,
   typeUrl: string,
   value: Uint8Array,
@@ -18,6 +18,7 @@ export const parseBridgeContract = async (
       value,
     },
   ]
+
   const simRes = await oraichainTatum.simulate.simulate(sender, msgs)
   if (simRes.error) {
     throw new HttpException(httpStatus.SERVICE_UNAVAILABLE, simRes.error.message as any)
@@ -28,12 +29,30 @@ export const parseBridgeContract = async (
   }
 
   switch (action) {
-    case BRIDGE_EXECUTE_TYPE.TRANSFER_TO_REMOTE:
-      response = await oraichainTatum.bridge.parseTransferToRemote({
+    case SWAP_EXECUTE_TYPE.SWAP: {
+      response = await oraichainTatum.ammV2.parseSwap({
+        sender: sender,
+        events: simRes.data.result!.events,
         message: msgs,
-        events: simRes.data.result.events,
       })
       break
+    }
+    case SWAP_EXECUTE_TYPE.SWAP_AND_ACTION: {
+      response = await oraichainTatum.ammV2.parseSwapAndAction({
+        sender: sender,
+        events: simRes.data.result!.events,
+        message: msgs,
+      })
+      break
+    }
+    case SWAP_EXECUTE_TYPE.SEND: {
+      response = await oraichainTatum.ammV2.parseSend({
+        sender: sender,
+        events: simRes.data.result!.events,
+        message: msgs,
+      })
+      break
+    }
     default:
       break
   }

@@ -10,9 +10,9 @@ interface Message {
 const main = async () => {
   const tatumCosmos = await TatumSDK.init<CosmosRosetta>({ network: Network.COSMOS_ROSETTA })
 
-  const data = await tatumCosmos.bridge.tokenInfo.getTokenInfo({ tokenId: 'orai' })
+  // const data = await tatumCosmos.bridge.tokenInfo.getTokenInfo({ tokenId: 'orai' })
 
-  console.log('data: ', data)
+  // console.log('data: ', data)
 }
 
 main()

@@ -3,13 +3,9 @@ import httpStatus from 'http-status'
 import { SWAP_EXECUTE_TYPE } from '../constant/msgType'
 import HttpException from '../utils/exception'
 import { oraichainTatum } from './tatum'
+import { ParseInput } from '../types/parser'
 
-export const parseSwapContract = async (
-  sender: string,
-  typeUrl: string,
-  value: Uint8Array,
-  action: string,
-) => {
+export const parseSwapContract = async ({ sender, typeUrl, value, action }: ParseInput) => {
   let response
 
   const msgs = [

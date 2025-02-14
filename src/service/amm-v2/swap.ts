@@ -64,12 +64,12 @@ export class AmmV2Cosmos {
     let res: SwapResponse = {
       fromAddress: data.sender,
       toAddress: data.sender!,
-      inAsset: inAssetInfo.denom,
+      inAsset: inAsset,
       inAmount: ops[0].offerAmount!,
-      outAsset: outAssetInfo.denom,
+      outAsset: outAsset,
       outAmount: ops[ops.length - 1].returnAmount!,
-      inAssetDecimals: inAssetInfo.decimal,
-      outAssetDecimals: outAssetInfo.decimal
+      inAssetInfo: inAssetInfo,
+      outAssetInfo: outAssetInfo
     }
 
     return res

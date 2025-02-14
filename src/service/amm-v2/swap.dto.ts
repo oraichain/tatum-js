@@ -1,4 +1,5 @@
 import { Event } from '@cosmjs/stargate'
+import { TokenInfoCosmos } from '../token-info'
 
 export interface OraiSwapData {
   sender: string
@@ -66,8 +67,8 @@ export interface SwapResponse {
   /**
    * Decimals of the asset. Valid for native and fungible tokens. For tokens, only when readable from the contract `decimals()` method.
    */
-  inAssetDecimals?: number
-  outAssetDecimals?: number
+  inAssetInfo?: any
+  outAssetInfo?: any
 }
 
 

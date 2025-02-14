@@ -1,9 +1,9 @@
 import { MsgExecuteContract } from 'cosmjs-types/cosmwasm/wasm/v1/tx'
-
 import { ORAI_CONTRACT } from '../../constant/contractAddress'
-import { COSMWASM_MSG_TYPE } from '../../constant/msgType'
+import { COSMWASM_MSG_TYPE, SWAP_EXECUTE_TYPE } from '../../constant/msgType'
 import { parseBridgeContract } from '../../services/parseBridge'
 import { parseSwapContract } from '../../services/parseSwap'
+import { oraichainTatum } from '../../services/tatum'
 
 export type ParseInput = {
   sender: string

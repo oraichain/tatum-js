@@ -29,7 +29,7 @@ export const parseBridgeContract = async (
 
   switch (action) {
     case BRIDGE_EXECUTE_TYPE.TRANSFER_TO_REMOTE:
-      response = oraichainTatum.bridge.parseTransferToRemote({
+      response = await oraichainTatum.bridge.parseTransferToRemote({
         message: msgs,
         events: simRes.data.result.events,
       })

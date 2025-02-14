@@ -1,17 +1,14 @@
-import { toUtf8 } from '@cosmjs/encoding';
+import { toUtf8 } from '@cosmjs/encoding'
+import { Coin } from 'cosmjs-types/cosmos/base/v1beta1/coin'
+import { MsgExecuteContract, MsgUpdateAdmin } from 'cosmjs-types/cosmwasm/wasm/v1/tx'
 import { CosmosRosetta, Ethereum, Network, TatumSDK } from './service'
-import { MsgUpdateAdmin, MsgExecuteContract } from "cosmjs-types/cosmwasm/wasm/v1/tx";
-import { Coin } from 'cosmjs-types/cosmos/base/v1beta1/coin';
-
 
 interface Message {
-  [key: string]: any;  // Additional dynamic fields for each message
+  [key: string]: any // Additional dynamic fields for each message
 }
 
 const main = async () => {
   const tatumCosmos = await TatumSDK.init<CosmosRosetta>({ network: Network.COSMOS_ROSETTA })
-  await tatumCosmos.simulate.setupQueryClient("https://rpc.orai.io")
-
   const msgs = [
       {
         typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
@@ -23,7 +20,7 @@ const main = async () => {
   "send": {
     "contract": "orai1yglsm0u2x3xmct9kq3lxa654cshaxj9j5d9rw5enemkkkdjgzj7sr3gwt0",
     "amount": "500000",
-    "msg": "eyJzd2FwX2FuZF9hY3Rpb24iOnsiYWZmaWxpYXRlcyI6W10sIm1pbl9hc3NldCI6eyJuYXRpdmUiOnsiYW1vdW50IjoiMTMwMTE2IiwiZGVub20iOiJvcmFpIn19LCJwb3N0X3N3YXBfYWN0aW9uIjp7InRyYW5zZmVyIjp7InRvX2FkZHJlc3MiOiJvcmFpMXFwdXVuZHB2dHltY3lxM2NtY3R5M3VkZjJ6eTBtNTA5dzRrZzh3In19LCJ0aW1lb3V0X3RpbWVzdGFtcCI6MTczOTUxMTgyNzAwMDAwMDAwMCwidXNlcl9zd2FwIjp7InN3YXBfZXhhY3RfYXNzZXRfaW4iOnsic3dhcF92ZW51ZV9uYW1lIjoib3JhaWRleCIsIm9wZXJhdGlvbnMiOlt7ImRlbm9tX2luIjoib3JhaTEyaHpqeGZoNzd3bDU3MmdkemN0MmZ4djJhcnhjd2g2Z3lrYzdxaCIsImRlbm9tX291dCI6Im9yYWkiLCJwb29sIjoib3JhaTFjNXMwM2MzbDMzNmRnZXNuZTdkeWxubWhzenc4NTU0dHN5eTl5dCJ9XX19fX0="
+    "msg": "eyJzd2FwX2FuZF9hY3Rpb24iOnsiYWZmaWxpYXRlcyI6W10sIm1pbl9hc3NldCI6eyJuYXRpdmUiOnsiYW1vdW50IjoiMTI4Mjc1IiwiZGVub20iOiJvcmFpIn19LCJwb3N0X3N3YXBfYWN0aW9uIjp7InRyYW5zZmVyIjp7InRvX2FkZHJlc3MiOiJvcmFpMXFwdXVuZHB2dHltY3lxM2NtY3R5M3VkZjJ6eTBtNTA5dzRrZzh3In19LCJ0aW1lb3V0X3RpbWVzdGFtcCI6MTczOTUxODkxMjAwMDAwMDAwMCwidXNlcl9zd2FwIjp7InN3YXBfZXhhY3RfYXNzZXRfaW4iOnsic3dhcF92ZW51ZV9uYW1lIjoib3JhaWRleCIsIm9wZXJhdGlvbnMiOlt7ImRlbm9tX2luIjoib3JhaTEyaHpqeGZoNzd3bDU3MmdkemN0MmZ4djJhcnhjd2g2Z3lrYzdxaCIsImRlbm9tX291dCI6Im9yYWkiLCJwb29sIjoib3JhaTFjNXMwM2MzbDMzNmRnZXNuZTdkeWxubWhzenc4NTU0dHN5eTl5dCJ9XX19fX0="
   }
 }`
           ),
@@ -53,6 +50,9 @@ const main = async () => {
     console.log(action)
 
     // console.log(res)
+  // const data = await tatumCosmos.bridge.tokenInfo.getTokenInfo({ tokenId: 'orai' })
+
+  // console.log('data: ', data)
 }
 
 main()

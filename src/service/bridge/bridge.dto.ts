@@ -1,5 +1,7 @@
 import { Event } from '@cosmjs/stargate'
 
+import { TokenInfoResponse } from '../token-info'
+
 export interface CosmosTransferToRemoteData {
   message: any
   events: Event[]
@@ -20,4 +22,5 @@ export interface TransferToRemoteResponse {
   toAddress: string
   bridgeAmount: string
   feeAmount: string
+  tokenInfo: TokenInfoResponse
 }

@@ -6,6 +6,7 @@ import { Container, Service } from 'typedi'
 import { TatumConnector } from '../../connector'
 import { CONFIG, ResponseDto, Status } from '../../util'
 import { TatumConfig } from '../tatum'
+import { TokenInfoCosmos } from '../token-info/tokenInfo'
 import { CosmosTransferToRemoteData, EvmTransferToRemoteData, TransferToRemoteResponse } from './bridge.dto'
 import { GravityAbi } from './helpers'
 
@@ -17,10 +18,12 @@ export class BridgeCosmos {
   private readonly connector: TatumConnector
   private readonly config: TatumConfig
   private queryClient: QueryClient & TxExtension
+  private tokenInfo: TokenInfoCosmos
 
   constructor(private readonly id: string) {
     this.connector = Container.of(this.id).get(TatumConnector)
     this.config = Container.of(this.id).get(CONFIG)
+    this.tokenInfo = Container.of(this.id).get(TokenInfoCosmos)
   }
 
   /**

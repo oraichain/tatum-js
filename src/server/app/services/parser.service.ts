@@ -1,7 +1,7 @@
 import { MsgExecuteContract } from 'cosmjs-types/cosmwasm/wasm/v1/tx'
 import {fromUtf8, fromBase64} from '@cosmjs/encoding'
 import { COSMOS_NETWORKS } from 'src/dto'
-import { oraichainTatum } from '../../../server/services/tatum'
+import { oraichainTatum } from '../../services/tatum'
 import { ORAI_CONTRACT } from '../../constant/contractAddress'
 import { COSMWASM_MSG_TYPE, SWAP_EXECUTE_TYPE } from '../../constant/msgType'
 
@@ -34,9 +34,14 @@ const handleParseCosmwasmExecuteContract = async (input: ParseInput): Promise<an
   const contractAddress = rawMsg.contract
 
   switch (contractAddress) {
-    case ORAI_CONTRACT.SWAP:
-      data = await handleParseSwapContract(input.sender, input.typeUrl, value, action)
-      break
+    case ORAI_CONTRACT.SWAP: {
+      data = await handleParseSwapContract(input.sender, input.typeUrl, value, action);
+      break;
+    }
+    case "orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh": {
+      data = await handleParseSwapContract(input.sender, input.typeUrl, value, action);
+      break;
+    }
     case ORAI_CONTRACT.BRIDGE:
       break
     default:
@@ -59,8 +64,9 @@ const handleParseSwapContract = async (
       value,
     },
   ]
-  const simRes = await oraichainTatum.simulate.simulate(sender, msgs)
 
+  console.log(action)
+  const simRes = await oraichainTatum.simulate.simulate(sender, msgs)
   switch (action) {
     case SWAP_EXECUTE_TYPE.SWAP: {
       response = oraichainTatum.ammV2.parseSwap({
@@ -79,12 +85,12 @@ const handleParseSwapContract = async (
       break
     }
     case SWAP_EXECUTE_TYPE.SEND: {
-      // const msg = Buffer.from(rawMsg.msg).toString('base64')
-      // handleParseCosmwasmExecuteContract({sender: input.sender, typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract", value: msg})
-      // const res = decodeNestedObject(rawMsg)
-      // console.log(res)
-      // console.dir(res, {depth: null})
-      // console.log(res.msg.send)
+      const rawMsg = MsgExecuteContract.decode(value)
+      response = oraichainTatum.ammV2.parseSend({
+        sender: sender,
+        events: simRes.data.result!.events,
+        message: msgs,
+      })
       break
     }
     default:
@@ -110,7 +116,7 @@ function decodeNestedObject(obj: any): any {
           }
         } else {
           newObj[key] = decodeNestedObject(obj[key]);
-          // console.log(newObj[key])
+          return key
         }
       }
     }

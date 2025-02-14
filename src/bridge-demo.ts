@@ -17,40 +17,13 @@ const main = async () => {
         typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
         value: MsgExecuteContract.encode({
           sender: "orai1qpuundpvtymcyq3cmcty3udf2zy0m509w4kg8w",
-          contract: "orai1yglsm0u2x3xmct9kq3lxa654cshaxj9j5d9rw5enemkkkdjgzj7sr3gwt0",
+          contract: "orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh",
           msg: toUtf8(
             `{
-  "swap_and_action": {
-    "affiliates": [],
-    "min_asset": {
-      "cw20": {
-        "amount": "394980",
-        "address": "orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh"
-      }
-    },
-    "post_swap_action": {
-      "transfer": {
-        "to_address": "orai1qpuundpvtymcyq3cmcty3udf2zy0m509w4kg8w"
-      }
-    },
-    "timeout_timestamp": 1739560318000000000,
-    "user_swap": {
-      "swap_exact_asset_in": {
-        "swap_venue_name": "oraidex",
-        "operations": [
-          {
-            "denom_in": "orai",
-            "denom_out": "orai15un8msx3n5zf9ahlxmfeqd2kwa5wm0nrpxer304m9nd5q6qq0g6sku5pdd",
-            "pool": "orai-orai15un8msx3n5zf9ahlxmfeqd2kwa5wm0nrpxer304m9nd5q6qq0g6sku5pdd-3000000000-100"
-          },
-          {
-            "denom_in": "orai15un8msx3n5zf9ahlxmfeqd2kwa5wm0nrpxer304m9nd5q6qq0g6sku5pdd",
-            "denom_out": "orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh",
-            "pool": "orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh-orai15un8msx3n5zf9ahlxmfeqd2kwa5wm0nrpxer304m9nd5q6qq0g6sku5pdd-500000000-10"
-          }
-        ]
-      }
-    }
+  "send": {
+    "contract": "orai1yglsm0u2x3xmct9kq3lxa654cshaxj9j5d9rw5enemkkkdjgzj7sr3gwt0",
+    "amount": "479325",
+    "msg": "eyJzd2FwX2FuZF9hY3Rpb24iOnsiYWZmaWxpYXRlcyI6W10sIm1pbl9hc3NldCI6eyJuYXRpdmUiOnsiYW1vdW50IjoiMTI2MDQ2IiwiZGVub20iOiJvcmFpIn19LCJwb3N0X3N3YXBfYWN0aW9uIjp7InRyYW5zZmVyIjp7InRvX2FkZHJlc3MiOiJvcmFpMXFwdXVuZHB2dHltY3lxM2NtY3R5M3VkZjJ6eTBtNTA5dzRrZzh3In19LCJ0aW1lb3V0X3RpbWVzdGFtcCI6MTczOTUwNDM2NzAwMDAwMDAwMCwidXNlcl9zd2FwIjp7InN3YXBfZXhhY3RfYXNzZXRfaW4iOnsic3dhcF92ZW51ZV9uYW1lIjoib3JhaWRleCIsIm9wZXJhdGlvbnMiOlt7ImRlbm9tX2luIjoib3JhaTEyaHpqeGZoNzd3bDU3MmdkemN0MmZ4djJhcnhjd2g2Z3lrYzdxaCIsImRlbm9tX291dCI6Im9yYWkxbHVzMGYwcmh4OHMwM2dkbGx4Mm42dmhrbWYwNTM2ZHY1N3dmZ2UiLCJwb29sIjoib3JhaTEyaHpqeGZoNzd3bDU3MmdkemN0MmZ4djJhcnhjd2g2Z3lrYzdxaC1vcmFpMWx1czBmMHJoeDhzMDNnZGxseDJuNnZoa21mMDUzNmR2NTd3ZmdlLTMwMDAwMDAwMDAtMTAwIn0seyJkZW5vbV9pbiI6Im9yYWkxbHVzMGYwcmh4OHMwM2dkbGx4Mm42dmhrbWYwNTM2ZHY1N3dmZ2UiLCJkZW5vbV9vdXQiOiJvcmFpIiwicG9vbCI6Im9yYWkxbTZxNWs1bnIyZWg4cTByZHJmNTd3cjdwaGs3dXZscGc3bXdmdjUifV19fX19"
   }
 }`
           ),
@@ -67,7 +40,7 @@ const main = async () => {
       msgs
     )
 
-    // console.log(Buffer.from(msgs[0].value).toString('base64'))
+    console.log(Buffer.from(msgs[0].value).toString('base64'))
 
     const res1 = await tatumCosmos.ammV2.parseSwapAndAction({sender: "orai1qpuundpvtymcyq3cmcty3udf2zy0m509w4kg8w", events: res.data.result!.events, message: msgs})
     const ms = MsgExecuteContract.decode(msgs[0].value)

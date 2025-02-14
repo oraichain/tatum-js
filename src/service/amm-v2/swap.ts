@@ -78,6 +78,23 @@ export class AmmV2Cosmos {
     return swapInfo
   }
 
+  parseSend(data: OraiSwapData): SwapResponse {
+    // const value = Uint8Array.from(Buffer.from(data.message[0].value, 'base64'))
+    // const rawMsg = MsgExecuteContract.decode(value)
+    // const nextMsg = decodeNestedObject(rawMsg.msg)
+    // console.log(nextMsg)
+
+    return {
+      fromAddress: "data.sender",
+      toAddress: "data.sender!",
+      inAsset: "ops[0].offerAsset!",
+      inAmount: "ops[0].offerAmount!",
+      outAsset: "ops[ops.length - 1].askAsset!",
+      outAmount: "ops[ops.length - 1].returnAmount!",
+    }
+
+  }
+
   private parseSwapNative(event: Event): OraiSwapOperations {
     let res: OraiSwapOperations = {}
     for (let attr of event.attributes) {
@@ -182,7 +199,7 @@ function decodeNestedObject(obj: any): any {
           }
         } else {
           newObj[key] = decodeNestedObject(obj[key]);
-          // console.log(newObj[key])
+          console.log(newObj[key])
         }
       }
     }
@@ -190,6 +207,23 @@ function decodeNestedObject(obj: any): any {
   }
   return obj;
 }
+
+function getSendAction(obj: any): string | undefined {
+  if (typeof obj === 'object' && obj !== null) {
+    for (const key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        if (key === 'sender' || key === 'contract') {
+        } else if (key === 'msg') {
+          return getSendAction(obj[key])
+        } else {
+          return key
+        }
+      }
+    }
+  }
+  return undefined 
+}
+
 @Service({
   factory: (data: { id: string }) => {
     return new AmmV2Evm(data.id)

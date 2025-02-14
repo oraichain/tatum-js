@@ -8,7 +8,12 @@ export const COSMWASM_MSG_TYPE = {
   EXECUTE_CONTRACT: 'MsgExecuteContract',
 }
 
-export const COSMWASM_EXECUTE_TYPE = {
+export const SWAP_EXECUTE_TYPE = {
   SWAP: 'swap',
   SWAP_AND_ACTION: 'swap_and_action',
+  SEND: 'send',
+}
+
+export const BRIDGE_EXECUTE_TYPE = {
+  TRANSFER_TO_REMOTE: 'transfer_to_remote',
 }

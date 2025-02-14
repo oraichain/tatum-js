@@ -1,5 +1,8 @@
+import { Event } from '@cosmjs/stargate'
+
 export interface CosmosTransferToRemoteData {
-  txHash: string
+  message: any
+  events: Event[]
 }
 
 export interface EvmTransferToRemoteData {

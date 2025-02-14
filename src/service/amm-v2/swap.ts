@@ -79,21 +79,24 @@ export class AmmV2Cosmos {
   }
 
   parseSend(data: OraiSwapData): SwapResponse {
-    // const value = Uint8Array.from(Buffer.from(data.message[0].value, 'base64'))
-    // const rawMsg = MsgExecuteContract.decode(value)
-    // const nextMsg = decodeNestedObject(rawMsg.msg)
-    // console.log(nextMsg)
+    let response: SwapResponse = {} as any
+    const rawMsg = MsgExecuteContract.decode(data.message[0].value)
+    const action = objectToMap(decodeNestedObject(rawMsg))
+    const actionName = action[0]
+    const actionData = action[1]
 
-    return {
-      fromAddress: "data.sender",
-      toAddress: "data.sender!",
-      inAsset: "ops[0].offerAsset!",
-      inAmount: "ops[0].offerAmount!",
-      outAsset: "ops[ops.length - 1].askAsset!",
-      outAmount: "ops[ops.length - 1].returnAmount!",
+    switch(actionName) {
+      case "swap_and_action": {
+        response = this.parseSwapAndAction({sender: data.sender, events: data.events})
+        response.toAddress = actionData.post_swap_action
+        break;
+      }
+      default:
+        break;
     }
 
-  }
+    return response
+}
 
   private parseSwapNative(event: Event): OraiSwapOperations {
     let res: OraiSwapOperations = {}
@@ -199,7 +202,6 @@ function decodeNestedObject(obj: any): any {
           }
         } else {
           newObj[key] = decodeNestedObject(obj[key]);
-          console.log(newObj[key])
         }
       }
     }
@@ -208,20 +210,42 @@ function decodeNestedObject(obj: any): any {
   return obj;
 }
 
-function getSendAction(obj: any): string | undefined {
-  if (typeof obj === 'object' && obj !== null) {
-    for (const key in obj) {
-      if (Object.prototype.hasOwnProperty.call(obj, key)) {
-        if (key === 'sender' || key === 'contract') {
-        } else if (key === 'msg') {
-          return getSendAction(obj[key])
-        } else {
-          return key
+function objectToMap(obj: any): [string, any] {
+  let response: [string, any] = ["", {}];
+
+  function recursiveHelper(input: any, parentKey: string = '') {
+    if (Array.isArray(input)) {
+      // If input is an array, iterate through each element and recurse
+      input.forEach((item, index) => {
+        recursiveHelper(item, `${parentKey}[${index}]`);
+      });
+    } else if (typeof input === 'object' && input !== null) {
+      // If input is an object, iterate through its properties
+      Object.entries(input).forEach(([key, value]) => {
+        // Create a new key by combining parentKey and current key
+        let newKey: string = "";
+        let isContinue: boolean = true;
+        switch(key) {
+          case "swap_and_action":
+            newKey = "swap_and_action"
+            isContinue = false
+            response = [key, value]
+            break
+          default:
+            newKey = parentKey ? `${parentKey}.${key}` : key;
+            break;
+        }        
+        // Recursively call the function for nested structures
+        
+        if (typeof value === 'object' && isContinue) {
+          recursiveHelper(value, newKey);
         }
-      }
+      });
     }
   }
-  return undefined 
+
+  recursiveHelper(obj); // Start recursion
+  return response;
 }
 
 @Service({

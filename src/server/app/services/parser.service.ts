@@ -65,8 +65,8 @@ const handleParseSwapContract = async (
     },
   ]
 
-  console.log(action)
   const simRes = await oraichainTatum.simulate.simulate(sender, msgs)
+  console.log(simRes)
   switch (action) {
     case SWAP_EXECUTE_TYPE.SWAP: {
       response = oraichainTatum.ammV2.parseSwap({
@@ -85,7 +85,6 @@ const handleParseSwapContract = async (
       break
     }
     case SWAP_EXECUTE_TYPE.SEND: {
-      const rawMsg = MsgExecuteContract.decode(value)
       response = oraichainTatum.ammV2.parseSend({
         sender: sender,
         events: simRes.data.result!.events,
@@ -97,32 +96,6 @@ const handleParseSwapContract = async (
       break
   }
   return { action, response }
-}
-
-function decodeNestedObject(obj: any): any {
-  if (Array.isArray(obj)) {
-    return obj.map(decodeNestedObject);
-  } else if (typeof obj === 'object' && obj !== null) {
-    const newObj: any = {};
-    for (const key in obj) {
-      if (Object.prototype.hasOwnProperty.call(obj, key)) {
-        if (key === 'msg') {
-          if (obj[key] instanceof Uint8Array) {
-            newObj[key] = decodeNestedObject(JSON.parse(fromUtf8(obj[key])));
-          } else if (typeof obj[key] === 'string') {
-            newObj[key] = decodeNestedObject(JSON.parse(fromUtf8(fromBase64(obj[key]))));
-          } else {
-            newObj[key] = decodeNestedObject(obj[key]); // Handle nested msg objects
-          }
-        } else {
-          newObj[key] = decodeNestedObject(obj[key]);
-          return key
-        }
-      }
-    }
-    return newObj;
-  }
-  return obj;
 }
 
 /**

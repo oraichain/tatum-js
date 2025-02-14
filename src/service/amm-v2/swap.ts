@@ -6,6 +6,7 @@ import { TatumConnector } from '../../connector'
 import { CONFIG } from '../../util'
 import { TatumConfig } from '../tatum'
 import { OraiSwapData, OraiSwapOperations, SwapResponse } from './swap.dto'
+import { TokenInfoCosmos } from '../token-info'
 
 const ORAI_SWAP_CONTRACT_ADDRESS = 'orai10s0c75gw5y5eftms5ncfknw6lzmx0dyhedn75uz793m8zwz4g8zq4d9x9a'
 const ORAI_SWAP_AND_ACTION_CONTRACT_ADDRESS =
@@ -18,16 +19,18 @@ const ORAI_SWAP_AND_ACTION_CONTRACT_ADDRESS =
 export class AmmV2Cosmos {
   private readonly connector: TatumConnector
   private readonly config: TatumConfig
+  private tokenInfo: TokenInfoCosmos
 
   constructor(private readonly id: string) {
     this.config = Container.of(this.id).get(CONFIG)
     this.connector = Container.of(this.id).get(TatumConnector)
+    this.tokenInfo = Container.of(this.id).get(TokenInfoCosmos)
   }
 
   /**
    * Get balance of all tokens for a given Tezos address.
    */
-  parseSwap(data: OraiSwapData): SwapResponse {
+  async parseSwap(data: OraiSwapData): Promise<SwapResponse> {
     // decode events
     const evs = data.events.filter(
       (e: Event) =>
@@ -52,21 +55,29 @@ export class AmmV2Cosmos {
       }
     }
 
+    const inAsset = ops[0].offerAsset!
+    const outAsset = ops[ops.length - 1].askAsset!
+
+    const inAssetInfo = (await this.tokenInfo.getTokenInfo({tokenId: inAsset})).data
+    const outAssetInfo = (await this.tokenInfo.getTokenInfo({tokenId: outAsset})).data
+
     let res: SwapResponse = {
       fromAddress: data.sender,
       toAddress: data.sender!,
-      inAsset: ops[0].offerAsset!,
+      inAsset: inAssetInfo.denom,
       inAmount: ops[0].offerAmount!,
-      outAsset: ops[ops.length - 1].askAsset!,
+      outAsset: outAssetInfo.denom,
       outAmount: ops[ops.length - 1].returnAmount!,
+      inAssetDecimals: inAssetInfo.decimal,
+      outAssetDecimals: outAssetInfo.decimal
     }
 
     return res
   }
 
-  parseSwapAndAction(data: OraiSwapData): SwapResponse {
+  async parseSwapAndAction(data: OraiSwapData): Promise<SwapResponse> {
     // decode events
-    let swapInfo = this.parseSwap(data)
+    let swapInfo = await this.parseSwap(data)
 
     // decode messages
     if (data.message != null) {
@@ -78,7 +89,7 @@ export class AmmV2Cosmos {
     return swapInfo
   }
 
-  parseSend(data: OraiSwapData): SwapResponse {
+  async parseSend(data: OraiSwapData): Promise<SwapResponse> {
     let response: SwapResponse = {} as any
     const rawMsg = MsgExecuteContract.decode(data.message[0].value)
     const action = objectToMap(decodeNestedObject(rawMsg))
@@ -87,7 +98,7 @@ export class AmmV2Cosmos {
 
     switch(actionName) {
       case "swap_and_action": {
-        response = this.parseSwapAndAction({sender: data.sender, events: data.events})
+        response = await this.parseSwapAndAction({sender: data.sender, events: data.events})
         response.toAddress = actionData.post_swap_action
         break;
       }

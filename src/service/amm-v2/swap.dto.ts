@@ -66,7 +66,8 @@ export interface SwapResponse {
   /**
    * Decimals of the asset. Valid for native and fungible tokens. For tokens, only when readable from the contract `decimals()` method.
    */
-  decimals?: number
+  inAssetDecimals?: number
+  outAssetDecimals?: number
 }
 
 

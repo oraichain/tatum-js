@@ -71,7 +71,7 @@ const handleParseSwapContract = async (
   console.log(simRes)
   switch (action) {
     case SWAP_EXECUTE_TYPE.SWAP: {
-      response = oraichainTatum.ammV2.parseSwap({
+      response = await oraichainTatum.ammV2.parseSwap({
         sender: sender,
         events: simRes.data.result!.events,
         message: msgs,
@@ -79,7 +79,7 @@ const handleParseSwapContract = async (
       break
     }
     case SWAP_EXECUTE_TYPE.SWAP_AND_ACTION: {
-      response = oraichainTatum.ammV2.parseSwapAndAction({
+      response = await oraichainTatum.ammV2.parseSwapAndAction({
         sender: sender,
         events: simRes.data.result!.events,
         message: msgs,
@@ -87,7 +87,7 @@ const handleParseSwapContract = async (
       break
     }
     case SWAP_EXECUTE_TYPE.SEND: {
-      response = oraichainTatum.ammV2.parseSend({
+      response = await oraichainTatum.ammV2.parseSend({
         sender: sender,
         events: simRes.data.result!.events,
         message: msgs,

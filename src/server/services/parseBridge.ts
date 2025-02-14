@@ -20,7 +20,7 @@ export const parseBridgeContract = async (
   ]
   const simRes = await oraichainTatum.simulate.simulate(sender, msgs)
   if (simRes.error) {
-    throw new HttpException(httpStatus.SERVICE_UNAVAILABLE, simRes.error.message.join(','))
+    throw new HttpException(httpStatus.SERVICE_UNAVAILABLE, simRes.error.message as any)
   }
 
   if (!simRes.data.result) {

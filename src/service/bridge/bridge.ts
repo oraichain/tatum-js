@@ -136,6 +136,9 @@ export class BridgeCosmos {
           (Number(returnData.bridgeAmount) / Math.pow(10, 18)) *
           Math.pow(10, returnData.tokenInfo.decimal)
         ).toString()
+        // TODO: we tmp hardcode here, need to fix later
+        returnData.fromChainId = 'Oraichain'
+        returnData.toChainId = returnData.toAddress.startsWith('oraib') ? '56' : '1'
       }
     } catch (err: any) {
       error = err

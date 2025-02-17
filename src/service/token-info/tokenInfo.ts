@@ -21,8 +21,9 @@ export class TokenInfoCosmos {
 
   async getTokenInfo({ tokenId }: GetTokenInfoParams): Promise<ResponseDto<TokenInfoResponse>> {
     return ErrorUtils.tryFail(async () => {
+      const encodeUrlToken = encodeURIComponent(tokenId)
       const data = await this.connector.get<TokenItemType, ApiGetTokenInfoRequest>({
-        basePath: `https://oraicommon.oraidex.io/api/v1/tokens/${tokenId}`,
+        basePath: `https://oraicommon.oraidex.io/api/v1/tokens/${encodeUrlToken}`,
       })
 
       return {

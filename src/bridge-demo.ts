@@ -10,73 +10,55 @@ interface Message {
 const main = async () => {
   const tatumCosmos = await TatumSDK.init<CosmosRosetta>({ network: Network.COSMOS_ROSETTA })
   const msgs = [
-      {
-        typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
-        value: MsgExecuteContract.encode({
-          sender: "orai1qpuundpvtymcyq3cmcty3udf2zy0m509w4kg8w",
-          contract: "orai1yglsm0u2x3xmct9kq3lxa654cshaxj9j5d9rw5enemkkkdjgzj7sr3gwt0",
-          msg: toUtf8(
-            `{
-  "swap_and_action": {
-    "affiliates": [],
-    "min_asset": {
-      "native": {
-        "amount": "1742955369",
-        "denom": "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/oraix39mVDGnusyjag97Tz5H8GvGriSZmhVvkvXRoc4"
-      }
-    },
-    "post_swap_action": {
-      "transfer": {
-        "to_address": "orai1qpuundpvtymcyq3cmcty3udf2zy0m509w4kg8w"
-      }
-    },
-    "timeout_timestamp": 1739765824000000000,
-    "user_swap": {
-      "swap_exact_asset_in": {
-        "swap_venue_name": "oraidex",
-        "operations": [
-          {
-            "denom_in": "orai",
-            "denom_out": "orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge",
-            "pool": "orai-orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge-3000000000-100"
-          },
-          {
-            "denom_in": "orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge",
-            "denom_out": "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/oraix39mVDGnusyjag97Tz5H8GvGriSZmhVvkvXRoc4",
-            "pool": "orai1jfmx6tqsfk42ffjjnqaee7c50u8jykcjysrh9caam98wkz9tr34skdt2tg"
-          }
-        ]
-      }
-    }
+    {
+      typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
+      value: MsgExecuteContract.encode({
+        sender: 'orai1eg9vt8af8nde8lx4flmrk7x9uvj8zd8xqyhkeh',
+        contract: 'orai195269awwnt5m6c843q6w7hp8rt0k7syfu9de4h0wz384slshuzps8y7ccm',
+        msg: toUtf8(
+          `
+{
+  "transfer_to_remote": {
+    "local_channel_id": "channel-29",
+    "remote_address": "oraib1eg9vt8af8nde8lx4flmrk7x9uvj8zd8xh9n6g5",
+    "remote_denom": "oraib0x25d887Ce7a35172C62FeBFD67a1856F20FaEbB00",
+    "timeout": 1739780488000000000,
+    "memo": "oraib0x6235dc3b9c234d0ad85da3fe35761304d7c65c96"
   }
-}`
-          ),
-          funds: [Coin.fromJSON({
-            denom: "orai",
-            amount: "68431",
-          })],
-        }).finish(),
-      } 
-     ]
+        }
 
-    const res = await tatumCosmos.simulate.simulate(
-      "orai1qpuundpvtymcyq3cmcty3udf2zy0m509w4kg8w",
-      msgs
-    )
 
-    console.log(Buffer.from(msgs[0].value).toString('base64'))
+`,
+        ),
+        funds: [
+          Coin.fromJSON({
+            denom: 'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/extPEPE',
+            amount: '40000',
+          }),
+        ],
+      }).finish(),
+    },
+  ]
 
-    const res1 = await tatumCosmos.ammV2.parseSwapAndAction({sender: "orai1qpuundpvtymcyq3cmcty3udf2zy0m509w4kg8w", events: res.data.result!.events, message: msgs})
-    const ms = MsgExecuteContract.decode(msgs[0].value)
+  // const res = await tatumCosmos.simulate.simulate('orai1qpuundpvtymcyq3cmcty3udf2zy0m509w4kg8w', msgs)
 
-    const val = (new TextDecoder).decode(ms.msg)
-    const message = JSON.parse(val)
-    // Get the name of the first element (first key)
-    const action = Object.keys(message)[0]
-    
-    console.log(action)
+  console.log(Buffer.from(msgs[0].value).toString('base64'))
 
-    // console.log(res)
+  // const res1 = await tatumCosmos.ammV2.parseSwapAndAction({
+  //   sender: 'orai1qpuundpvtymcyq3cmcty3udf2zy0m509w4kg8w',
+  //   events: res.data.result!.events,
+  //   message: msgs,
+  // })
+  // const ms = MsgExecuteContract.decode(msgs[0].value)
+
+  // const val = new TextDecoder().decode(ms.msg)
+  // const message = JSON.parse(val)
+  // // Get the name of the first element (first key)
+  // const action = Object.keys(message)[0]
+
+  // console.log(action)
+
+  // console.log(res)
   // const data = await tatumCosmos.bridge.tokenInfo.getTokenInfo({ tokenId: 'orai' })
 
   // console.log('data: ', data)

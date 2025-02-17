@@ -21,4 +21,5 @@ export const BRIDGE_EXECUTE_TYPE = {
 
 export const USDT_CW20_EXECUTE_TYPE = {
   SEND: 'send',
+  INCREASE_ALLOWANCE: 'increase_allowance'
 }

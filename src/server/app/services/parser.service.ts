@@ -46,7 +46,7 @@ const handleParseCosmwasmExecuteContract = async (input: ParseInput): Promise<an
     case ORAI_CONTRACT.USDT_CW20: {
       data = await parseUsdtCw20(
         { sender: input.sender, typeUrl: input.typeUrl, value, action },
-        executeMsg.send.contract,
+        executeMsg,
       )
       break
     }

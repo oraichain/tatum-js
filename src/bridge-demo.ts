@@ -21,8 +21,8 @@ const main = async () => {
     "affiliates": [],
     "min_asset": {
       "native": {
-        "amount": "1742955369",
-        "denom": "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/oraix39mVDGnusyjag97Tz5H8GvGriSZmhVvkvXRoc4"
+        "amount": "80563958",
+        "denom": "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/oraim8c9d1nkfuQk9EzGYEUGxqL3MHQYndRw1huVo5h"
       }
     },
     "post_swap_action": {
@@ -30,20 +30,20 @@ const main = async () => {
         "to_address": "orai1qpuundpvtymcyq3cmcty3udf2zy0m509w4kg8w"
       }
     },
-    "timeout_timestamp": 1739765824000000000,
+    "timeout_timestamp": 1739770398000000000,
     "user_swap": {
       "swap_exact_asset_in": {
         "swap_venue_name": "oraidex",
         "operations": [
           {
-            "denom_in": "orai",
+            "denom_in": "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/D7yP4ycfsRWUGYionGpi64sLF2ddZ2JXxuRAti2M7uck",
             "denom_out": "orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge",
-            "pool": "orai-orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge-3000000000-100"
+            "pool": "orai1g6dcml7xwm8mcyav80yv94ds3ymn7f65pnerledtp7tj25jhcn2strhyc9"
           },
           {
             "denom_in": "orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge",
-            "denom_out": "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/oraix39mVDGnusyjag97Tz5H8GvGriSZmhVvkvXRoc4",
-            "pool": "orai1jfmx6tqsfk42ffjjnqaee7c50u8jykcjysrh9caam98wkz9tr34skdt2tg"
+            "denom_out": "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/oraim8c9d1nkfuQk9EzGYEUGxqL3MHQYndRw1huVo5h",
+            "pool": "orai1s3746evfgwm7dtl3x4s7fmd37c4s8t566z0xvflr4shdculkxw5qa3pusc"
           }
         ]
       }
@@ -52,8 +52,8 @@ const main = async () => {
 }`
           ),
           funds: [Coin.fromJSON({
-            denom: "orai",
-            amount: "68431",
+            denom: "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/D7yP4ycfsRWUGYionGpi64sLF2ddZ2JXxuRAti2M7uck",
+            amount: "554971449",
           })],
         }).finish(),
       } 

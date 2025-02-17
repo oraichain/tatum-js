@@ -7,8 +7,9 @@ import { ParseInput, SimulateMsg } from '../types/parser'
 import HttpException from '../utils/exception'
 import { oraichainTatum } from './tatum'
 import { Contract } from 'ethers'
+import { ORAI } from '@oraichain/common'
 
-export const parseUsdtCw20 = async ({ sender, typeUrl, value, action }: ParseInput, sendContract: string) => {
+export const parseUsdtCw20 = async ({ sender, typeUrl, value, action }: ParseInput, executeMsg: any) => {
   let response
 
   const msgs = [
@@ -25,10 +26,13 @@ export const parseUsdtCw20 = async ({ sender, typeUrl, value, action }: ParseInp
   if (!simRes.data.result) {
     throw new HttpException(httpStatus.SERVICE_UNAVAILABLE, 'Simulate with undefined result')
   }
-  console.log(sendContract)
+
   switch (action) {
     case USDT_CW20_EXECUTE_TYPE.SEND:
-      response = await handleParseSend(sender, sendContract, msgs, simRes.data.result.events)
+      response = await handleParseSend(sender, executeMsg.send.contract, msgs, simRes.data.result.events)
+      break
+    case USDT_CW20_EXECUTE_TYPE.INCREASE_ALLOWANCE:
+      response = await handleParseIncreaseAllowance(sender, executeMsg.spender, msgs, simRes.data.result.events)
       break
     default:
       break
@@ -57,4 +61,8 @@ const handleParseSend = async (sender: string, contract: string, message: Simula
     }
 
   return response
+}
+
+const handleParseIncreaseAllowance = async(sender: string, contract: string, message: SimulateMsg[], events: Event[]) => {
+  let response
 }

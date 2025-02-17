@@ -248,7 +248,10 @@ function objectToMap(obj: any): [string, any] {
         let isContinue: boolean = true;
         switch(key) {
           case "swap_and_action":
-            newKey = "swap_and_action"
+            isContinue = false
+            response = [key, value]
+            break
+          case "execute_swap_operations":
             isContinue = false
             response = [key, value]
             break

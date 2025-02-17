@@ -35,10 +35,11 @@ const handleParseCosmwasmExecuteContract = async (input: ParseInput): Promise<an
   const contractAddress = rawMsg.contract
 
   switch (contractAddress) {
-    case ORAI_CONTRACT.SWAP: {
-      data = await parseSwapContract({ sender: input.sender, typeUrl: input.typeUrl, value, action })
-      break
-    }
+    case ORAI_CONTRACT.SWAP:
+    case ORAI_CONTRACT.SWAP_AND_ACTION:
+    case ORAI_CONTRACT.SWAP_OPERATIONS:
+      data = await parseSwapContract({ sender: input.sender, typeUrl: input.typeUrl, value, action });
+      break;
     case ORAI_CONTRACT.BRIDGE:
       data = await parseBridgeContract({ sender: input.sender, typeUrl: input.typeUrl, value, action })
       break

@@ -6,6 +6,7 @@ import { USDT_CW20_EXECUTE_TYPE } from '../constant/msgType'
 import { ParseInput, SimulateMsg } from '../types/parser'
 import HttpException from '../utils/exception'
 import { oraichainTatum } from './tatum'
+import { Contract } from 'ethers'
 
 export const parseUsdtCw20 = async ({ sender, typeUrl, value, action }: ParseInput, sendContract: string) => {
   let response
@@ -24,7 +25,7 @@ export const parseUsdtCw20 = async ({ sender, typeUrl, value, action }: ParseInp
   if (!simRes.data.result) {
     throw new HttpException(httpStatus.SERVICE_UNAVAILABLE, 'Simulate with undefined result')
   }
-
+  console.log(sendContract)
   switch (action) {
     case USDT_CW20_EXECUTE_TYPE.SEND:
       response = await handleParseSend(sender, sendContract, msgs, simRes.data.result.events)
@@ -46,12 +47,14 @@ const handleParseSend = async (sender: string, contract: string, message: Simula
         events,
       })
       break
-    case ORAI_CONTRACT.SWAP:
+    case ORAI_CONTRACT.SWAP: 
+    case ORAI_CONTRACT.SWAP_AND_ACTION:
+    case ORAI_CONTRACT.SWAP_OPERATIONS:
       response = await oraichainTatum.ammV2.parseSend({ message, events, sender })
       break
     default:
       break
-  }
+    }
 
   return response
 }

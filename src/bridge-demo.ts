@@ -14,19 +14,46 @@ const main = async () => {
         typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
         value: MsgExecuteContract.encode({
           sender: "orai1qpuundpvtymcyq3cmcty3udf2zy0m509w4kg8w",
-          contract: "orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh",
+          contract: "orai1yglsm0u2x3xmct9kq3lxa654cshaxj9j5d9rw5enemkkkdjgzj7sr3gwt0",
           msg: toUtf8(
             `{
-  "send": {
-    "contract": "orai1yglsm0u2x3xmct9kq3lxa654cshaxj9j5d9rw5enemkkkdjgzj7sr3gwt0",
-    "amount": "500000",
-    "msg": "eyJzd2FwX2FuZF9hY3Rpb24iOnsiYWZmaWxpYXRlcyI6W10sIm1pbl9hc3NldCI6eyJuYXRpdmUiOnsiYW1vdW50IjoiMTI2NDE1IiwiZGVub20iOiJvcmFpIn19LCJwb3N0X3N3YXBfYWN0aW9uIjp7InRyYW5zZmVyIjp7InRvX2FkZHJlc3MiOiJvcmFpMXFwdXVuZHB2dHltY3lxM2NtY3R5M3VkZjJ6eTBtNTA5dzRrZzh3In19LCJ0aW1lb3V0X3RpbWVzdGFtcCI6MTczOTUyMjY3MTAwMDAwMDAwMCwidXNlcl9zd2FwIjp7InN3YXBfZXhhY3RfYXNzZXRfaW4iOnsic3dhcF92ZW51ZV9uYW1lIjoib3JhaWRleCIsIm9wZXJhdGlvbnMiOlt7ImRlbm9tX2luIjoib3JhaTEyaHpqeGZoNzd3bDU3MmdkemN0MmZ4djJhcnhjd2g2Z3lrYzdxaCIsImRlbm9tX291dCI6Im9yYWkiLCJwb29sIjoib3JhaTFjNXMwM2MzbDMzNmRnZXNuZTdkeWxubWhzenc4NTU0dHN5eTl5dCJ9XX19fX0="
+  "swap_and_action": {
+    "affiliates": [],
+    "min_asset": {
+      "native": {
+        "amount": "1742955369",
+        "denom": "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/oraix39mVDGnusyjag97Tz5H8GvGriSZmhVvkvXRoc4"
+      }
+    },
+    "post_swap_action": {
+      "transfer": {
+        "to_address": "orai1qpuundpvtymcyq3cmcty3udf2zy0m509w4kg8w"
+      }
+    },
+    "timeout_timestamp": 1739765824000000000,
+    "user_swap": {
+      "swap_exact_asset_in": {
+        "swap_venue_name": "oraidex",
+        "operations": [
+          {
+            "denom_in": "orai",
+            "denom_out": "orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge",
+            "pool": "orai-orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge-3000000000-100"
+          },
+          {
+            "denom_in": "orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge",
+            "denom_out": "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/oraix39mVDGnusyjag97Tz5H8GvGriSZmhVvkvXRoc4",
+            "pool": "orai1jfmx6tqsfk42ffjjnqaee7c50u8jykcjysrh9caam98wkz9tr34skdt2tg"
+          }
+        ]
+      }
+    }
   }
 }`
           ),
           funds: [Coin.fromJSON({
             denom: "orai",
-            amount: "1000",
+            amount: "68431",
           })],
         }).finish(),
       } 

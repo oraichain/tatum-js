@@ -53,7 +53,7 @@ export class CommonInfoCosmos {
       tokenIds.map((tokenId) => listTokens.push(encodeURIComponent(tokenId)))
 
       const data = await this.connector.get<TokenItemType[], ApiGetTokenInfosRequest>({
-        basePath: `https://oraicommon.oraidex.io/api/v1/tokens/${listTokens.join(',')}`,
+        basePath: `https://oraicommon.oraidex.io/api/v1/tokens/list/${listTokens.join(',')}`,
       })
 
       const tokenInfos: TokenInfo[] = []

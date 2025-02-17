@@ -14,16 +14,36 @@ const main = async () => {
       typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
       value: MsgExecuteContract.encode({
         sender: 'orai1eg9vt8af8nde8lx4flmrk7x9uvj8zd8xqyhkeh',
-        contract: 'orai195269awwnt5m6c843q6w7hp8rt0k7syfu9de4h0wz384slshuzps8y7ccm',
+        contract: 'orai1yglsm0u2x3xmct9kq3lxa654cshaxj9j5d9rw5enemkkkdjgzj7sr3gwt0',
         msg: toUtf8(
           `
 {
-  "transfer_to_remote": {
-    "local_channel_id": "channel-29",
-    "remote_address": "oraib1eg9vt8af8nde8lx4flmrk7x9uvj8zd8xh9n6g5",
-    "remote_denom": "oraib0x25d887Ce7a35172C62FeBFD67a1856F20FaEbB00",
-    "timeout": 1739788826000000000,
-    "memo": "oraib0x6235dc3b9c234d0ad85da3fe35761304d7c65c96"
+  "swap_and_action": {
+    "affiliates": [],
+    "min_asset": {
+      "cw20": {
+        "amount": "1585894",
+        "address": "orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh"
+      }
+    },
+    "post_swap_action": {
+      "transfer": {
+        "to_address": "orai1eg9vt8af8nde8lx4flmrk7x9uvj8zd8xqyhkeh"
+      }
+    },
+    "timeout_timestamp": 1739791126000000000,
+    "user_swap": {
+      "swap_exact_asset_in": {
+        "swap_venue_name": "oraidex",
+        "operations": [
+          {
+            "denom_in": "orai",
+            "denom_out": "orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh",
+            "pool": "orai-orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh-3000000000-100"
+          }
+        ]
+      }
+    }
   }
 }
 
@@ -32,8 +52,8 @@ const main = async () => {
         ),
         funds: [
           Coin.fromJSON({
-            denom: 'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/extPEPE',
-            amount: '40000',
+            denom: 'orai',
+            amount: '351749',
           }),
         ],
       }).finish(),

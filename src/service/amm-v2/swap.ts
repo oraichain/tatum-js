@@ -57,8 +57,9 @@ export class AmmV2Cosmos {
     const inAsset = ops[0].offerAsset!
     const outAsset = ops[ops.length - 1].askAsset!
 
-    const inAssetInfo = (await this.commonInfo.getTokenInfo({ tokenId: inAsset })).data
-    const outAssetInfo = (await this.commonInfo.getTokenInfo({ tokenId: outAsset })).data
+    const [inAssetInfo, outAssetInfo] = (
+      await this.commonInfo.getTokenInfos({ tokenIds: [inAsset, outAsset] })
+    ).data
 
     let res: SwapResponse = {
       fromAddress: data.sender,

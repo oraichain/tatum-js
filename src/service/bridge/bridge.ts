@@ -136,9 +136,14 @@ export class BridgeCosmos {
           (Number(returnData.bridgeAmount) / Math.pow(10, 18)) *
           Math.pow(10, returnData.tokenInfo.decimal)
         ).toString()
+
         // TODO: we tmp hardcode here, need to fix later
-        returnData.fromChainId = 'Oraichain'
-        returnData.toChainId = returnData.toAddress.startsWith('oraib') ? '56' : '1'
+        const fromChainId = 'Oraichain'
+        const toChainId = returnData.toAddress.startsWith('oraib') ? '0x38' : '0x01'
+        const chainInfos = (await this.tokenInfo.getChainsInfo({ chainIds: [fromChainId, toChainId] })).data
+          .chainInfos
+        returnData.fromChain = chainInfos[0]
+        returnData.toChain = chainInfos[1]
       }
     } catch (err: any) {
       error = err

@@ -89,6 +89,12 @@ export class AmmV2Cosmos {
     return swapInfo
   }
 
+  async parserSwapOperations(data: OraiSwapData) : Promise<SwapResponse> {
+    let swapInfo: SwapResponse = await this.parseSwap(data)
+
+    return swapInfo
+  }
+
   async parseSend(data: OraiSwapData): Promise<SwapResponse> {
     let response: SwapResponse = {} as any
     const rawMsg = MsgExecuteContract.decode(data.message[0].value)
@@ -102,12 +108,16 @@ export class AmmV2Cosmos {
         response.toAddress = actionData.post_swap_action
         break;
       }
+      case "execute_swap_operations": {
+        response = await this.parserSwapOperations(data)
+        break;
+      }
       default:
         break;
     }
 
     return response
-}
+  }
 
   private parseSwapNative(event: Event): OraiSwapOperations {
     let res: OraiSwapOperations = {}

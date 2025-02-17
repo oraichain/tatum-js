@@ -1,5 +1,4 @@
 import { MsgExecuteContract } from 'cosmjs-types/cosmwasm/wasm/v1/tx'
-
 import { ORAI_CONTRACT } from '../../constant/contractAddress'
 import { COSMWASM_MSG_TYPE } from '../../constant/msgType'
 import { parseBridgeContract } from '../../services/parseBridge'

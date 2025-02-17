@@ -1,9 +1,10 @@
-import { TokenItemType } from '@oraichain/common'
+import { CustomChainInfo, TokenItemType } from '@oraichain/common'
 import { Container, Service } from 'typedi'
 
 import { TatumConnector } from '../../connector'
 import { CONFIG, ErrorUtils, ResponseDto } from '../../util'
 import { TatumConfig } from '../tatum'
+import { ApiGetChainInfosRequest, ChainInfo, ChainInfosResponse, GetChainInfosParams } from './chainInfo.dto'
 import { ApiGetTokenInfoRequest, GetTokenInfoParams, TokenInfoResponse } from './tokenInfo.dto'
 
 @Service({
@@ -33,6 +34,28 @@ export class TokenInfoCosmos {
         coinGeckoId: data.coinGeckoId,
         icon: data.icon,
       } as TokenInfoResponse
+    })
+  }
+  async getChainsInfo({ chainIds }: GetChainInfosParams): Promise<ResponseDto<ChainInfosResponse>> {
+    return ErrorUtils.tryFail(async () => {
+      const data = await this.connector.get<CustomChainInfo[], ApiGetChainInfosRequest>({
+        basePath: 'https://oraicommon.oraidex.io/api/v1/chains',
+      })
+
+      const chainInfos: ChainInfo[] = []
+      data.map((chainInfo) => {
+        if (chainIds.includes(chainInfo.chainId)) {
+          chainInfos.push({
+            id: chainInfo.chainId,
+            name: chainInfo.chainName,
+            image: chainInfo.chainLogoSvg ? chainInfo.chainLogoSvg : chainInfo.chainLogoPng,
+          })
+        }
+      })
+
+      return {
+        chainInfos,
+      } as ChainInfosResponse
     })
   }
 }

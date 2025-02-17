@@ -74,7 +74,7 @@ export class BridgeCosmos {
 
         const factoryTokenEvent = coinSpentEvents.find((event) => {
           for (const atrribute of event.attributes) {
-            if (atrribute.key === 'amount' && atrribute.value.split(' ')[1] !== 'orai') {
+            if (atrribute.key === 'amount' && atrribute.value.split('/').length > 1) {
               return event
             }
           }
@@ -85,7 +85,12 @@ export class BridgeCosmos {
         if (tokenWasmEvent) {
           tokenId = tokenWasmEvent.attributes.find((attr) => attr.key === '_contract_address')?.value!
         } else if (factoryTokenEvent) {
-          tokenId = factoryTokenEvent.attributes.find((attr) => attr.key === 'amount')?.value.split(' ')[1]!
+          for (const attr of factoryTokenEvent.attributes) {
+            if (attr.key === 'amount') {
+              const tokenFragment = attr.value.split('/')
+              tokenId = `factory/${tokenFragment[1]}/${tokenFragment[2]}`
+            }
+          }
         }
       }
 
@@ -131,6 +136,9 @@ export class BridgeCosmos {
           (Number(returnData.bridgeAmount) / Math.pow(10, 18)) *
           Math.pow(10, returnData.tokenInfo.decimal)
         ).toString()
+        // TODO: we tmp hardcode here, need to fix later
+        returnData.fromChainId = 'Oraichain'
+        returnData.toChainId = returnData.toAddress.startsWith('oraib') ? '56' : '1'
       }
     } catch (err: any) {
       error = err

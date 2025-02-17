@@ -20,6 +20,8 @@ export interface TransferToRemoteResponse {
    * address of remote chain
    */
   toAddress: string
+  fromChainId: string
+  toChainId: string
   bridgeAmount: string
   feeAmount: string
   tokenInfo: TokenInfoResponse

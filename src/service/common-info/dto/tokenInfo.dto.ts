@@ -1,4 +1,4 @@
-import { DefaultParamsType } from '../../connector'
+import { DefaultParamsType } from '../../../connector'
 
 export interface GetTokenInfoParams {
   /**
@@ -7,7 +7,7 @@ export interface GetTokenInfoParams {
   tokenId: string
 }
 
-export interface TokenInfoResponse {
+export interface TokenInfo {
   /**
    * name of the token
    */
@@ -30,9 +30,13 @@ export interface TokenInfoResponse {
   icon: string
 }
 
-export interface ApiGetTokenInfoRequest extends DefaultParamsType {
+export interface ApiGetTokenInfoRequest extends DefaultParamsType {}
+
+export interface GetTokenInfosParams {
   /**
    * token id can be token name or token address (cw20)
    */
-  tokenId: string
+  tokenIds: string[]
 }
+
+export interface ApiGetTokenInfosRequest extends DefaultParamsType {}

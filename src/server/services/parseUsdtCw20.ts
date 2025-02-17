@@ -6,7 +6,6 @@ import { USDT_CW20_EXECUTE_TYPE } from '../constant/msgType'
 import { ParseInput, SimulateMsg } from '../types/parser'
 import HttpException from '../utils/exception'
 import { oraichainTatum } from './tatum'
-import { Contract } from 'ethers'
 
 export const parseUsdtCw20 = async ({ sender, typeUrl, value, action }: ParseInput, sendContract: string) => {
   let response

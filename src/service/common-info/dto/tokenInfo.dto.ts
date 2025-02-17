@@ -1,4 +1,4 @@
-import { DefaultParamsType } from '../../connector'
+import { DefaultParamsType } from '../../../connector'
 
 export interface GetTokenInfoParams {
   /**

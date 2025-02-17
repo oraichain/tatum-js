@@ -1,9 +1,10 @@
 import { MsgExecuteContract } from 'cosmjs-types/cosmwasm/wasm/v1/tx'
+
 import { ORAI_CONTRACT } from '../../constant/contractAddress'
-import { COSMWASM_MSG_TYPE, SWAP_EXECUTE_TYPE } from '../../constant/msgType'
+import { COSMWASM_MSG_TYPE } from '../../constant/msgType'
 import { parseBridgeContract } from '../../services/parseBridge'
 import { parseSwapContract } from '../../services/parseSwap'
-import { oraichainTatum } from '../../services/tatum'
+import { parseUsdtCw20 } from '../../services/parseUsdtCw20'
 
 export type ParseInput = {
   sender: string
@@ -35,16 +36,19 @@ const handleParseCosmwasmExecuteContract = async (input: ParseInput): Promise<an
 
   switch (contractAddress) {
     case ORAI_CONTRACT.SWAP: {
-      data = await parseSwapContract(input.sender, input.typeUrl, value, action)
-      break
-    }
-    case 'orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh': {
-      data = await parseSwapContract(input.sender, input.typeUrl, value, action)
+      data = await parseSwapContract({ sender: input.sender, typeUrl: input.typeUrl, value, action })
       break
     }
     case ORAI_CONTRACT.BRIDGE:
-      data = await parseBridgeContract(input.sender, input.typeUrl, value, action)
+      data = await parseBridgeContract({ sender: input.sender, typeUrl: input.typeUrl, value, action })
       break
+    case ORAI_CONTRACT.USDT_CW20: {
+      data = await parseUsdtCw20(
+        { sender: input.sender, typeUrl: input.typeUrl, value, action },
+        executeMsg.send.contract,
+      )
+      break
+    }
     default:
       break
   }

@@ -1,15 +1,11 @@
 import httpStatus from 'http-status'
 
 import { BRIDGE_EXECUTE_TYPE } from '../constant/msgType'
+import { ParseInput } from '../types/parser'
 import HttpException from '../utils/exception'
 import { oraichainTatum } from './tatum'
 
-export const parseBridgeContract = async (
-  sender: string,
-  typeUrl: string,
-  value: Uint8Array,
-  action: string,
-) => {
+export const parseBridgeContract = async ({ sender, typeUrl, value, action }: ParseInput) => {
   let response
 
   const msgs = [

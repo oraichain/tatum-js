@@ -22,10 +22,10 @@ const main = async () => {
     "local_channel_id": "channel-29",
     "remote_address": "oraib1eg9vt8af8nde8lx4flmrk7x9uvj8zd8xh9n6g5",
     "remote_denom": "oraib0x25d887Ce7a35172C62FeBFD67a1856F20FaEbB00",
-    "timeout": 1739780488000000000,
+    "timeout": 1739788826000000000,
     "memo": "oraib0x6235dc3b9c234d0ad85da3fe35761304d7c65c96"
   }
-        }
+}
 
 
 `,

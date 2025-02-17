@@ -8,10 +8,10 @@ import { ApiGetChainInfosRequest, ChainInfo, ChainInfosResponse, GetChainInfosPa
 import { ApiGetTokenInfoRequest, GetTokenInfoParams, TokenInfoResponse } from './tokenInfo.dto'
 
 @Service({
-  factory: (data: { id: string }) => new TokenInfoCosmos(data.id),
+  factory: (data: { id: string }) => new CommonInfoCosmos(data.id),
   transient: true,
 })
-export class TokenInfoCosmos {
+export class CommonInfoCosmos {
   private readonly connector: TatumConnector
   private readonly config: TatumConfig
 
@@ -36,6 +36,7 @@ export class TokenInfoCosmos {
       } as TokenInfoResponse
     })
   }
+  
   async getChainsInfo({ chainIds }: GetChainInfosParams): Promise<ResponseDto<ChainInfosResponse>> {
     return ErrorUtils.tryFail(async () => {
       const data = await this.connector.get<CustomChainInfo[], ApiGetChainInfosRequest>({

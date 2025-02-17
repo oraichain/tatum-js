@@ -48,11 +48,16 @@ export class BridgeCosmos {
 
     try {
       const wasmEvents: Event[] = []
+      const coinSpentEvents: Event[] = []
       let tokenId: string = 'orai'
 
       for (const event of data.events) {
         if (event.type === 'wasm') {
           wasmEvents.push(event)
+        }
+
+        if (event.type === 'coin_spent') {
+          coinSpentEvents.push(event)
         }
       }
 
@@ -67,8 +72,20 @@ export class BridgeCosmos {
           return undefined
         })
 
+        const factoryTokenEvent = coinSpentEvents.find((event) => {
+          for (const atrribute of event.attributes) {
+            if (atrribute.key === 'amount' && atrribute.value.split(' ')[1] !== 'orai') {
+              return event
+            }
+          }
+
+          return undefined
+        })
+
         if (tokenWasmEvent) {
           tokenId = tokenWasmEvent.attributes.find((attr) => attr.key === '_contract_address')?.value!
+        } else if (factoryTokenEvent) {
+          tokenId = factoryTokenEvent.attributes.find((attr) => attr.key === 'amount')?.value.split(' ')[1]!
         }
       }
 

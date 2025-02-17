@@ -115,7 +115,7 @@ export class AmmV2Cosmos {
       default:
         break;
     }
-
+    console.log(response)
     return response
   }
 

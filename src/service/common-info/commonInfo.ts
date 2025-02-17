@@ -5,10 +5,11 @@ import { TatumConnector } from '../../connector'
 import { CONFIG, ErrorUtils, ResponseDto } from '../../util'
 import { TatumConfig } from '../tatum'
 import {
+  ApiGetChainInfoRequest,
   ApiGetChainInfosRequest,
   ApiGetTokenInfoRequest,
   ChainInfo,
-  ChainInfosResponse,
+  GetChainInfoParams,
   GetChainInfosParams,
   GetTokenInfoParams,
   TokenInfoResponse,
@@ -44,7 +45,21 @@ export class CommonInfoCosmos {
     })
   }
 
-  async getChainsInfo({ chainIds }: GetChainInfosParams): Promise<ResponseDto<ChainInfosResponse>> {
+  async getChainInfo({ chainId }: GetChainInfoParams): Promise<ResponseDto<ChainInfo>> {
+    return ErrorUtils.tryFail(async () => {
+      const data = await this.connector.get<CustomChainInfo, ApiGetChainInfoRequest>({
+        basePath: `https://oraicommon.oraidex.io/api/v1/chains/${chainId}`,
+      })
+
+      return {
+        id: data.chainId,
+        name: data.chainName,
+        image: data.chainLogoSvg ? data.chainLogoSvg : data.chainLogoPng,
+      } as ChainInfo
+    })
+  }
+
+  async getChainsInfo({ chainIds }: GetChainInfosParams): Promise<ResponseDto<ChainInfo[]>> {
     return ErrorUtils.tryFail(async () => {
       const data = await this.connector.get<CustomChainInfo[], ApiGetChainInfosRequest>({
         basePath: 'https://oraicommon.oraidex.io/api/v1/chains',
@@ -61,9 +76,7 @@ export class CommonInfoCosmos {
         }
       })
 
-      return {
-        chainInfos,
-      } as ChainInfosResponse
+      return chainInfos
     })
   }
 }

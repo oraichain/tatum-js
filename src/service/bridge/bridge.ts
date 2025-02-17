@@ -141,7 +141,6 @@ export class BridgeCosmos {
         const fromChainId = 'Oraichain'
         const toChainId = returnData.toAddress.startsWith('oraib') ? '0x38' : '0x01'
         const chainInfos = (await this.commonInfo.getChainsInfo({ chainIds: [fromChainId, toChainId] })).data
-          .chainInfos
         returnData.fromChain = chainInfos[0]
         returnData.toChain = chainInfos[1]
       }

@@ -8,11 +8,13 @@ import {
   ApiGetChainInfoRequest,
   ApiGetChainInfosRequest,
   ApiGetTokenInfoRequest,
+  ApiGetTokenInfosRequest,
   ChainInfo,
   GetChainInfoParams,
   GetChainInfosParams,
   GetTokenInfoParams,
-  TokenInfoResponse,
+  GetTokenInfosParams,
+  TokenInfo,
 } from './dto'
 
 @Service({
@@ -28,7 +30,7 @@ export class CommonInfoCosmos {
     this.config = Container.of(this.id).get(CONFIG)
   }
 
-  async getTokenInfo({ tokenId }: GetTokenInfoParams): Promise<ResponseDto<TokenInfoResponse>> {
+  async getTokenInfo({ tokenId }: GetTokenInfoParams): Promise<ResponseDto<TokenInfo>> {
     return ErrorUtils.tryFail(async () => {
       const encodeUrlToken = encodeURIComponent(tokenId)
       const data = await this.connector.get<TokenItemType, ApiGetTokenInfoRequest>({
@@ -41,7 +43,31 @@ export class CommonInfoCosmos {
         decimal: data.decimals,
         coinGeckoId: data.coinGeckoId,
         icon: data.icon,
-      } as TokenInfoResponse
+      } as TokenInfo
+    })
+  }
+
+  async getTokenInfos({ tokenIds }: GetTokenInfosParams): Promise<ResponseDto<TokenInfo[]>> {
+    return ErrorUtils.tryFail(async () => {
+      const listTokens: string[] = []
+      tokenIds.map((tokenId) => listTokens.push(encodeURIComponent(tokenId)))
+
+      const data = await this.connector.get<TokenItemType[], ApiGetTokenInfosRequest>({
+        basePath: `https://oraicommon.oraidex.io/api/v1/tokens/${listTokens.join(',')}`,
+      })
+
+      const tokenInfos: TokenInfo[] = []
+      data.map((tokenInfo) =>
+        tokenInfos.push({
+          name: tokenInfo.name,
+          denom: tokenInfo.denom,
+          decimal: tokenInfo.decimals,
+          coinGeckoId: tokenInfo.coinGeckoId,
+          icon: tokenInfo.icon,
+        }),
+      )
+
+      return tokenInfos
     })
   }
 

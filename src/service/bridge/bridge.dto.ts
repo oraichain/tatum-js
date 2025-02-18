@@ -11,6 +11,8 @@ export interface EvmTransferToRemoteData {
   txHash: string
 }
 
+export interface ChainInfoWithoutCurrency extends Omit<ChainInfo, 'currencies'> {}
+
 export interface TransferToRemoteResponse {
   /**
    * address of local chain
@@ -20,8 +22,8 @@ export interface TransferToRemoteResponse {
    * address of remote chain
    */
   toAddress: string
-  fromChain: ChainInfo
-  toChain: ChainInfo
+  fromChain: ChainInfoWithoutCurrency
+  toChain: ChainInfoWithoutCurrency
   bridgeAmount: string
   feeAmount: string
   tokenInfo: TokenInfo

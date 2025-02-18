@@ -13,22 +13,28 @@ const main = async () => {
     {
       typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
       value: MsgExecuteContract.encode({
-        sender: 'orai1qpuundpvtymcyq3cmcty3udf2zy0m509w4kg8w',
-        contract: 'orai15un8msx3n5zf9ahlxmfeqd2kwa5wm0nrpxer304m9nd5q6qq0g6sku5pdd',
+        sender: 'orai1eg9vt8af8nde8lx4flmrk7x9uvj8zd8xqyhkeh',
+        contract: 'orai195269awwnt5m6c843q6w7hp8rt0k7syfu9de4h0wz384slshuzps8y7ccm',
         msg: toUtf8(
-          `{
-  "send": {
-    "contract": "orai1yglsm0u2x3xmct9kq3lxa654cshaxj9j5d9rw5enemkkkdjgzj7sr3gwt0",
-    "amount": "676560",
-    "msg": "eyJzd2FwX2FuZF9hY3Rpb24iOnsiYWZmaWxpYXRlcyI6W10sIm1pbl9hc3NldCI6eyJjdzIwIjp7ImFtb3VudCI6IjQ3NjU0IiwiYWRkcmVzcyI6Im9yYWkxOXJ0bWtrNnNuNHRwcHZqbXA1ZDV6ajZnZnNkeWtybDVydzJldXU1Z3d1cjNsdWhldXV1c2VzcW40OSJ9fSwicG9zdF9zd2FwX2FjdGlvbiI6eyJ0cmFuc2ZlciI6eyJ0b19hZGRyZXNzIjoib3JhaTFxcHV1bmRwdnR5bWN5cTNjbWN0eTN1ZGYyenkwbTUwOXc0a2c4dyJ9fSwidGltZW91dF90aW1lc3RhbXAiOjE3Mzk4NjYzNzEwMDAwMDAwMDAsInVzZXJfc3dhcCI6eyJzd2FwX2V4YWN0X2Fzc2V0X2luIjp7InN3YXBfdmVudWVfbmFtZSI6Im9yYWlkZXgiLCJvcGVyYXRpb25zIjpbeyJkZW5vbV9pbiI6Im9yYWkxNXVuOG1zeDNuNXpmOWFobHhtZmVxZDJrd2E1d20wbnJweGVyMzA0bTluZDVxNnFxMGc2c2t1NXBkZCIsImRlbm9tX291dCI6Im9yYWkxMmh6anhmaDc3d2w1NzJnZHpjdDJmeHYyYXJ4Y3doNmd5a2M3cWgiLCJwb29sIjoib3JhaTEyaHpqeGZoNzd3bDU3MmdkemN0MmZ4djJhcnhjd2g2Z3lrYzdxaC1vcmFpMTV1bjhtc3gzbjV6ZjlhaGx4bWZlcWQya3dhNXdtMG5ycHhlcjMwNG05bmQ1cTZxcTBnNnNrdTVwZGQtNTAwMDAwMDAwLTEwIn0seyJkZW5vbV9pbiI6Im9yYWkxMmh6anhmaDc3d2w1NzJnZHpjdDJmeHYyYXJ4Y3doNmd5a2M3cWgiLCJkZW5vbV9vdXQiOiJvcmFpIiwicG9vbCI6Im9yYWktb3JhaTEyaHpqeGZoNzd3bDU3MmdkemN0MmZ4djJhcnhjd2g2Z3lrYzdxaC0zMDAwMDAwMDAwLTEwMCJ9LHsiZGVub21faW4iOiJvcmFpIiwiZGVub21fb3V0Ijoib3JhaTE5cnRta2s2c240dHBwdmptcDVkNXpqNmdmc2R5a3JsNXJ3MmV1dTVnd3VyM2x1aGV1dXVzZXNxbjQ5IiwicG9vbCI6Im9yYWktb3JhaTE5cnRta2s2c240dHBwdmptcDVkNXpqNmdmc2R5a3JsNXJ3MmV1dTVnd3VyM2x1aGV1dXVzZXNxbjQ5LTMwMDAwMDAwMDAtMTAwIn1dfX19fQ=="
+          `
+{
+  "transfer_to_remote": {
+    "local_channel_id": "channel-29",
+    "remote_address": "oraib1eg9vt8af8nde8lx4flmrk7x9uvj8zd8xh9n6g5",
+    "remote_denom": "oraib0x25d887Ce7a35172C62FeBFD67a1856F20FaEbB00",
+    "timeout": 1739875018000000000,
+    "memo": "oraib0x6235dc3b9c234d0ad85da3fe35761304d7c65c96"
   }
-}`,
+}
+
+
+  `,
         ),
         funds: [
-          // Coin.fromJSON({
-          //   denom: 'orai',
-          //   amount: '1000',
-          // }),
+          Coin.fromJSON({
+            denom: 'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/extPEPE',
+            amount: '1000000',
+          }),
         ],
       }).finish(),
     },

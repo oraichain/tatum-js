@@ -13,48 +13,22 @@ const main = async () => {
     {
       typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
       value: MsgExecuteContract.encode({
-        sender: 'orai1eg9vt8af8nde8lx4flmrk7x9uvj8zd8xqyhkeh',
-        contract: 'orai1yglsm0u2x3xmct9kq3lxa654cshaxj9j5d9rw5enemkkkdjgzj7sr3gwt0',
+        sender: 'orai1qpuundpvtymcyq3cmcty3udf2zy0m509w4kg8w',
+        contract: 'orai15un8msx3n5zf9ahlxmfeqd2kwa5wm0nrpxer304m9nd5q6qq0g6sku5pdd',
         msg: toUtf8(
-          `
-{
-  "swap_and_action": {
-    "affiliates": [],
-    "min_asset": {
-      "cw20": {
-        "amount": "1585894",
-        "address": "orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh"
-      }
-    },
-    "post_swap_action": {
-      "transfer": {
-        "to_address": "orai1eg9vt8af8nde8lx4flmrk7x9uvj8zd8xqyhkeh"
-      }
-    },
-    "timeout_timestamp": 1739791126000000000,
-    "user_swap": {
-      "swap_exact_asset_in": {
-        "swap_venue_name": "oraidex",
-        "operations": [
-          {
-            "denom_in": "orai",
-            "denom_out": "orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh",
-            "pool": "orai-orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh-3000000000-100"
-          }
-        ]
-      }
-    }
+          `{
+  "send": {
+    "contract": "orai1yglsm0u2x3xmct9kq3lxa654cshaxj9j5d9rw5enemkkkdjgzj7sr3gwt0",
+    "amount": "676560",
+    "msg": "eyJzd2FwX2FuZF9hY3Rpb24iOnsiYWZmaWxpYXRlcyI6W10sIm1pbl9hc3NldCI6eyJjdzIwIjp7ImFtb3VudCI6IjQ3NjU0IiwiYWRkcmVzcyI6Im9yYWkxOXJ0bWtrNnNuNHRwcHZqbXA1ZDV6ajZnZnNkeWtybDVydzJldXU1Z3d1cjNsdWhldXV1c2VzcW40OSJ9fSwicG9zdF9zd2FwX2FjdGlvbiI6eyJ0cmFuc2ZlciI6eyJ0b19hZGRyZXNzIjoib3JhaTFxcHV1bmRwdnR5bWN5cTNjbWN0eTN1ZGYyenkwbTUwOXc0a2c4dyJ9fSwidGltZW91dF90aW1lc3RhbXAiOjE3Mzk4NjYzNzEwMDAwMDAwMDAsInVzZXJfc3dhcCI6eyJzd2FwX2V4YWN0X2Fzc2V0X2luIjp7InN3YXBfdmVudWVfbmFtZSI6Im9yYWlkZXgiLCJvcGVyYXRpb25zIjpbeyJkZW5vbV9pbiI6Im9yYWkxNXVuOG1zeDNuNXpmOWFobHhtZmVxZDJrd2E1d20wbnJweGVyMzA0bTluZDVxNnFxMGc2c2t1NXBkZCIsImRlbm9tX291dCI6Im9yYWkxMmh6anhmaDc3d2w1NzJnZHpjdDJmeHYyYXJ4Y3doNmd5a2M3cWgiLCJwb29sIjoib3JhaTEyaHpqeGZoNzd3bDU3MmdkemN0MmZ4djJhcnhjd2g2Z3lrYzdxaC1vcmFpMTV1bjhtc3gzbjV6ZjlhaGx4bWZlcWQya3dhNXdtMG5ycHhlcjMwNG05bmQ1cTZxcTBnNnNrdTVwZGQtNTAwMDAwMDAwLTEwIn0seyJkZW5vbV9pbiI6Im9yYWkxMmh6anhmaDc3d2w1NzJnZHpjdDJmeHYyYXJ4Y3doNmd5a2M3cWgiLCJkZW5vbV9vdXQiOiJvcmFpIiwicG9vbCI6Im9yYWktb3JhaTEyaHpqeGZoNzd3bDU3MmdkemN0MmZ4djJhcnhjd2g2Z3lrYzdxaC0zMDAwMDAwMDAwLTEwMCJ9LHsiZGVub21faW4iOiJvcmFpIiwiZGVub21fb3V0Ijoib3JhaTE5cnRta2s2c240dHBwdmptcDVkNXpqNmdmc2R5a3JsNXJ3MmV1dTVnd3VyM2x1aGV1dXVzZXNxbjQ5IiwicG9vbCI6Im9yYWktb3JhaTE5cnRta2s2c240dHBwdmptcDVkNXpqNmdmc2R5a3JsNXJ3MmV1dTVnd3VyM2x1aGV1dXVzZXNxbjQ5LTMwMDAwMDAwMDAtMTAwIn1dfX19fQ=="
   }
-}
-
-
-`,
+}`,
         ),
         funds: [
-          Coin.fromJSON({
-            denom: 'orai',
-            amount: '351749',
-          }),
+          // Coin.fromJSON({
+          //   denom: 'orai',
+          //   amount: '1000',
+          // }),
         ],
       }).finish(),
     },

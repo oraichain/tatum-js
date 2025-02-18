@@ -1,5 +1,4 @@
 import { Event } from '@cosmjs/stargate'
-import { TokenInfoCosmos } from '../token-info'
 
 export interface OraiSwapData {
   sender: string
@@ -18,30 +17,30 @@ export interface OraiSwapOperations {
 }
 
 export interface SwapAction {
-  _contract_address: string,
-  action: string[],
-  denom_in: string,
-  denom_out: string,
+  _contract_address: string
+  action: string[]
+  denom_in: string
+  denom_out: string
   msg_index: string
 }
 
 export interface PostSwapAction {
-  _contract_address: string,
-  action: string[],
-  post_swap_action_amount_out: string,
-  post_swap_action_denom_out: string,
-  receiver: string,
+  _contract_address: string
+  action: string[]
+  post_swap_action_amount_out: string
+  post_swap_action_denom_out: string
+  receiver: string
   msg_index: string
 }
 
 export interface SwapAndAction {
-  swapAction?: SwapAction,
+  swapAction?: SwapAction
   postSwapAction?: PostSwapAction
 }
 
 export interface OraiSwapAndActionResponse {
-  operations: OraiSwapOperations[],
-  postAction: SwapAndAction,
+  operations: OraiSwapOperations[]
+  postAction: SwapAndAction
 }
 
 export interface EvmSwapData {
@@ -71,6 +70,4 @@ export interface SwapResponse {
   outAssetInfo?: any
 }
 
-
 // export type SwapResponse = | EvmSwapResponse | OraiSwapOperations[];
-

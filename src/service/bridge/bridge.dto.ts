@@ -1,6 +1,6 @@
 import { Event } from '@cosmjs/stargate'
 
-import { TokenInfoResponse } from '../token-info'
+import { ChainInfo, TokenInfo } from '../common-info'
 
 export interface CosmosTransferToRemoteData {
   message: any
@@ -20,7 +20,9 @@ export interface TransferToRemoteResponse {
    * address of remote chain
    */
   toAddress: string
+  fromChain: ChainInfo
+  toChain: ChainInfo
   bridgeAmount: string
   feeAmount: string
-  tokenInfo: TokenInfoResponse
+  tokenInfo: TokenInfo
 }

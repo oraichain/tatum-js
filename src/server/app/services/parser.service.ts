@@ -1,9 +1,9 @@
 import { MsgExecuteContract } from 'cosmjs-types/cosmwasm/wasm/v1/tx'
-import { ORAI_CONTRACT } from '../../constant/contractAddress'
+import { ORAI_CONTRACT, ORAI_TOKEN_CONTRACTS } from '../../constant/contractAddress'
 import { COSMWASM_MSG_TYPE } from '../../constant/msgType'
 import { parseBridgeContract } from '../../services/parseBridge'
 import { parseSwapContract } from '../../services/parseSwap'
-import { parseUsdtCw20 } from '../../services/parseUsdtCw20'
+import { parseCw20 } from '../../services/parseUsdtCw20'
 
 export type ParseInput = {
   sender: string
@@ -42,14 +42,13 @@ const handleParseCosmwasmExecuteContract = async (input: ParseInput): Promise<an
     case ORAI_CONTRACT.BRIDGE:
       data = await parseBridgeContract({ sender: input.sender, typeUrl: input.typeUrl, value, action })
       break
-    case ORAI_CONTRACT.USDT_CW20: {
-      data = await parseUsdtCw20(
-        { sender: input.sender, typeUrl: input.typeUrl, value, action },
-        executeMsg,
-      )
-      break
-    }
     default:
+      if (Object.values(ORAI_TOKEN_CONTRACTS).includes(contractAddress)) {
+        data = await parseCw20(
+          { sender: input.sender, typeUrl: input.typeUrl, value, action },
+          executeMsg.send.contract,
+        ) 
+      }
       break
   }
 

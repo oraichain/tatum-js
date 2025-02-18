@@ -1,16 +1,15 @@
+import { fromBase64, fromUtf8 } from '@cosmjs/encoding'
 import { Event } from '@cosmjs/stargate'
 import { MsgExecuteContract } from 'cosmjs-types/cosmwasm/wasm/v1/tx'
 import { Container, Service } from 'typedi'
-import {fromUtf8, fromBase64} from '@cosmjs/encoding'
+
 import { TatumConnector } from '../../connector'
 import { CONFIG } from '../../util'
+import { CommonInfoCosmos } from '../common-info'
 import { TatumConfig } from '../tatum'
 import { OraiSwapData, OraiSwapOperations, SwapResponse } from './swap.dto'
-import { TokenInfoCosmos } from '../token-info'
 
 const ORAI_SWAP_CONTRACT_ADDRESS = 'orai10s0c75gw5y5eftms5ncfknw6lzmx0dyhedn75uz793m8zwz4g8zq4d9x9a'
-const ORAI_SWAP_AND_ACTION_CONTRACT_ADDRESS =
-  'orai1yglsm0u2x3xmct9kq3lxa654cshaxj9j5d9rw5enemkkkdjgzj7sr3gwt0'
 
 @Service({
   factory: (data: { id: string }) => new AmmV2Cosmos(data.id),
@@ -19,12 +18,12 @@ const ORAI_SWAP_AND_ACTION_CONTRACT_ADDRESS =
 export class AmmV2Cosmos {
   private readonly connector: TatumConnector
   private readonly config: TatumConfig
-  private tokenInfo: TokenInfoCosmos
+  private commonInfo: CommonInfoCosmos
 
   constructor(private readonly id: string) {
     this.config = Container.of(this.id).get(CONFIG)
     this.connector = Container.of(this.id).get(TatumConnector)
-    this.tokenInfo = Container.of(this.id).get(TokenInfoCosmos)
+    this.commonInfo = Container.of(this.id).get(CommonInfoCosmos)
   }
 
   /**
@@ -58,8 +57,9 @@ export class AmmV2Cosmos {
     const inAsset = ops[0].offerAsset!
     const outAsset = ops[ops.length - 1].askAsset!
 
-    const inAssetInfo = (await this.tokenInfo.getTokenInfo({tokenId: inAsset})).data
-    const outAssetInfo = (await this.tokenInfo.getTokenInfo({tokenId: outAsset})).data
+    const [inAssetInfo, outAssetInfo] = (
+      await this.commonInfo.getTokenInfos({ tokenIds: [inAsset, outAsset] })
+    ).data
 
     let res: SwapResponse = {
       fromAddress: data.sender,
@@ -69,7 +69,7 @@ export class AmmV2Cosmos {
       outAsset: outAsset,
       outAmount: ops[ops.length - 1].returnAmount!,
       inAssetInfo: inAssetInfo,
-      outAssetInfo: outAssetInfo
+      outAssetInfo: outAssetInfo,
     }
 
     return res
@@ -89,7 +89,7 @@ export class AmmV2Cosmos {
     return swapInfo
   }
 
-  async parserSwapOperations(data: OraiSwapData) : Promise<SwapResponse> {
+  async parserSwapOperations(data: OraiSwapData): Promise<SwapResponse> {
     let swapInfo: SwapResponse = await this.parseSwap(data)
 
     return swapInfo
@@ -102,18 +102,18 @@ export class AmmV2Cosmos {
     const actionName = action[0]
     const actionData = action[1]
 
-    switch(actionName) {
-      case "swap_and_action": {
-        response = await this.parseSwapAndAction({sender: data.sender, events: data.events})
+    switch (actionName) {
+      case 'swap_and_action': {
+        response = await this.parseSwapAndAction({ sender: data.sender, events: data.events })
         response.toAddress = actionData.post_swap_action
-        break;
+        break
       }
-      case "execute_swap_operations": {
+      case 'execute_swap_operations': {
         response = await this.parserSwapOperations(data)
-        break;
+        break
       }
       default:
-        break;
+        break
     }
     console.log(response)
     return response
@@ -208,68 +208,68 @@ export class AmmV2Cosmos {
 
 function decodeNestedObject(obj: any): any {
   if (Array.isArray(obj)) {
-    return obj.map(decodeNestedObject);
+    return obj.map(decodeNestedObject)
   } else if (typeof obj === 'object' && obj !== null) {
-    const newObj: any = {};
+    const newObj: any = {}
     for (const key in obj) {
       if (Object.prototype.hasOwnProperty.call(obj, key)) {
         if (key === 'msg') {
           if (obj[key] instanceof Uint8Array) {
-            newObj[key] = decodeNestedObject(JSON.parse(fromUtf8(obj[key])));
+            newObj[key] = decodeNestedObject(JSON.parse(fromUtf8(obj[key])))
           } else if (typeof obj[key] === 'string') {
-            newObj[key] = decodeNestedObject(JSON.parse(fromUtf8(fromBase64(obj[key]))));
+            newObj[key] = decodeNestedObject(JSON.parse(fromUtf8(fromBase64(obj[key]))))
           } else {
-            newObj[key] = decodeNestedObject(obj[key]); // Handle nested msg objects
+            newObj[key] = decodeNestedObject(obj[key]) // Handle nested msg objects
           }
         } else {
-          newObj[key] = decodeNestedObject(obj[key]);
+          newObj[key] = decodeNestedObject(obj[key])
         }
       }
     }
-    return newObj;
+    return newObj
   }
-  return obj;
+  return obj
 }
 
 function objectToMap(obj: any): [string, any] {
-  let response: [string, any] = ["", {}];
+  let response: [string, any] = ['', {}]
 
   function recursiveHelper(input: any, parentKey: string = '') {
     if (Array.isArray(input)) {
       // If input is an array, iterate through each element and recurse
       input.forEach((item, index) => {
-        recursiveHelper(item, `${parentKey}[${index}]`);
-      });
+        recursiveHelper(item, `${parentKey}[${index}]`)
+      })
     } else if (typeof input === 'object' && input !== null) {
       // If input is an object, iterate through its properties
       Object.entries(input).forEach(([key, value]) => {
         // Create a new key by combining parentKey and current key
-        let newKey: string = "";
-        let isContinue: boolean = true;
-        switch(key) {
-          case "swap_and_action":
+        let newKey: string = ''
+        let isContinue: boolean = true
+        switch (key) {
+          case 'swap_and_action':
             isContinue = false
             response = [key, value]
             break
-          case "execute_swap_operations":
+          case 'execute_swap_operations':
             isContinue = false
             response = [key, value]
             break
           default:
-            newKey = parentKey ? `${parentKey}.${key}` : key;
-            break;
-        }        
-        // Recursively call the function for nested structures
-        
-        if (typeof value === 'object' && isContinue) {
-          recursiveHelper(value, newKey);
+            newKey = parentKey ? `${parentKey}.${key}` : key
+            break
         }
-      });
+        // Recursively call the function for nested structures
+
+        if (typeof value === 'object' && isContinue) {
+          recursiveHelper(value, newKey)
+        }
+      })
     }
   }
 
-  recursiveHelper(obj); // Start recursion
-  return response;
+  recursiveHelper(obj) // Start recursion
+  return response
 }
 
 @Service({

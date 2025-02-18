@@ -5,8 +5,8 @@ import { Container, Service } from 'typedi'
 
 import { TatumConnector } from '../../connector'
 import { CONFIG, ResponseDto, Status } from '../../util'
+import { CommonInfoCosmos } from '../common-info/commonInfo'
 import { TatumConfig } from '../tatum'
-import { TokenInfoCosmos } from '../token-info/tokenInfo'
 import { CosmosTransferToRemoteData, EvmTransferToRemoteData, TransferToRemoteResponse } from './bridge.dto'
 import { GravityAbi } from './helpers'
 
@@ -18,12 +18,12 @@ export class BridgeCosmos {
   private readonly connector: TatumConnector
   private readonly config: TatumConfig
   private queryClient: QueryClient & TxExtension
-  private tokenInfo: TokenInfoCosmos
+  private commonInfo: CommonInfoCosmos
 
   constructor(private readonly id: string) {
     this.connector = Container.of(this.id).get(TatumConnector)
     this.config = Container.of(this.id).get(CONFIG)
-    this.tokenInfo = Container.of(this.id).get(TokenInfoCosmos)
+    this.commonInfo = Container.of(this.id).get(CommonInfoCosmos)
   }
 
   /**
@@ -74,7 +74,7 @@ export class BridgeCosmos {
 
         const factoryTokenEvent = coinSpentEvents.find((event) => {
           for (const atrribute of event.attributes) {
-            if (atrribute.key === 'amount' && atrribute.value.split(' ')[1] !== 'orai') {
+            if (atrribute.key === 'amount' && atrribute.value.split('/').length > 1) {
               return event
             }
           }
@@ -85,7 +85,12 @@ export class BridgeCosmos {
         if (tokenWasmEvent) {
           tokenId = tokenWasmEvent.attributes.find((attr) => attr.key === '_contract_address')?.value!
         } else if (factoryTokenEvent) {
-          tokenId = factoryTokenEvent.attributes.find((attr) => attr.key === 'amount')?.value.split(' ')[1]!
+          for (const attr of factoryTokenEvent.attributes) {
+            if (attr.key === 'amount') {
+              const tokenFragment = attr.value.split('/')
+              tokenId = `factory/${tokenFragment[1]}/${tokenFragment[2]}`
+            }
+          }
         }
       }
 
@@ -126,11 +131,18 @@ export class BridgeCosmos {
         }
 
         returnData.feeAmount = feeAmount.toString()
-        returnData.tokenInfo = (await this.tokenInfo.getTokenInfo({ tokenId })).data
+        returnData.tokenInfo = (await this.commonInfo.getTokenInfo({ tokenId })).data
         returnData.bridgeAmount = (
           (Number(returnData.bridgeAmount) / Math.pow(10, 18)) *
           Math.pow(10, returnData.tokenInfo.decimal)
         ).toString()
+
+        // TODO: we tmp hardcode here, need to fix later
+        const fromChainId = 'Oraichain'
+        const toChainId = returnData.toAddress.startsWith('oraib') ? '0x38' : '0x01'
+        const chainInfos = (await this.commonInfo.getChainsInfo({ chainIds: [fromChainId, toChainId] })).data
+        returnData.fromChain = chainInfos[0]
+        returnData.toChain = chainInfos[1]
       }
     } catch (err: any) {
       error = err

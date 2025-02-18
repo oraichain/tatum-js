@@ -14,14 +14,16 @@ const main = async () => {
       typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
       value: MsgExecuteContract.encode({
         sender: 'orai1eg9vt8af8nde8lx4flmrk7x9uvj8zd8xqyhkeh',
-        contract: 'orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh',
+        contract: 'orai195269awwnt5m6c843q6w7hp8rt0k7syfu9de4h0wz384slshuzps8y7ccm',
         msg: toUtf8(
           `
 {
-  "send": {
-    "contract": "orai195269awwnt5m6c843q6w7hp8rt0k7syfu9de4h0wz384slshuzps8y7ccm",
-    "amount": "8060410",
-    "msg": "eyJsb2NhbF9jaGFubmVsX2lkIjoiY2hhbm5lbC0yOSIsInJlbW90ZV9hZGRyZXNzIjoib3JhaWIxZWc5dnQ4YWY4bmRlOGx4NGZsbXJrN3g5dXZqOHpkOHhoOW42ZzUiLCJyZW1vdGVfZGVub20iOiJldGgtbWFpbm5ldDB4ZEFDMTdGOTU4RDJlZTUyM2EyMjA2MjA2OTk0NTk3QzEzRDgzMWVjNyIsInRpbWVvdXQiOjE3Mzk4Njk3NTkwMDAwMDAwMDAsIm1lbW8iOiJldGgtbWFpbm5ldDB4NjIzNWRjM2I5YzIzNGQwYWQ4NWRhM2ZlMzU3NjEzMDRkN2M2NWM5NiJ9"
+  "transfer_to_remote": {
+    "local_channel_id": "channel-29",
+    "remote_address": "oraib1eg9vt8af8nde8lx4flmrk7x9uvj8zd8xh9n6g5",
+    "remote_denom": "oraib0x25d887Ce7a35172C62FeBFD67a1856F20FaEbB00",
+    "timeout": 1739875018000000000,
+    "memo": "oraib0x6235dc3b9c234d0ad85da3fe35761304d7c65c96"
   }
 }
 
@@ -30,8 +32,8 @@ const main = async () => {
         ),
         funds: [
           Coin.fromJSON({
-            denom: 'orai',
-            amount: '10000',
+            denom: 'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/extPEPE',
+            amount: '1000000',
           }),
         ],
       }).finish(),

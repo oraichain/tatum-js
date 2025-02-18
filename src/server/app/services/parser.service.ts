@@ -46,7 +46,7 @@ const handleParseCosmwasmExecuteContract = async (input: ParseInput): Promise<an
       if (Object.values(ORAI_TOKEN_CONTRACTS).includes(contractAddress)) {
         data = await parseCw20(
           { sender: input.sender, typeUrl: input.typeUrl, value, action },
-          executeMsg.send.contract,
+          executeMsg,
         ) 
       }
       break

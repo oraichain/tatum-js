@@ -15,7 +15,7 @@ import {
   EvmTransferToRemoteData,
   TransferToRemoteResponse,
 } from './bridge.dto'
-import { GravityAbi } from './helpers'
+import { GravityAbi, SOLANA_SUPPORTED_TOKEN } from './helpers'
 
 @Service({
   factory: (data: { id: string }) => new BridgeCosmos(data.id),
@@ -197,11 +197,14 @@ export class BridgeCosmos {
       const tokenAmount = rawMsg.amount[0].amount
 
       // TODO: here we hardcode from chain and to chain
-      const chainInfos = (await this.commonInfo.getChainInfos({ chainIds: ['Oraichain', 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp'] })).data
+      const chainInfos = (
+        await this.commonInfo.getChainInfos({
+          chainIds: ['Oraichain', 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp'],
+        })
+      ).data
 
       returnData.fromAddress = rawMsg.fromAddress
       returnData.toAddress = rawMsg.toAddress
-      returnData.feeAmount = ''
       returnData.fromChain = {
         id: chainInfos[0].id,
         name: chainInfos[0].name,
@@ -214,13 +217,29 @@ export class BridgeCosmos {
       }
       returnData.tokenInfo = (await this.commonInfo.getTokenInfo({ tokenId })).data
 
+      const localTokenInfo = chainInfos[0].currencies.find(
+        (currency) => currency.coinDenom === returnData.tokenInfo.name,
+      )
       const remoteTokenInfo = chainInfos[1].currencies.find(
         (currency) => currency.coinDenom === returnData.tokenInfo.name,
       )
-      returnData.bridgeAmount = Math.floor(
-        (Number(tokenAmount) / Math.pow(10, remoteTokenInfo?.coinDecimals!)) *
-          Math.pow(10, returnData.tokenInfo.decimal),
-      ).toString()
+
+      let apiTokenId: string = localTokenInfo?.coinDenom!
+      let isMemeApi: boolean = false
+      if (!(SOLANA_SUPPORTED_TOKEN as any)[apiTokenId]) {
+        apiTokenId = localTokenInfo?.contractAddress!
+        isMemeApi = true
+      }
+      const feeData = (
+        await this.commonInfo.getSolanaBridgeFee({
+          tokenId: isMemeApi ? apiTokenId : apiTokenId.toLowerCase(),
+          amount: tokenAmount,
+          isMemeApi,
+        })
+      ).data
+
+      returnData.bridgeAmount = feeData.sendAmount
+      returnData.feeAmount = (Number(feeData.solanaFee) + Number(feeData.tokenFeeAmount)).toString()
     } catch (err: any) {
       error = err
       status = Status.ERROR

@@ -20,7 +20,7 @@ const main = async () => {
         amount: [
           Coin.fromJSON({
             denom: 'orai',
-            amount: '100000',
+            amount: '1000000',
           }),
         ],
       }).finish(),

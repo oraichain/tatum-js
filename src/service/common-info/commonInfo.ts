@@ -16,6 +16,7 @@ import {
   GetTokenInfosParams,
   TokenInfo,
 } from './dto'
+import { ApiGetSolanaBridgeFeeRequest, GetSolanaBridgeFeeParams, SolanaBridgeFee } from './dto/solananFee.dto'
 
 @Service({
   factory: (data: { id: string }) => new CommonInfoCosmos(data.id),
@@ -104,6 +105,30 @@ export class CommonInfoCosmos {
       })
 
       return chainInfos
+    })
+  }
+
+  async getSolanaBridgeFee({
+    tokenId,
+    amount,
+    isMemeApi,
+  }: GetSolanaBridgeFeeParams): Promise<ResponseDto<SolanaBridgeFee>> {
+    console.log('param: ', tokenId, amount, isMemeApi)
+
+    
+    return ErrorUtils.tryFail(async () => {
+      const data = await this.connector.get<SolanaBridgeFee, ApiGetSolanaBridgeFeeRequest>({
+        basePath: isMemeApi
+          ? 'https://sol-meme-bridge.agents.land/fee'
+          : 'https://solana-relayer.orai.io/fee',
+        params: {
+          direction: 'orai_to_solana',
+          amount,
+          supportedToken: tokenId,
+        },
+      })
+
+      return data
     })
   }
 }

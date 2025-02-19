@@ -98,6 +98,7 @@ export class CommonInfoCosmos {
             id: chainInfo.chainId,
             name: chainInfo.chainName,
             image: chainInfo.chainLogoSvg ? chainInfo.chainLogoSvg : chainInfo.chainLogoPng,
+            currencies: chainInfo.currencies,
           })
         }
       })

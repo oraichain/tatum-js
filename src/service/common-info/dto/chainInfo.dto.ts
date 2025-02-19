@@ -1,3 +1,5 @@
+import { BridgeAppCurrency } from '@oraichain/common'
+
 import { DefaultParamsType } from '../../../connector'
 
 export interface ChainInfo {
@@ -13,6 +15,10 @@ export interface ChainInfo {
    * image of chain
    */
   image?: string
+  /**
+   * all token chain support
+   */
+  currencies: BridgeAppCurrency[]
 }
 
 export interface GetChainInfoParams {

@@ -1,7 +1,8 @@
+import { MsgSend } from 'cosmjs-types/cosmos/bank/v1beta1/tx'
 import { MsgExecuteContract } from 'cosmjs-types/cosmwasm/wasm/v1/tx'
 
-import { ORAI_CONTRACT, ORAI_TOKEN_CONTRACTS } from '../../constant/contractAddress'
-import { COSMWASM_MSG_TYPE } from '../../constant/msgType'
+import { ORAI_CONTRACT, ORAI_TOKEN_CONTRACTS, SOLANA_BRIDGE_ADDRESS } from '../../constant/contractAddress'
+import { COSMOS_BANK_MSG_TYPE, COSMOS_TYPE, COSMWASM_MSG_TYPE } from '../../constant/msgType'
 import { parseBridgeContract } from '../../services/parseBridge'
 import { parseSwapContract } from '../../services/parseSwap'
 import { parseCw20 } from '../../services/parseUsdtCw20'
@@ -37,8 +38,8 @@ const handleParseCosmwasmExecuteContract = async (input: ParseInput): Promise<an
     case ORAI_CONTRACT.SWAP:
     case ORAI_CONTRACT.SWAP_AND_ACTION:
     case ORAI_CONTRACT.SWAP_OPERATIONS:
-      data = await parseSwapContract({ sender: input.sender, typeUrl: input.typeUrl, value, action });
-      break;
+      data = await parseSwapContract({ sender: input.sender, typeUrl: input.typeUrl, value, action })
+      break
     case ORAI_CONTRACT.BRIDGE:
       data = await parseBridgeContract({ sender: input.sender, typeUrl: input.typeUrl, value, action })
       break
@@ -47,8 +48,41 @@ const handleParseCosmwasmExecuteContract = async (input: ParseInput): Promise<an
         data = await parseCw20(
           { sender: input.sender, typeUrl: input.typeUrl, value, action },
           executeMsg.send.contract,
-        ) 
+        )
       }
+      break
+  }
+
+  return data
+}
+
+const parseCosmos = async (input: ParseInput, cosmosType: string, msgType: string) => {
+  let data
+  switch (cosmosType) {
+    case COSMOS_TYPE.BANK:
+      data = await handleParseBankMsg(input, msgType)
+      break
+    default:
+      break
+  }
+
+  return data
+}
+
+const handleParseBankMsg = async (input: ParseInput, msgType: string) => {
+  let data
+  const value = Uint8Array.from(Buffer.from(input.value, 'base64'))
+
+  switch (msgType) {
+    case COSMOS_BANK_MSG_TYPE.MSG_SEND:
+      const rawMsg = MsgSend.decode(value)
+
+      if (rawMsg.toAddress === SOLANA_BRIDGE_ADDRESS) {
+        // TODO: handle parse bridge solana
+      }
+
+      break
+    default:
       break
   }
 
@@ -57,4 +91,5 @@ const handleParseCosmwasmExecuteContract = async (input: ParseInput): Promise<an
 
 export default {
   parseCosmwasm,
+  parseCosmos,
 }

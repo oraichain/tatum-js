@@ -6,7 +6,7 @@ export interface FuturesData {
   events: readonly Event[]
 }
 
-export interface OpenPosition {
+export interface OpenPositionResponse {
   action: string
   positionId: string
   positionSide: string
@@ -19,7 +19,7 @@ export interface OpenPosition {
   entryPrice: string
 }
 
-export interface ClosePosition {
+export interface ClosePositionResponse {
   action: string
   positionId: string
   positionSide: string
@@ -36,4 +36,20 @@ export interface ClosePosition {
   badDebt: string
 }
 
-export type FuturesReponse = OpenPosition | ClosePosition
+export interface UpdateTpSlResponse {
+  action: string
+  pair: string
+  trader: string
+  positionId: string
+  takeProfit: string
+  stopLoss: string
+}
+
+export interface DepositMarginResponse {
+  action: string
+  trader: string
+  positionId: string
+  depositAmount: string
+}
+
+export type FuturesReponse = | OpenPositionResponse | ClosePositionResponse | UpdateTpSlResponse | DepositMarginResponse

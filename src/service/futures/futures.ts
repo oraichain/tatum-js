@@ -2,7 +2,7 @@ import { TatumConnector } from "../../connector";
 import { TatumConfig } from "../tatum";
 import Container, { Service } from "typedi";
 import { CONFIG } from '../../util';
-import { FuturesData, OpenPosition, FuturesReponse, ClosePosition } from "./futures.dto";
+import { FuturesData, OpenPositionResponse, FuturesReponse, ClosePositionResponse, UpdateTpSlResponse, DepositMarginResponse } from "./futures.dto";
 import { Attribute, Event } from '@cosmjs/stargate'
 import { MsgExecuteContract } from "cosmjs-types/cosmwasm/wasm/v1/tx";
 
@@ -20,7 +20,7 @@ export class FuturesCosmos {
     this.connector = Container.of(id).get(TatumConnector)
   }
 
-  parseFuturesAction(data: FuturesData): FuturesReponse {
+  public parseFuturesAction(data: FuturesData): FuturesReponse {
     let response: FuturesReponse = {} as any
     const evs = data.events.filter(
       (e: Event) => 
@@ -41,6 +41,14 @@ export class FuturesCosmos {
         response = this.parseClosePosition({sender: data.sender, events: evs, message: data.message})
         break;
       }
+      case 'update_tp_sl': {
+        response = this.parseUpdateTpSl({sender: data.sender, events: evs, message: data.message})
+        break;
+      }
+      case 'deposit_margin': {
+        response = this.parseDepositMargin({sender: data.sender, events: evs, message: data.message})
+        break;
+      }
       default:
         break;
     }
@@ -48,8 +56,8 @@ export class FuturesCosmos {
     return response
   }
 
-  parseOpenPosition(data: FuturesData): OpenPosition {
-    let response: OpenPosition = {} as any
+  parseOpenPosition(data: FuturesData): OpenPositionResponse {
+    let response: OpenPositionResponse = {} as any
     const evs = combiningEvents(data.events.filter(
       (e: Event) => 
         e.attributes.some((attr) => attr.key === 'action' && attr.value === 'open_position') ||
@@ -75,8 +83,8 @@ export class FuturesCosmos {
     return response
   }
 
-  parseClosePosition(data: FuturesData): ClosePosition {
-    let response: ClosePosition = {} as any
+  parseClosePosition(data: FuturesData): ClosePositionResponse {
+    let response: ClosePositionResponse = {} as any
     const evs = combiningEvents(data.events.filter(
       (e: Event) =>
         e.attributes.some((attr) => attr.key === 'action' && attr.value === 'close_position') ||
@@ -102,7 +110,47 @@ export class FuturesCosmos {
         response.withdrawAmount = e.withdraw_amount
       }
     }
-    console.log(response)
+
+    return response
+  }
+
+  parseUpdateTpSl(data: FuturesData): UpdateTpSlResponse {
+    let response: UpdateTpSlResponse = {} as any
+    const evs = combiningEvents(data.events.filter(
+      (e: Event) =>
+        e.attributes.some((attr) => attr.key === 'action' && attr.value === 'update_tp_sl')
+    ));
+
+    for(let e of evs) {
+      if(e.action === 'update_tp_sl') {
+        response.action = e.action
+        response.pair = e.pair
+        response.trader = e.trader
+        response.positionId = e.position_id
+        response.takeProfit = e.take_profit
+        response.stopLoss = e.stop_loss
+      }
+    }
+
+    return response
+  }
+
+  parseDepositMargin(data: FuturesData): DepositMarginResponse {
+    let response: DepositMarginResponse = {} as any
+    const evs = combiningEvents(data.events.filter(
+      (e: Event) =>
+        e.attributes.some((attr) => attr.key === 'action' && attr.value === 'deposit_margin')
+    ));
+
+    for(let e of evs) {
+      if(e.action === 'deposit_margin') {
+        response.action = e.action
+        response.trader = e.trader
+        response.positionId = e.position_id
+        response.depositAmount = e.deposit_amount
+      }
+    }
+
     return response
   }
 }

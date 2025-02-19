@@ -9,7 +9,7 @@ const rpc = "http://3.14.142.99:26657/";
   const client = await StargateClient.connect(rpc);
   const tx = await client.getTx(
     // "B4226C9D4C2872CA2B95A688BE4A04E27BE13B62EFA9D55F735F289717D6BC99"
-    "F27ABB8642F9FBF4EE3B10F7945B667C70330F97EF9EA25BD3507EA52F904299"
+    "E1FF77912196190A09F9C7D70BB770C8D46B1D0C07442D572FA8953A9655AFD0"
   );
 
   const tatumCosmos = await TatumSDK.init<CosmosRosetta>({ network: Network.COSMOS_ROSETTA })
@@ -17,6 +17,6 @@ const rpc = "http://3.14.142.99:26657/";
   // console.log(cosmosSwap)
   // console.log("tx", tx)
   const msg = Tx.decode(tx!.tx)
-  const cosmosSwap = await tatumCosmos.futures.parseFuturesAction({ sender: "", events: tx!.events, message: msg.body!.messages })
-  // console.log(cosmosSwap)
+  const cosmosSwap = await tatumCosmos.futures.parseFuturesAction({ sender: "", events: tx!.events, message: [msg.body!.messages[1]] })
+  console.log(cosmosSwap)
 })()

@@ -19,8 +19,8 @@ const main = async () => {
         toAddress: 'orai1ym6qytsu7skv2flw89y0mkey4gn7wl9q4y6r5p',
         amount: [
           Coin.fromJSON({
-            denom: 'orai',
-            amount: '1000000',
+            denom: 'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/oraiUNrTQmeuc13JoMFSyNcJCnXYpqErfp9v5diy64b',
+            amount: '1000000000000',
           }),
         ],
       }).finish(),

@@ -1,5 +1,4 @@
 import { MsgSend } from 'cosmjs-types/cosmos/bank/v1beta1/tx'
-import httpStatus from 'http-status'
 
 import { SOLANA_BRIDGE_ADDRESS } from '../constant/contractAddress'
 import { COSMOS_BANK_MSG_TYPE } from '../constant/msgType'

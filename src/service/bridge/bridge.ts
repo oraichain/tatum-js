@@ -217,19 +217,17 @@ export class BridgeCosmos {
       }
       returnData.tokenInfo = (await this.commonInfo.getTokenInfo({ tokenId })).data
 
-      const localTokenInfo = chainInfos[0].currencies.find(
-        (currency) => currency.coinDenom === returnData.tokenInfo.name,
-      )
       const remoteTokenInfo = chainInfos[1].currencies.find(
         (currency) => currency.coinDenom === returnData.tokenInfo.name,
       )
 
-      let apiTokenId: string = localTokenInfo?.coinDenom!
+      let apiTokenId: string = remoteTokenInfo?.coinDenom!
       let isMemeApi: boolean = false
       if (!(SOLANA_SUPPORTED_TOKEN as any)[apiTokenId]) {
-        apiTokenId = localTokenInfo?.contractAddress!
+        apiTokenId = remoteTokenInfo?.contractAddress!
         isMemeApi = true
       }
+
       const feeData = (
         await this.commonInfo.getSolanaBridgeFee({
           tokenId: isMemeApi ? apiTokenId : apiTokenId.toLowerCase(),

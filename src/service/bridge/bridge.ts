@@ -109,6 +109,7 @@ export class BridgeCosmos {
 
       if (bridgeWasmEvent) {
         let feeAmount: number = 0
+        let remoteDenom: string = ''
 
         for (const attribute of bridgeWasmEvent.attributes) {
           switch (attribute.key) {
@@ -121,6 +122,9 @@ export class BridgeCosmos {
             case 'amount':
               returnData.bridgeAmount = attribute.value
               break
+            case 'denom':
+              remoteDenom = attribute.value.split('/')[2]
+              break
             case 'token_fee':
             case 'relayer_fee':
               feeAmount += Number(attribute.value)
@@ -130,19 +134,35 @@ export class BridgeCosmos {
           }
         }
 
-        returnData.feeAmount = feeAmount.toString()
-        returnData.tokenInfo = (await this.commonInfo.getTokenInfo({ tokenId })).data
-        returnData.bridgeAmount = (
-          (Number(returnData.bridgeAmount) / Math.pow(10, 18)) *
-          Math.pow(10, returnData.tokenInfo.decimal)
-        ).toString()
-
         // TODO: we tmp hardcode here, need to fix later
         const fromChainId = 'Oraichain'
-        const toChainId = returnData.toAddress.startsWith('oraib') ? '0x38' : '0x01'
+        const toChainId = remoteDenom.startsWith('oraib')
+          ? '0x38'
+          : remoteDenom.startsWith('trontrx')
+          ? '0x2b6653dc'
+          : '0x01'
         const chainInfos = (await this.commonInfo.getChainsInfo({ chainIds: [fromChainId, toChainId] })).data
-        returnData.fromChain = chainInfos[0]
-        returnData.toChain = chainInfos[1]
+        returnData.fromChain = {
+          id: chainInfos[0].id,
+          name: chainInfos[0].name,
+          image: chainInfos[0].image,
+        }
+        returnData.toChain = {
+          id: chainInfos[1].id,
+          name: chainInfos[1].name,
+          image: chainInfos[1].image,
+        }
+
+        returnData.feeAmount = feeAmount.toString()
+        returnData.tokenInfo = (await this.commonInfo.getTokenInfo({ tokenId })).data
+
+        const remoteTokenInfo = chainInfos[1].currencies.find(
+          (currency) => currency.coinDenom === returnData.tokenInfo.name,
+        )
+        returnData.bridgeAmount = Math.floor(
+          (Number(returnData.bridgeAmount) / Math.pow(10, remoteTokenInfo?.coinDecimals!)) *
+            Math.pow(10, returnData.tokenInfo.decimal),
+        ).toString()
       }
     } catch (err: any) {
       error = err

@@ -136,7 +136,11 @@ export class BridgeCosmos {
 
         // TODO: we tmp hardcode here, need to fix later
         const fromChainId = 'Oraichain'
-        const toChainId = remoteDenom.startsWith('oraib') ? '0x38' : '0x01'
+        const toChainId = remoteDenom.startsWith('oraib')
+          ? '0x38'
+          : remoteDenom.startsWith('trontrx')
+          ? '0x2b6653dc'
+          : '0x01'
         const chainInfos = (await this.commonInfo.getChainsInfo({ chainIds: [fromChainId, toChainId] })).data
         returnData.fromChain = {
           id: chainInfos[0].id,
@@ -155,9 +159,9 @@ export class BridgeCosmos {
         const remoteTokenInfo = chainInfos[1].currencies.find(
           (currency) => currency.coinDenom === returnData.tokenInfo.name,
         )
-        returnData.bridgeAmount = (
+        returnData.bridgeAmount = Math.floor(
           (Number(returnData.bridgeAmount) / Math.pow(10, remoteTokenInfo?.coinDecimals!)) *
-          Math.pow(10, returnData.tokenInfo.decimal)
+            Math.pow(10, returnData.tokenInfo.decimal),
         ).toString()
       }
     } catch (err: any) {

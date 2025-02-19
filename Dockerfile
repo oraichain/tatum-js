@@ -17,11 +17,6 @@ RUN yarn add typescript
 RUN yarn add tsx
 RUN yarn install
 
-# Env
-ENV PORT=8000
-ENV NODE_ENV=development
-ENV RPC_URL=https://rpc.orai.io
-
 # Start the server
 CMD ["yarn", "start"]
 

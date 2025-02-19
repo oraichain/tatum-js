@@ -27,14 +27,15 @@ export const parseBank = async (input: ParseApiInput, msgType: string) => {
     throw new HttpException(httpStatus.SERVICE_UNAVAILABLE, 'Simulate with undefined result')
   }
 
-  console.dir(simRes.data.result.events, { depth: null })
-
   switch (msgType) {
     case COSMOS_BANK_MSG_TYPE.MSG_SEND:
       const rawMsg = MsgSend.decode(value)
 
       if (rawMsg.toAddress === SOLANA_BRIDGE_ADDRESS) {
-        // TODO: handle parse bridge solana
+        response = await oraichainTatum.bridge.parseSolana({
+          message: msgs,
+          events: simRes.data.result.events,
+        })
       }
 
       break

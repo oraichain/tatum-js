@@ -1,5 +1,6 @@
 import { Event, QueryClient, TxExtension, setupTxExtension } from '@cosmjs/stargate'
 import { Tendermint37Client } from '@cosmjs/tendermint-rpc'
+import { MsgSend } from 'cosmjs-types/cosmos/bank/v1beta1/tx'
 import { Interface, JsonRpcProvider } from 'ethers'
 import { Container, Service } from 'typedi'
 
@@ -7,7 +8,13 @@ import { TatumConnector } from '../../connector'
 import { CONFIG, ResponseDto, Status } from '../../util'
 import { CommonInfoCosmos } from '../common-info/commonInfo'
 import { TatumConfig } from '../tatum'
-import { CosmosTransferToRemoteData, EvmTransferToRemoteData, TransferToRemoteResponse } from './bridge.dto'
+import {
+  BridgeSolanaResponse,
+  CosmosBridgeSolanaData,
+  CosmosTransferToRemoteData,
+  EvmTransferToRemoteData,
+  TransferToRemoteResponse,
+} from './bridge.dto'
 import { GravityAbi } from './helpers'
 
 @Service({
@@ -141,7 +148,7 @@ export class BridgeCosmos {
           : remoteDenom.startsWith('trontrx')
           ? '0x2b6653dc'
           : '0x01'
-        const chainInfos = (await this.commonInfo.getChainsInfo({ chainIds: [fromChainId, toChainId] })).data
+        const chainInfos = (await this.commonInfo.getChainInfos({ chainIds: [fromChainId, toChainId] })).data
         returnData.fromChain = {
           id: chainInfos[0].id,
           name: chainInfos[0].name,
@@ -164,6 +171,56 @@ export class BridgeCosmos {
             Math.pow(10, returnData.tokenInfo.decimal),
         ).toString()
       }
+    } catch (err: any) {
+      error = err
+      status = Status.ERROR
+    }
+
+    return {
+      data: returnData,
+      error,
+      status,
+    }
+  }
+
+  /**
+   * Parse Solana bridge msg
+   */
+  async parseSolana(data: CosmosBridgeSolanaData): Promise<ResponseDto<BridgeSolanaResponse>> {
+    let returnData: BridgeSolanaResponse = {} as any
+    let error = null
+    let status = Status.SUCCESS
+
+    try {
+      const rawMsg = MsgSend.decode(data.message[0].value)
+      const tokenId = rawMsg.amount[0].denom
+      const tokenAmount = rawMsg.amount[0].amount
+
+      // TODO: here we hardcode from chain and to chain
+      const chainInfos = (await this.commonInfo.getChainInfos({ chainIds: ['Oraichain', 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp'] })).data
+
+      returnData.fromAddress = rawMsg.fromAddress
+      returnData.toAddress = rawMsg.toAddress
+      returnData.feeAmount = ''
+      returnData.fromChain = {
+        id: chainInfos[0].id,
+        name: chainInfos[0].name,
+        image: chainInfos[0].image,
+      }
+      returnData.toChain = {
+        id: chainInfos[1].id,
+        name: chainInfos[1].name,
+        image: chainInfos[1].image,
+      }
+      returnData.tokenInfo = (await this.commonInfo.getTokenInfo({ tokenId })).data
+
+      const remoteTokenInfo = chainInfos[1].currencies.find(
+        (currency) => currency.coinDenom === returnData.tokenInfo.name,
+      )
+      returnData.bridgeAmount = Math.floor(
+        (Number(tokenAmount) / Math.pow(10, remoteTokenInfo?.coinDecimals!)) *
+          Math.pow(10, returnData.tokenInfo.decimal),
+      ).toString()
     } catch (err: any) {
       error = err
       status = Status.ERROR

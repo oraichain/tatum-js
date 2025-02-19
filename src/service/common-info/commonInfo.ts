@@ -85,7 +85,7 @@ export class CommonInfoCosmos {
     })
   }
 
-  async getChainsInfo({ chainIds }: GetChainInfosParams): Promise<ResponseDto<ChainInfo[]>> {
+  async getChainInfos({ chainIds }: GetChainInfosParams): Promise<ResponseDto<ChainInfo[]>> {
     return ErrorUtils.tryFail(async () => {
       const data = await this.connector.get<CustomChainInfo[], ApiGetChainInfosRequest>({
         basePath: 'https://oraicommon.oraidex.io/api/v1/chains',

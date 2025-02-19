@@ -37,10 +37,14 @@ const handleParseCosmwasmExecuteContract = async (input: ParseInput): Promise<an
     case ORAI_CONTRACT.SWAP:
     case ORAI_CONTRACT.SWAP_AND_ACTION:
     case ORAI_CONTRACT.SWAP_OPERATIONS:
-      data = await parseSwapContract({ sender: input.sender, typeUrl: input.typeUrl, value, action });
-      break;
+      data = await parseSwapContract({ sender: input.sender, typeUrl: input.typeUrl, value, action })
+      break
     case ORAI_CONTRACT.BRIDGE:
       data = await parseBridgeContract({ sender: input.sender, typeUrl: input.typeUrl, value, action })
+      break
+    case ORAI_CONTRACT.FUTURES:
+      break
+    case ORAI_CONTRACT.STAKING:
       break
     default:
       if (Object.values(ORAI_TOKEN_CONTRACTS).includes(contractAddress)) {

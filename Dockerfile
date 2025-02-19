@@ -21,4 +21,4 @@ RUN yarn install
 CMD ["yarn", "start"]
 
 # docker build -t parser-services .
-# docker run -it --name parser-services -p 9000:9000 parser-services:latest
+# docker compose up

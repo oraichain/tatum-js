@@ -27,7 +27,6 @@ const parseCosmwasm = async (input: ParseInput, msgType: string) => {
 
 const handleParseCosmwasmExecuteContract = async (input: ParseInput): Promise<any> => {
   let data
-
   const value = Uint8Array.from(Buffer.from(input.value, 'base64'))
   const rawMsg = MsgExecuteContract.decode(value)
   const executeMsg = JSON.parse(new TextDecoder().decode(rawMsg.msg))

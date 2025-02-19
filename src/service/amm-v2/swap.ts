@@ -1,5 +1,5 @@
 import { fromBase64, fromUtf8 } from '@cosmjs/encoding'
-import { Event } from '@cosmjs/stargate'
+import { Attribute, Event } from '@cosmjs/stargate'
 import { MsgExecuteContract } from 'cosmjs-types/cosmwasm/wasm/v1/tx'
 import { Container, Service } from 'typedi'
 
@@ -8,6 +8,7 @@ import { CONFIG } from '../../util'
 import { CommonInfoCosmos } from '../common-info'
 import { TatumConfig } from '../tatum'
 import { OraiSwapData, OraiSwapOperations, SwapResponse } from './swap.dto'
+import { ORAI_CONTRACT } from '../../server/constant/contractAddress'
 
 const ORAI_SWAP_CONTRACT_ADDRESS = 'orai10s0c75gw5y5eftms5ncfknw6lzmx0dyhedn75uz793m8zwz4g8zq4d9x9a'
 
@@ -75,15 +76,40 @@ export class AmmV2Cosmos {
     return res
   }
 
-  async parseSwapAndAction(data: OraiSwapData): Promise<SwapResponse> {
+  async parseSwapAndAction(data: OraiSwapData, postAction?: any): Promise<SwapResponse> {
     // decode events
     let swapInfo = await this.parseSwap(data)
+    let postSwapAction: any = postAction
 
     // decode messages
     if (data.message != null) {
       const msg = MsgExecuteContract.decode(data.message[0].value)
       const msgValue = new TextDecoder().decode(msg.msg)
-      swapInfo.toAddress = JSON.parse(msgValue).swap_and_action.post_swap_action
+      postSwapAction = JSON.parse(msgValue).swap_and_action.post_swap_action
+    }
+
+    if (postSwapAction != null) {
+      if (Object.keys(postSwapAction)[0] === 'ibc_wasm_transfer') {
+        const wasmTransferEvents = data.events.find(
+          (e: Event) =>
+            e.type === 'wasm' && 
+            e.attributes.some((attr) => attr.key === '_contract_address' && attr.value === ORAI_CONTRACT.BRIDGE) &&
+            e.attributes.some((attr) => attr.key === 'action' && attr.value === 'transfer_back_to_remote_chain')
+        )?.attributes.reduce((obj: { [key: string]: any }, attr: Attribute) => {
+          if (attr.key in obj) {
+            obj[attr.key] = [obj[attr.key], attr.value];
+            return obj;
+          }
+          obj[attr.key] = attr.value;
+          return obj;
+        }, {} as any) || {};
+
+        let relayerFee: number = +wasmTransferEvents['relayer_fee']
+        let tokenFee: number = +wasmTransferEvents['token_fee']
+        let feeAction = relayerFee + tokenFee
+        swapInfo.toAddress = postSwapAction
+        swapInfo.postActionFee = feeAction.toString()
+      }
     }
 
     return swapInfo
@@ -104,8 +130,7 @@ export class AmmV2Cosmos {
 
     switch (actionName) {
       case 'swap_and_action': {
-        response = await this.parseSwapAndAction({ sender: data.sender, events: data.events })
-        response.toAddress = actionData.post_swap_action
+        response = await this.parseSwapAndAction({ sender: data.sender, events: data.events }, actionData.post_swap_action)
         break
       }
       case 'execute_swap_operations': {

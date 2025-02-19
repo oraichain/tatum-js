@@ -63,6 +63,7 @@ export interface SwapResponse {
   outAsset: string
   outAmount: string
   minimumReceive?: string
+  postActionFee?: string
   /**
    * Decimals of the asset. Valid for native and fungible tokens. For tokens, only when readable from the contract `decimals()` method.
    */

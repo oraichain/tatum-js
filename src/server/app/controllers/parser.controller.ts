@@ -12,7 +12,7 @@ const parser = tryCatchAsync(async (req, res, _next) => {
 
   switch (typeMsg[0].split('/')[1]) {
     case MSG_TYPE.COSMOS_MSG:
-      // TODO: need to handle
+      data = await parserService.parseCosmos({ sender, typeUrl, value }, typeMsg[1], typeMsg[3])
       break
     case MSG_TYPE.COSMWASM_MSG:
       data = await parserService.parseCosmwasm({ sender, typeUrl, value }, typeMsg[3])

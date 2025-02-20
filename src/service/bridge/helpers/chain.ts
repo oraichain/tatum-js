@@ -19,4 +19,12 @@ export const COSMOS_CHAIN = {
     chain_id: 'noble-1',
     prefix: 'noble',
   },
+  NEUTARO: {
+    chain_id: 'Neutaro-1',
+    prefix: 'neutaro',
+  },
+  CELESTIA: {
+    chain_id: 'celestia',
+    prefix: 'celestia',
+  },
 } as const

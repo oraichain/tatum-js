@@ -55,6 +55,12 @@ const handleParseSend = async (sender: string, contract: string, message: Simula
         events,
       })
       break
+    case ORAI_CONTRACT.TON_BRIDGE:
+      response = await oraichainTatum.bridge.parseTonBridge({
+        message,
+        events,
+      })
+      break
     case ORAI_CONTRACT.SWAP:
     case ORAI_CONTRACT.SWAP_AND_ACTION:
     case ORAI_CONTRACT.SWAP_OPERATIONS:

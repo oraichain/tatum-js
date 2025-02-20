@@ -359,18 +359,22 @@ export class BridgeCosmos {
         }
       }
 
-      const sendToTonEvent = wasmEvents.find((event) => {
+      let sendToTonEvent: Event | undefined = undefined
+      let sendCw20Event: Event | undefined = undefined
+      for (const event of wasmEvents) {
         for (const attr of event.attributes) {
           if (
             attr.key === '_contract_address' &&
             attr.value === 'orai159l8l9c5ckhqpuwdfgs9p4v599nqt3cjlfahalmtrhfuncnec2ms5mz60e'
           ) {
-            return event
+            sendToTonEvent = event
+          }
+
+          if (attr.key === 'action' && attr.value === 'send') {
+            sendCw20Event = event
           }
         }
-
-        return undefined
-      })
+      }
 
       const bridgeTokenTransferEvent = transferEvents.find((event) => {
         for (const attr of event.attributes) {
@@ -390,6 +394,14 @@ export class BridgeCosmos {
           if (attr.key === 'amount') {
             const tokenSplit = attr.value.split('/')
             tokenId = tokenSplit.length > 1 ? `factory/${tokenSplit[1]}/${tokenSplit[2]}` : tokenSplit[0]
+          }
+        }
+      }
+
+      if (sendCw20Event) {
+        for (const attr of sendCw20Event.attributes) {
+          if (attr.key === '_contract_address') {
+            tokenId = attr.value
           }
         }
       }
@@ -431,14 +443,7 @@ export class BridgeCosmos {
           image: chainInfos[1].image,
         }
 
-        const tokenInfo = chainInfos[0].currencies.find((currency) => currency.coinMinimalDenom === tokenId)
-        returnData.tokenInfo = {
-          name: tokenInfo?.coinDenom!,
-          denom: tokenInfo?.coinMinimalDenom!,
-          decimal: tokenInfo?.coinDecimals!,
-          coinGeckoId: tokenInfo?.coinGeckoId!,
-          icon: tokenInfo?.coinImageUrl!,
-        }
+        returnData.tokenInfo = (await this.commonInfo.getTokenInfo({ tokenId })).data
       }
     } catch (err: any) {
       error = err

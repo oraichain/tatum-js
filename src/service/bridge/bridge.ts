@@ -11,11 +11,13 @@ import { TatumConfig } from '../tatum'
 import {
   BridgeSolanaResponse,
   CosmosBridgeSolanaData,
+  CosmosIbcData,
   CosmosTransferToRemoteData,
   EvmTransferToRemoteData,
+  IbcDataResponse,
   TransferToRemoteResponse,
 } from './bridge.dto'
-import { GravityAbi, SOLANA_SUPPORTED_TOKEN } from './helpers'
+import { COSMOS_CHAIN, GravityAbi, SOLANA_SUPPORTED_TOKEN } from './helpers'
 
 @Service({
   factory: (data: { id: string }) => new BridgeCosmos(data.id),
@@ -238,6 +240,86 @@ export class BridgeCosmos {
 
       returnData.bridgeAmount = feeData.sendAmount
       returnData.feeAmount = (Number(feeData.solanaFee) + Number(feeData.tokenFeeAmount)).toString()
+    } catch (err: any) {
+      error = err
+      status = Status.ERROR
+    }
+
+    return {
+      data: returnData,
+      error,
+      status,
+    }
+  }
+
+  /**
+   * Parse ibc message
+   */
+  async parseIbc(data: CosmosIbcData): Promise<ResponseDto<IbcDataResponse>> {
+    let returnData: IbcDataResponse = {} as any
+    let error = null
+    let status = Status.SUCCESS
+
+    try {
+      const ibcTransferEvent = data.events.find((event) => event.type === 'ibc_transfer')
+
+      if (ibcTransferEvent) {
+        let tokenId: string = ''
+        let fromChainId: string = ''
+        let toChainId: string = ''
+
+        for (const attribute of ibcTransferEvent.attributes) {
+          switch (attribute.key) {
+            case 'sender':
+              returnData.fromAddress = attribute.value
+              break
+            case 'receiver':
+              returnData.toAddress = attribute.value
+              break
+            case 'amount':
+              returnData.bridgeAmount = attribute.value
+              break
+            case 'denom':
+              tokenId = attribute.value
+              break
+            default:
+              break
+          }
+        }
+
+        for (const chain in COSMOS_CHAIN) {
+          if (returnData.fromAddress.startsWith((COSMOS_CHAIN as any)[chain].prefix)) {
+            fromChainId = (COSMOS_CHAIN as any)[chain].chain_id
+          }
+
+          if (returnData.toAddress.startsWith((COSMOS_CHAIN as any)[chain].prefix)) {
+            toChainId = (COSMOS_CHAIN as any)[chain].chain_id
+          }
+        }
+
+        const chainInfos = (await this.commonInfo.getChainInfos({ chainIds: [fromChainId, toChainId] })).data
+        returnData.fromChain = {
+          id: chainInfos[0].id,
+          name: chainInfos[0].name,
+          image: chainInfos[0].image,
+        }
+        returnData.toChain = {
+          id: chainInfos[1].id,
+          name: chainInfos[1].name,
+          image: chainInfos[1].image,
+        }
+
+        const tokenInfo = chainInfos[0].currencies.find((currency) => currency.coinMinimalDenom === tokenId)
+        returnData.tokenInfo = {
+          name: tokenInfo?.coinDenom!,
+          denom: tokenInfo?.coinMinimalDenom!,
+          decimal: tokenInfo?.coinDecimals!,
+          coinGeckoId: tokenInfo?.coinGeckoId!,
+          icon: tokenInfo?.coinImageUrl!,
+        }
+
+        returnData.feeAmount = '0'
+      }
     } catch (err: any) {
       error = err
       status = Status.ERROR

@@ -21,6 +21,7 @@ export const parseBank = async (input: ParseApiInput, msgType: string) => {
   switch (msgType) {
     case COSMOS_BANK_MSG_TYPE.MSG_SEND:
       const rawMsg = MsgSend.decode(value)
+      action = COSMOS_BANK_MSG_TYPE.MSG_SEND
 
       if (rawMsg.toAddress === SOLANA_BRIDGE_ADDRESS) {
         response = await oraichainTatum.bridge.parseSolana({

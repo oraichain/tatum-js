@@ -17,6 +17,9 @@ const parser = tryCatchAsync(async (req, res, _next) => {
     case MSG_TYPE.COSMWASM_MSG:
       data = await parserService.parseCosmwasm({ sender, typeUrl, value }, typeMsg[3])
       break
+    case MSG_TYPE.IBC_MSG:
+      data = await parserService.parseIbc({ sender, typeUrl, value }, typeMsg[4])
+      break
     default:
       break
   }

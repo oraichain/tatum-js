@@ -16,6 +16,7 @@ export const parseCw20 = async ({ sender, typeUrl, value, action }: ParseInput, 
       value,
     },
   ]
+  
   const simRes = await oraichainTatum.simulate.simulate(sender, msgs)
   if (simRes.error) {
     throw new HttpException(httpStatus.SERVICE_UNAVAILABLE, simRes.error.message as any)

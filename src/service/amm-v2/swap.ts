@@ -37,6 +37,9 @@ export class AmmV2Cosmos {
         e.type === 'wasm' && e.attributes.some((attr) => attr.key === 'action' && attr.value === 'swap'),
     )
 
+    console.log(data.events)
+    console.dir(data.events, {depth: null})
+
     let ops: OraiSwapOperations[] = []
 
     if (Array.isArray(evs)) {
@@ -80,6 +83,9 @@ export class AmmV2Cosmos {
     // decode events
     let swapInfo = await this.parseSwap(data)
     let postSwapAction: any = postAction
+
+    console.log(data.events)
+    console.dir(data.events, {depth: null})
 
     // decode messages
     if (data.message != null) {

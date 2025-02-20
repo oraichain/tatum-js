@@ -1,12 +1,15 @@
 import { MsgExecuteContract } from 'cosmjs-types/cosmwasm/wasm/v1/tx'
+import httpStatus from 'http-status'
 import { ORAI_CONTRACT, ORAI_TOKEN_CONTRACTS } from '../../constant/contractAddress'
 import { COSMOS_TYPE, COSMWASM_MSG_TYPE } from '../../constant/msgType'
 import { parseBank } from '../../services/parseBank'
 import { parseBridgeContract } from '../../services/parseBridge'
 import { parseSwapContract } from '../../services/parseSwap'
 import { parseFuturesContract } from '../../services/parseFutures'
-import { parseCw20 } from '../../services/parseUsdtCw20'
+import { parseCw20 } from '../../services/parseCw20'
+import { oraichainTatum } from '../../services/tatum'
 import { ParseApiInput } from '../../types/parser'
+import HttpException from '../../utils/exception'
 
 const parseCosmwasm = async (input: ParseApiInput, msgType: string) => {
   let data
@@ -69,7 +72,32 @@ const parseCosmos = async (input: ParseApiInput, cosmosType: string, msgType: st
   return data
 }
 
+const parseIbc = async (input: ParseApiInput, msgType: string) => {
+  const value = Uint8Array.from(Buffer.from(input.value, 'base64'))
+  const msgs = [
+    {
+      typeUrl: input.typeUrl,
+      value,
+    },
+  ]
+
+  const simRes = await oraichainTatum.simulate.simulate(input.sender, msgs)
+  if (simRes.error) {
+    throw new HttpException(httpStatus.SERVICE_UNAVAILABLE, simRes.error.message as any)
+  }
+
+  if (!simRes.data.result) {
+    throw new HttpException(httpStatus.SERVICE_UNAVAILABLE, 'Simulate with undefined result')
+  }
+
+  // TODO: need to parse ibc here
+  const response = await oraichainTatum.bridge.parseIbc({ message: msgs, events: simRes.data.result.events })
+
+  return { action: msgType, response }
+}
+
 export default {
   parseCosmwasm,
   parseCosmos,
+  parseIbc,
 }

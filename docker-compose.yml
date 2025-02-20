@@ -1,0 +1,16 @@
+services:
+  app:
+    ports:
+      - 9000:9000
+
+    image: parser-services:latest
+
+    privileged: true
+
+    env_file:
+      - .env
+    
+    volumes:
+      - ./data:/data
+      # - .:/app
+

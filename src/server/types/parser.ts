@@ -5,6 +5,12 @@ export type ParseInput = {
   action: string
 }
 
+export type ParseApiInput = {
+  sender: string
+  typeUrl: string
+  value: string
+}
+
 export type SimulateMsg = {
   typeUrl: string
   value: Uint8Array

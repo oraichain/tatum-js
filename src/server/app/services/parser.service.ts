@@ -1,17 +1,13 @@
 import { MsgExecuteContract } from 'cosmjs-types/cosmwasm/wasm/v1/tx'
 import { ORAI_CONTRACT, ORAI_TOKEN_CONTRACTS } from '../../constant/contractAddress'
-import { COSMWASM_MSG_TYPE } from '../../constant/msgType'
+import { COSMOS_TYPE, COSMWASM_MSG_TYPE } from '../../constant/msgType'
+import { parseBank } from '../../services/parseBank'
 import { parseBridgeContract } from '../../services/parseBridge'
 import { parseSwapContract } from '../../services/parseSwap'
 import { parseCw20 } from '../../services/parseUsdtCw20'
+import { ParseApiInput } from '../../types/parser'
 
-export type ParseInput = {
-  sender: string
-  typeUrl: string
-  value: string
-}
-
-const parseCosmwasm = async (input: ParseInput, msgType: string) => {
+const parseCosmwasm = async (input: ParseApiInput, msgType: string) => {
   let data
   switch (msgType) {
     case COSMWASM_MSG_TYPE.EXECUTE_CONTRACT:
@@ -24,7 +20,7 @@ const parseCosmwasm = async (input: ParseInput, msgType: string) => {
   return data
 }
 
-const handleParseCosmwasmExecuteContract = async (input: ParseInput): Promise<any> => {
+const handleParseCosmwasmExecuteContract = async (input: ParseApiInput): Promise<any> => {
   let data
   const value = Uint8Array.from(Buffer.from(input.value, 'base64'))
   const rawMsg = MsgExecuteContract.decode(value)
@@ -58,6 +54,20 @@ const handleParseCosmwasmExecuteContract = async (input: ParseInput): Promise<an
   return data
 }
 
+const parseCosmos = async (input: ParseApiInput, cosmosType: string, msgType: string) => {
+  let data
+  switch (cosmosType) {
+    case COSMOS_TYPE.BANK:
+      data = await parseBank(input, msgType)
+      break
+    default:
+      break
+  }
+
+  return data
+}
+
 export default {
   parseCosmwasm,
+  parseCosmos,
 }

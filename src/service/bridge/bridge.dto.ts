@@ -28,3 +28,7 @@ export interface TransferToRemoteResponse {
   feeAmount: string
   tokenInfo: TokenInfo
 }
+
+export interface CosmosBridgeSolanaData extends CosmosTransferToRemoteData {}
+
+export interface BridgeSolanaResponse extends TransferToRemoteResponse {}

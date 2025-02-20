@@ -94,6 +94,8 @@ export class AmmV2Cosmos {
       postSwapAction = JSON.parse(msgValue).swap_and_action.post_swap_action
     }
 
+    swapInfo.toAddress = postSwapAction
+
     if (postSwapAction != null) {
       if (Object.keys(postSwapAction)[0] === 'ibc_wasm_transfer') {
         const wasmTransferEvents = data.events.find(
@@ -113,7 +115,6 @@ export class AmmV2Cosmos {
         let relayerFee: number = +wasmTransferEvents['relayer_fee']
         let tokenFee: number = +wasmTransferEvents['token_fee']
         let feeAction = relayerFee + tokenFee
-        swapInfo.toAddress = postSwapAction
         swapInfo.postActionFee = feeAction.toString()
       }
     }

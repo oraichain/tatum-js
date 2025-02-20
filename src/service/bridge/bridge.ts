@@ -147,9 +147,11 @@ export class BridgeCosmos {
         const fromChainId = 'Oraichain'
         const toChainId = remoteDenom.startsWith('oraib')
           ? '0x38'
+          : remoteDenom.startsWith('eth-mainnet')
+          ? '0x01'
           : remoteDenom.startsWith('trontrx')
           ? '0x2b6653dc'
-          : '0x01'
+          : 'noble-1'
         const chainInfos = (await this.commonInfo.getChainInfos({ chainIds: [fromChainId, toChainId] })).data
         returnData.fromChain = {
           id: chainInfos[0].id,

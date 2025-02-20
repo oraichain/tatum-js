@@ -31,6 +31,12 @@ export const parseBridgeContract = async ({ sender, typeUrl, value, action }: Pa
         events: simRes.data.result.events,
       })
       break
+    case BRIDGE_EXECUTE_TYPE.BRIDGE_TO_TON:
+      response = await oraichainTatum.bridge.parseTonBridge({
+        message: msgs,
+        events: simRes.data.result.events,
+      })
+      break
     default:
       break
   }

@@ -101,7 +101,7 @@ export class AmmV2Cosmos {
         const wasmTransferEvents = data.events.find(
           (e: Event) =>
             e.type === 'wasm' && 
-            e.attributes.some((attr) => attr.key === '_contract_address' && attr.value === ORAI_CONTRACT.BRIDGE) &&
+            e.attributes.some((attr) => attr.key === '_contract_address' && attr.value === ORAI_CONTRACT.EVM_BRIDGE) &&
             e.attributes.some((attr) => attr.key === 'action' && attr.value === 'transfer_back_to_remote_chain')
         )?.attributes.reduce((obj: { [key: string]: any }, attr: Attribute) => {
           if (attr.key in obj) {

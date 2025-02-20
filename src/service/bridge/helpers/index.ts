@@ -1,2 +1,3 @@
+export * from './chain'
 export * from './contractAbi'
-export * from './solanaBridgeToken'
+export * from './token'

@@ -68,8 +68,6 @@ const parseCosmos = async (input: ParseApiInput, cosmosType: string, msgType: st
 }
 
 const parseIbc = async (input: ParseApiInput, msgType: string) => {
-  let response
-
   const value = Uint8Array.from(Buffer.from(input.value, 'base64'))
   const msgs = [
     {
@@ -77,6 +75,7 @@ const parseIbc = async (input: ParseApiInput, msgType: string) => {
       value,
     },
   ]
+
   const simRes = await oraichainTatum.simulate.simulate(input.sender, msgs)
   if (simRes.error) {
     throw new HttpException(httpStatus.SERVICE_UNAVAILABLE, simRes.error.message as any)
@@ -87,6 +86,7 @@ const parseIbc = async (input: ParseApiInput, msgType: string) => {
   }
 
   // TODO: need to parse ibc here
+  const response = await oraichainTatum.bridge.parseIbc({ message: msgs, events: simRes.data.result.events })
 
   return { action: msgType, response }
 }

@@ -4,6 +4,7 @@ import { COSMOS_TYPE, COSMWASM_MSG_TYPE } from '../../constant/msgType'
 import { parseBank } from '../../services/parseBank'
 import { parseBridgeContract } from '../../services/parseBridge'
 import { parseSwapContract } from '../../services/parseSwap'
+import { parseFuturesContract } from '../../services/parseFutures'
 import { parseCw20 } from '../../services/parseUsdtCw20'
 import { ParseApiInput } from '../../types/parser'
 
@@ -32,12 +33,13 @@ const handleParseCosmwasmExecuteContract = async (input: ParseApiInput): Promise
     case ORAI_CONTRACT.SWAP:
     case ORAI_CONTRACT.SWAP_AND_ACTION:
     case ORAI_CONTRACT.SWAP_OPERATIONS:
-      data = await parseSwapContract({ sender: input.sender, typeUrl: input.typeUrl, value, action })
+      data = await parseSwapContract({ sender: input.sender, typeUrl: input.typeUrl, value: value, action: action })
       break
     case ORAI_CONTRACT.BRIDGE:
-      data = await parseBridgeContract({ sender: input.sender, typeUrl: input.typeUrl, value, action })
+      data = await parseBridgeContract({ sender: input.sender, typeUrl: input.typeUrl, value: value, action: action })
       break
     case ORAI_CONTRACT.FUTURES:
+      data = await parseFuturesContract({sender: input.sender, typeUrl: input.typeUrl, value: value, action: action})
       break
     case ORAI_CONTRACT.STAKING:
       break

@@ -8,7 +8,7 @@ import HttpException from '../utils/exception'
 import { oraichainTatum } from './tatum'
 
 export const parseCw20 = async ({ sender, typeUrl, value, action }: ParseInput, executeMsg: any) => {
-  let response
+  let response = {} as any
 
   const msgs = [
     {
@@ -42,20 +42,29 @@ export const parseCw20 = async ({ sender, typeUrl, value, action }: ParseInput, 
       break
   }
 
-  return { action, response }
+  return {
+    action: {
+      action: response.action,
+      msgAction: action,
+    },
+    response: response.response,
+  }
 }
 
 const handleParseSend = async (sender: string, contract: string, message: SimulateMsg[], events: Event[]) => {
   let response
+  let action
 
   switch (contract) {
     case ORAI_CONTRACT.EVM_BRIDGE:
+      action = 'bridge'
       response = await oraichainTatum.bridge.parseTransferToRemote({
         message,
         events,
       })
       break
     case ORAI_CONTRACT.TON_BRIDGE:
+      action = 'bridge'
       response = await oraichainTatum.bridge.parseTonBridge({
         message,
         events,
@@ -64,13 +73,14 @@ const handleParseSend = async (sender: string, contract: string, message: Simula
     case ORAI_CONTRACT.SWAP:
     case ORAI_CONTRACT.SWAP_AND_ACTION:
     case ORAI_CONTRACT.SWAP_OPERATIONS:
+      action = 'swap'
       response = await oraichainTatum.ammV2.parseSend({ message, events, sender })
       break
     default:
       break
   }
 
-  return response
+  return { action, response }
 }
 
 const handleParseIncreaseAllowance = async (

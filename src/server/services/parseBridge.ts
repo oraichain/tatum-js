@@ -47,5 +47,11 @@ export const parseBridgeContract = async ({ sender, typeUrl, value, action }: Pa
       break
   }
 
-  return { action, response }
+  return {
+    action: {
+      action: 'bridge',
+      msgAction: action,
+    },
+    response,
+  }
 }

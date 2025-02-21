@@ -37,6 +37,9 @@ export class AmmV2Cosmos {
         e.type === 'wasm' && e.attributes.some((attr) => attr.key === 'action' && attr.value === 'swap'),
     )
 
+    console.log(data.events)
+    console.dir(data.events, {depth: null})
+
     let ops: OraiSwapOperations[] = []
 
     if (Array.isArray(evs)) {
@@ -81,6 +84,9 @@ export class AmmV2Cosmos {
     let swapInfo = await this.parseSwap(data)
     let postSwapAction: any = postAction
 
+    console.log(data.events)
+    console.dir(data.events, {depth: null})
+
     // decode messages
     if (data.message != null) {
       const msg = MsgExecuteContract.decode(data.message[0].value)
@@ -95,7 +101,7 @@ export class AmmV2Cosmos {
         const wasmTransferEvents = data.events.find(
           (e: Event) =>
             e.type === 'wasm' && 
-            e.attributes.some((attr) => attr.key === '_contract_address' && attr.value === ORAI_CONTRACT.BRIDGE) &&
+            e.attributes.some((attr) => attr.key === '_contract_address' && attr.value === ORAI_CONTRACT.EVM_BRIDGE) &&
             e.attributes.some((attr) => attr.key === 'action' && attr.value === 'transfer_back_to_remote_chain')
         )?.attributes.reduce((obj: { [key: string]: any }, attr: Attribute) => {
           if (attr.key in obj) {

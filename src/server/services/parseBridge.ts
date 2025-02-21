@@ -14,6 +14,7 @@ export const parseBridgeContract = async ({ sender, typeUrl, value, action }: Pa
       value,
     },
   ]
+
   const simRes = await oraichainTatum.simulate.simulate(sender, msgs)
   if (simRes.error) {
     throw new HttpException(httpStatus.SERVICE_UNAVAILABLE, simRes.error.message as any)
@@ -26,6 +27,12 @@ export const parseBridgeContract = async ({ sender, typeUrl, value, action }: Pa
   switch (action) {
     case BRIDGE_EXECUTE_TYPE.TRANSFER_TO_REMOTE:
       response = await oraichainTatum.bridge.parseTransferToRemote({
+        message: msgs,
+        events: simRes.data.result.events,
+      })
+      break
+    case BRIDGE_EXECUTE_TYPE.BRIDGE_TO_TON:
+      response = await oraichainTatum.bridge.parseTonBridge({
         message: msgs,
         events: simRes.data.result.events,
       })

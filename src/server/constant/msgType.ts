@@ -8,6 +8,14 @@ export const COSMWASM_MSG_TYPE = {
   EXECUTE_CONTRACT: 'MsgExecuteContract',
 }
 
+export const COSMOS_TYPE = {
+  BANK: 'bank',
+}
+
+export const COSMOS_BANK_MSG_TYPE = {
+  MSG_SEND: 'MsgSend',
+}
+
 export const SWAP_EXECUTE_TYPE = {
   SWAP: 'swap',
   SWAP_AND_ACTION: 'swap_and_action',
@@ -17,8 +25,10 @@ export const SWAP_EXECUTE_TYPE = {
 
 export const BRIDGE_EXECUTE_TYPE = {
   TRANSFER_TO_REMOTE: 'transfer_to_remote',
+  BRIDGE_TO_TON: 'bridge_to_ton',
 }
 
 export const USDT_CW20_EXECUTE_TYPE = {
   SEND: 'send',
+  INCREASE_ALLOWANCE: 'increase_allowance'
 }

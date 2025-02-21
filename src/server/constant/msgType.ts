@@ -26,9 +26,10 @@ export const SWAP_EXECUTE_TYPE = {
 export const BRIDGE_EXECUTE_TYPE = {
   TRANSFER_TO_REMOTE: 'transfer_to_remote',
   BRIDGE_TO_TON: 'bridge_to_ton',
+  WITHDRAW_TO_BITCOIN: 'withdraw_to_bitcoin',
 }
 
 export const USDT_CW20_EXECUTE_TYPE = {
   SEND: 'send',
-  INCREASE_ALLOWANCE: 'increase_allowance'
+  INCREASE_ALLOWANCE: 'increase_allowance',
 }

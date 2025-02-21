@@ -1,9 +1,9 @@
 import httpStatus from 'http-status'
 
 import { SWAP_EXECUTE_TYPE } from '../constant/msgType'
+import { ParseInput } from '../types/parser'
 import HttpException from '../utils/exception'
 import { oraichainTatum } from './tatum'
-import { ParseInput } from '../types/parser'
 
 export const parseSwapContract = async ({ sender, typeUrl, value, action }: ParseInput) => {
   let response
@@ -61,5 +61,11 @@ export const parseSwapContract = async ({ sender, typeUrl, value, action }: Pars
       break
   }
 
-  return { action, response }
+  return {
+    action: {
+      action: 'swap',
+      msgAction: action,
+    },
+    response,
+  }
 }

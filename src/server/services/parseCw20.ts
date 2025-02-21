@@ -27,7 +27,7 @@ export const parseCw20 = async ({ sender, typeUrl, value, action }: ParseInput, 
   }
   switch (action) {
     case USDT_CW20_EXECUTE_TYPE.SEND:
-      response = await handleParseSend(sender, executeMsg.send.contract, msgs, simRes.data.result.events)
+      response = await handleParseSend(sender, executeMsg, msgs, simRes.data.result.events)
       break
     case USDT_CW20_EXECUTE_TYPE.INCREASE_ALLOWANCE:
       response = await handleParseIncreaseAllowance(sender, executeMsg.spender, msgs, simRes.data.result.events)
@@ -39,8 +39,10 @@ export const parseCw20 = async ({ sender, typeUrl, value, action }: ParseInput, 
   return { action, response }
 }
 
-const handleParseSend = async (sender: string, contract: string, message: SimulateMsg[], events: Event[]) => {
+const handleParseSend = async (sender: string, executeMsg: any, message: SimulateMsg[], events: Event[]) => {
   let response
+
+  const contract = executeMsg.send.contract
 
   switch (contract) {
     case ORAI_CONTRACT.BRIDGE:
@@ -53,6 +55,9 @@ const handleParseSend = async (sender: string, contract: string, message: Simula
     case ORAI_CONTRACT.SWAP_AND_ACTION:
     case ORAI_CONTRACT.SWAP_OPERATIONS:
       response = await oraichainTatum.ammV2.parseSend({ message, events, sender })
+      break
+    case ORAI_CONTRACT.STAKING:
+      response = await oraichainTatum.staking.parseStakingAction({sender: sender, message: message, events: events})
       break
     default:
       break

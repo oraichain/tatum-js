@@ -5,6 +5,7 @@ import { CONFIG } from '../../util';
 import { FuturesData, OpenPositionResponse, FuturesReponse, ClosePositionResponse, UpdateTpSlResponse, DepositMarginResponse } from "./futures.dto";
 import { Attribute, Event } from '@cosmjs/stargate'
 import { MsgExecuteContract } from "cosmjs-types/cosmwasm/wasm/v1/tx";
+import { ORAI_CONTRACT } from "../../server/constant/contractAddress";
 
 
 @Service({
@@ -25,7 +26,10 @@ export class FuturesCosmos {
     const evs = data.events.filter(
       (e: Event) => 
         e.type === 'wasm'
-        && e.attributes.some((attr) => attr.key === "_contract_address" && attr.value === "orai1wrkchuss9wtph4mxrzqksfrulj7hsl89z0048hg8l7hcglse5rxqea2qnr")
+        && e.attributes.some((attr) => 
+          attr.key === "_contract_address" && 
+          attr.value === ORAI_CONTRACT.FUTURES
+        )
     )
 
     const msg = MsgExecuteContract.decode(data.message[0].value)

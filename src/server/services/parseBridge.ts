@@ -37,6 +37,9 @@ export const parseBridgeContract = async ({ sender, typeUrl, value, action }: Pa
         events: simRes.data.result.events,
       })
       break
+    case BRIDGE_EXECUTE_TYPE.WITHDRAW_TO_BITCOIN:
+      // TODO: need to handle parse bridge to btc here
+      break
     default:
       break
   }

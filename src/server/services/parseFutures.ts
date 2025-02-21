@@ -1,16 +1,17 @@
-import { ParseInput } from "../types/parser";
-import HttpException from "../utils/exception";
-import { oraichainTatum } from "./tatum";
 import httpStatus from 'http-status'
+
+import { ParseInput } from '../types/parser'
+import HttpException from '../utils/exception'
+import { oraichainTatum } from './tatum'
 
 export const parseFuturesContract = async ({ sender, typeUrl, value, action }: ParseInput) => {
   let response
 
   const msgs = [
     {
-        typeUrl,
-        value
-    }
+      typeUrl,
+      value,
+    },
   ]
 
   const simRes = await oraichainTatum.simulate.simulate(sender, msgs)
@@ -22,7 +23,17 @@ export const parseFuturesContract = async ({ sender, typeUrl, value, action }: P
     throw new HttpException(httpStatus.SERVICE_UNAVAILABLE, 'Simulate with undefined result')
   }
 
-  response = oraichainTatum.futures.parseFuturesAction({sender: sender, message: msgs, events: simRes.data.result!.events})
+  response = oraichainTatum.futures.parseFuturesAction({
+    sender: sender,
+    message: msgs,
+    events: simRes.data.result!.events,
+  })
 
-  return response
+  return {
+    action: {
+      action: 'future',
+      msgAction: action,
+    },
+    response,
+  }
 }

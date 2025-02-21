@@ -36,23 +36,23 @@ const main = async () => {
       typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
       value: MsgExecuteContract.encode({
         sender: 'orai1eg9vt8af8nde8lx4flmrk7x9uvj8zd8xqyhkeh',
-        contract: 'orai15un8msx3n5zf9ahlxmfeqd2kwa5wm0nrpxer304m9nd5q6qq0g6sku5pdd',
+        contract: 'orai1g90x3z2kss99wvmpkenjdelmpw4hf9l3yt420gpgqvpuz8lt79uq24arlv',
         msg: toUtf8(
           `
 {
-  "send": {
-    "contract": "orai195269awwnt5m6c843q6w7hp8rt0k7syfu9de4h0wz384slshuzps8y7ccm",
-    "amount": "4684042",
-    "msg": "eyJsb2NhbF9jaGFubmVsX2lkIjoiY2hhbm5lbC0xNDciLCJyZW1vdGVfYWRkcmVzcyI6Im5vYmxlMWVnOXZ0OGFmOG5kZThseDRmbG1yazd4OXV2ajh6ZDh4bTU1YXEyIiwicmVtb3RlX2Rlbm9tIjoidXVzZGMiLCJ0aW1lb3V0IjoxNzQwMDM5MjE1MDAwMDAwMDAwLCJtZW1vIjoiIn0="
+  "withdraw_to_bitcoin": {
+    "btc_address": "bc1ql4g33h25w5gg5wgvet9pvu6lvzsncsv0mpanxz",
+    "fee": 51192000000
   }
 }
+
           
           `,
         ),
         funds: [
           Coin.fromJSON({
-            denom: 'orai',
-            amount: '100000',
+            denom: 'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/obtc',
+            amount: '70100000000',
           }),
         ],
       }).finish(),

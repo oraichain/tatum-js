@@ -30,9 +30,13 @@ export interface TransferToRemoteResponse {
 }
 
 export interface CosmosBridgeSolanaData extends CosmosTransferToRemoteData {}
-
 export interface BridgeSolanaResponse extends TransferToRemoteResponse {}
 
 export interface CosmosIbcData extends CosmosTransferToRemoteData {}
-
 export interface IbcDataResponse extends TransferToRemoteResponse {}
+
+export interface BridgeTonData extends CosmosTransferToRemoteData {}
+export interface BridgeTonDataResponse extends TransferToRemoteResponse {}
+
+export interface BridgeBtcData extends CosmosTransferToRemoteData {}
+export interface BridgeBtcDataResponse extends TransferToRemoteResponse {}

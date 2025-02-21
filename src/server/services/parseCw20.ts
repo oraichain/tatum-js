@@ -8,7 +8,7 @@ import HttpException from '../utils/exception'
 import { oraichainTatum } from './tatum'
 
 export const parseCw20 = async ({ sender, typeUrl, value, action }: ParseInput, executeMsg: any) => {
-  let response
+  let response = {} as any
 
   const msgs = [
     {
@@ -16,7 +16,7 @@ export const parseCw20 = async ({ sender, typeUrl, value, action }: ParseInput, 
       value,
     },
   ]
-  
+
   const simRes = await oraichainTatum.simulate.simulate(sender, msgs)
   if (simRes.error) {
     throw new HttpException(httpStatus.SERVICE_UNAVAILABLE, simRes.error.message as any)
@@ -25,12 +25,60 @@ export const parseCw20 = async ({ sender, typeUrl, value, action }: ParseInput, 
   if (!simRes.data.result) {
     throw new HttpException(httpStatus.SERVICE_UNAVAILABLE, 'Simulate with undefined result')
   }
+
   switch (action) {
     case USDT_CW20_EXECUTE_TYPE.SEND:
       response = await handleParseSend(sender, executeMsg, msgs, simRes.data.result.events)
       break
     case USDT_CW20_EXECUTE_TYPE.INCREASE_ALLOWANCE:
-      response = await handleParseIncreaseAllowance(sender, executeMsg.spender, msgs, simRes.data.result.events)
+      response = await handleParseIncreaseAllowance(
+        sender,
+        executeMsg.spender,
+        msgs,
+        simRes.data.result.events,
+      )
+      break
+    default:
+      break
+  }
+
+  return {
+    action: {
+      action: response.action,
+      msgAction: action,
+    },
+    response: response.response,
+  }
+}
+
+const handleParseSend = async (sender: string, contract: string, message: SimulateMsg[], events: Event[]) => {
+  let response
+  let action
+
+  switch (contract) {
+    case ORAI_CONTRACT.EVM_BRIDGE:
+      action = 'bridge'
+      response = await oraichainTatum.bridge.parseTransferToRemote({
+        message,
+        events,
+      })
+      break
+    case ORAI_CONTRACT.TON_BRIDGE:
+      action = 'bridge'
+      response = await oraichainTatum.bridge.parseTonBridge({
+        message,
+        events,
+      })
+      break
+    case ORAI_CONTRACT.SWAP:
+    case ORAI_CONTRACT.SWAP_AND_ACTION:
+    case ORAI_CONTRACT.SWAP_OPERATIONS:
+      action = 'swap'
+      response = await oraichainTatum.ammV2.parseSend({ message, events, sender })
+      break
+    case ORAI_CONTRACT.STAKING:
+      action = 'staking'
+      response = await oraichainTatum.staking.parseStakingAction({sender: sender, message: message, events: events})
       break
     default:
       break
@@ -39,33 +87,11 @@ export const parseCw20 = async ({ sender, typeUrl, value, action }: ParseInput, 
   return { action, response }
 }
 
-const handleParseSend = async (sender: string, executeMsg: any, message: SimulateMsg[], events: Event[]) => {
-  let response
-
-  const contract = executeMsg.send.contract
-
-  switch (contract) {
-    case ORAI_CONTRACT.BRIDGE:
-      response = await oraichainTatum.bridge.parseTransferToRemote({
-        message,
-        events,
-      })
-      break
-    case ORAI_CONTRACT.SWAP: 
-    case ORAI_CONTRACT.SWAP_AND_ACTION:
-    case ORAI_CONTRACT.SWAP_OPERATIONS:
-      response = await oraichainTatum.ammV2.parseSend({ message, events, sender })
-      break
-    case ORAI_CONTRACT.STAKING:
-      response = await oraichainTatum.staking.parseStakingAction({sender: sender, message: message, events: events})
-      break
-    default:
-      break
-    }
-
-  return response
-}
-
-const handleParseIncreaseAllowance = async(sender: string, contract: string, message: SimulateMsg[], events: Event[]) => {
+const handleParseIncreaseAllowance = async (
+  sender: string,
+  contract: string,
+  message: SimulateMsg[],
+  events: Event[],
+) => {
   let response
 }

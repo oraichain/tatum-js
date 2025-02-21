@@ -1,6 +1,7 @@
 import { Event, QueryClient, TxExtension, setupTxExtension } from '@cosmjs/stargate'
 import { Tendermint37Client } from '@cosmjs/tendermint-rpc'
 import { MsgSend } from 'cosmjs-types/cosmos/bank/v1beta1/tx'
+import { MsgExecuteContract } from 'cosmjs-types/cosmwasm/wasm/v1/tx'
 import { Interface, JsonRpcProvider } from 'ethers'
 import { Container, Service } from 'typedi'
 
@@ -9,7 +10,11 @@ import { CONFIG, ResponseDto, Status } from '../../util'
 import { CommonInfoCosmos } from '../common-info/commonInfo'
 import { TatumConfig } from '../tatum'
 import {
+  BridgeBtcData,
+  BridgeBtcDataResponse,
   BridgeSolanaResponse,
+  BridgeTonData,
+  BridgeTonDataResponse,
   CosmosBridgeSolanaData,
   CosmosIbcData,
   CosmosTransferToRemoteData,
@@ -321,6 +326,178 @@ export class BridgeCosmos {
         }
 
         returnData.feeAmount = '0'
+      }
+    } catch (err: any) {
+      error = err
+      status = Status.ERROR
+    }
+
+    return {
+      data: returnData,
+      error,
+      status,
+    }
+  }
+
+  /**
+   * Parse bridge to ton
+   */
+  async parseTonBridge(data: BridgeTonData): Promise<ResponseDto<BridgeTonDataResponse>> {
+    let returnData: BridgeTonDataResponse = {} as any
+    let error = null
+    let status = Status.SUCCESS
+
+    try {
+      let wasmEvents: Event[] = []
+      let transferEvents: Event[] = []
+      let tokenId: string = ''
+
+      for (const event of data.events) {
+        if (event.type === 'wasm') {
+          wasmEvents.push(event)
+        }
+
+        if (event.type === 'transfer') {
+          transferEvents.push(event)
+        }
+      }
+
+      let sendToTonEvent: Event | undefined = undefined
+      let sendCw20Event: Event | undefined = undefined
+      for (const event of wasmEvents) {
+        for (const attr of event.attributes) {
+          if (
+            attr.key === '_contract_address' &&
+            attr.value === 'orai159l8l9c5ckhqpuwdfgs9p4v599nqt3cjlfahalmtrhfuncnec2ms5mz60e'
+          ) {
+            sendToTonEvent = event
+          }
+
+          if (attr.key === 'action' && attr.value === 'send') {
+            sendCw20Event = event
+          }
+        }
+      }
+
+      const bridgeTokenTransferEvent = transferEvents.find((event) => {
+        for (const attr of event.attributes) {
+          if (
+            attr.key === 'recipient' &&
+            attr.value === 'orai159l8l9c5ckhqpuwdfgs9p4v599nqt3cjlfahalmtrhfuncnec2ms5mz60e'
+          ) {
+            return event
+          }
+        }
+
+        return undefined
+      })
+
+      if (bridgeTokenTransferEvent) {
+        for (const attr of bridgeTokenTransferEvent.attributes) {
+          if (attr.key === 'amount') {
+            const tokenSplit = attr.value.split('/')
+            tokenId = tokenSplit.length > 1 ? `factory/${tokenSplit[1]}/${tokenSplit[2]}` : tokenSplit[0]
+          }
+        }
+      }
+
+      if (sendCw20Event) {
+        for (const attr of sendCw20Event.attributes) {
+          if (attr.key === '_contract_address') {
+            tokenId = attr.value
+          }
+        }
+      }
+
+      if (sendToTonEvent && tokenId !== '') {
+        let tokenFee: number = 0
+
+        for (const attr of sendToTonEvent.attributes) {
+          switch (attr.key) {
+            case 'local_sender':
+              returnData.fromAddress = attr.value
+              break
+            case 'remote_receiver':
+              returnData.toAddress = attr.value
+              break
+            case 'local_amount':
+              returnData.bridgeAmount = attr.value
+              break
+            case 'relayer_fee':
+            case 'token_fee':
+              tokenFee += Number(attr.value)
+              break
+            default:
+              break
+          }
+        }
+
+        returnData.feeAmount = tokenFee.toString()
+
+        const chainInfos = (await this.commonInfo.getChainInfos({ chainIds: ['Oraichain', 'ton'] })).data
+        returnData.fromChain = {
+          id: chainInfos[0].id,
+          name: chainInfos[0].name,
+          image: chainInfos[0].image,
+        }
+        returnData.toChain = {
+          id: chainInfos[1].id,
+          name: chainInfos[1].name,
+          image: chainInfos[1].image,
+        }
+
+        returnData.tokenInfo = (await this.commonInfo.getTokenInfo({ tokenId })).data
+      }
+    } catch (err: any) {
+      error = err
+      status = Status.ERROR
+    }
+
+    return {
+      data: returnData,
+      error,
+      status,
+    }
+  }
+
+  /**
+   * Parse bridge to btc
+   */
+  async parseBtcBridge(data: BridgeBtcData): Promise<ResponseDto<BridgeBtcDataResponse>> {
+    let returnData: BridgeBtcDataResponse = {} as any
+    let error = null
+    let status = Status.SUCCESS
+
+    try {
+      const rawMsg = MsgExecuteContract.decode(data.message[0].value)
+      const fundAmount = rawMsg.funds[0].amount
+      const tokenId = rawMsg.funds[0].denom
+      const executeMsg = JSON.parse(new TextDecoder().decode(rawMsg.msg))
+
+      returnData.fromAddress = rawMsg.sender
+      returnData.toAddress = executeMsg.withdraw_to_bitcoin.btc_address
+      returnData.feeAmount = executeMsg.withdraw_to_bitcoin.fee.toString()
+      returnData.bridgeAmount = Math.floor(Number(fundAmount) - executeMsg.withdraw_to_bitcoin.fee).toString()
+
+      const chainInfos = (await this.commonInfo.getChainInfos({ chainIds: ['Oraichain', 'bitcoin'] })).data
+      returnData.fromChain = {
+        id: chainInfos[0].id,
+        name: chainInfos[0].name,
+        image: chainInfos[0].image,
+      }
+      returnData.toChain = {
+        id: chainInfos[1].id,
+        name: chainInfos[1].name,
+        image: chainInfos[1].image,
+      }
+
+      const tokenInfo = chainInfos[0].currencies.find((currency) => currency.coinMinimalDenom === tokenId)
+      returnData.tokenInfo = {
+        name: tokenInfo?.coinDenom!,
+        denom: tokenInfo?.coinMinimalDenom!,
+        decimal: tokenInfo?.coinDecimals!,
+        coinGeckoId: tokenInfo?.coinGeckoId!,
+        icon: tokenInfo?.coinImageUrl!,
       }
     } catch (err: any) {
       error = err

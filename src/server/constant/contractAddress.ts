@@ -1,10 +1,12 @@
 export const ORAI_CONTRACT = {
-    SWAP: "orai10s0c75gw5y5eftms5ncfknw6lzmx0dyhedn75uz793m8zwz4g8zq4d9x9a",
-    SWAP_AND_ACTION: "orai1yglsm0u2x3xmct9kq3lxa654cshaxj9j5d9rw5enemkkkdjgzj7sr3gwt0",
-    SWAP_OPERATIONS: "orai1cy2pc5czxm5qlacp6j0hfq7qj9wh8zuhxgpdartcfrdljknq0arsuc4znj",
-    FUTURES: "orai1wrkchuss9wtph4mxrzqksfrulj7hsl89z0048hg8l7hcglse5rxqea2qnr",
-    STAKING: "orai1xu9yw2xwd55d09pjce28yjklvk2kwwrqw4ql9gvyrs607z26kv0sl99040",
-    BRIDGE: "orai195269awwnt5m6c843q6w7hp8rt0k7syfu9de4h0wz384slshuzps8y7ccm",
+  SWAP: 'orai10s0c75gw5y5eftms5ncfknw6lzmx0dyhedn75uz793m8zwz4g8zq4d9x9a',
+  SWAP_AND_ACTION: 'orai1yglsm0u2x3xmct9kq3lxa654cshaxj9j5d9rw5enemkkkdjgzj7sr3gwt0',
+  SWAP_OPERATIONS: 'orai1cy2pc5czxm5qlacp6j0hfq7qj9wh8zuhxgpdartcfrdljknq0arsuc4znj',
+  FUTURES: 'orai1wrkchuss9wtph4mxrzqksfrulj7hsl89z0048hg8l7hcglse5rxqea2qnr',
+  STAKING: 'orai1xu9yw2xwd55d09pjce28yjklvk2kwwrqw4ql9gvyrs607z26kv0sl99040',
+  EVM_BRIDGE: 'orai195269awwnt5m6c843q6w7hp8rt0k7syfu9de4h0wz384slshuzps8y7ccm',
+  TON_BRIDGE: 'orai159l8l9c5ckhqpuwdfgs9p4v599nqt3cjlfahalmtrhfuncnec2ms5mz60e',
+  BITCOIN_BRIDGE: 'orai1g90x3z2kss99wvmpkenjdelmpw4hf9l3yt420gpgqvpuz8lt79uq24arlv',
 }
 
 export const ORAI_TOKEN_CONTRACTS = {

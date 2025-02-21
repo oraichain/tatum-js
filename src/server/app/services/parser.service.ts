@@ -46,6 +46,7 @@ const handleParseCosmwasmExecuteContract = async (input: ParseApiInput): Promise
       break
     case ORAI_CONTRACT.EVM_BRIDGE:
     case ORAI_CONTRACT.TON_BRIDGE:
+    case ORAI_CONTRACT.BITCOIN_BRIDGE:
       data = await parseBridgeContract({ sender: input.sender, typeUrl: input.typeUrl, value, action })
       break
     case ORAI_CONTRACT.FUTURES:

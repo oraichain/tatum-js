@@ -37,3 +37,6 @@ export interface IbcDataResponse extends TransferToRemoteResponse {}
 
 export interface BridgeTonData extends CosmosTransferToRemoteData {}
 export interface BridgeTonDataResponse extends TransferToRemoteResponse {}
+
+export interface BridgeBtcData extends CosmosTransferToRemoteData {}
+export interface BridgeBtcDataResponse extends TransferToRemoteResponse {}

@@ -113,9 +113,6 @@ export class CommonInfoCosmos {
     amount,
     isMemeApi,
   }: GetSolanaBridgeFeeParams): Promise<ResponseDto<SolanaBridgeFee>> {
-    console.log('param: ', tokenId, amount, isMemeApi)
-
-    
     return ErrorUtils.tryFail(async () => {
       const data = await this.connector.get<SolanaBridgeFee, ApiGetSolanaBridgeFeeRequest>({
         basePath: isMemeApi

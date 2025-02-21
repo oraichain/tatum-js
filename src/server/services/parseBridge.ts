@@ -38,7 +38,10 @@ export const parseBridgeContract = async ({ sender, typeUrl, value, action }: Pa
       })
       break
     case BRIDGE_EXECUTE_TYPE.WITHDRAW_TO_BITCOIN:
-      // TODO: need to handle parse bridge to btc here
+      response = await oraichainTatum.bridge.parseBtcBridge({
+        message: msgs,
+        events: simRes.data.result.events,
+      })
       break
     default:
       break

@@ -29,7 +29,7 @@ export const BRIDGE_EXECUTE_TYPE = {
   WITHDRAW_TO_BITCOIN: 'withdraw_to_bitcoin',
 }
 
-export const USDT_CW20_EXECUTE_TYPE = {
+export const CW20_EXECUTE_TYPE = {
   SEND: 'send',
   INCREASE_ALLOWANCE: 'increase_allowance',
 }

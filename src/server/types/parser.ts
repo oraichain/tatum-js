@@ -1,17 +1,22 @@
 export type ParseInput = {
   sender: string
-  typeUrl: string
-  value: Uint8Array
+  messages: Message[]
   action: string
 }
 
-export type ParseApiInput = {
+export type ParserBody = {
   sender: string
-  typeUrl: string
-  value: string
+  messages: Message[]
 }
+
+export type ParseApiInput = ParserBody
 
 export type SimulateMsg = {
   typeUrl: string
   value: Uint8Array
+}
+
+export type Message = {
+  typeUrl: string
+  value: string
 }

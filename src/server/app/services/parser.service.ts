@@ -11,7 +11,7 @@ import { parseSwapContract } from '../../services/parseSwap'
 import { oraichainTatum } from '../../services/tatum'
 import { ParseApiInput } from '../../types/parser'
 import HttpException from '../../utils/exception'
-import { parseStakingContract } from 'src/server/services/parseStaking'
+import { parseStakingContract } from '../../../server/services/parseStaking'
 
 const parseCosmwasm = async (input: ParseApiInput, msgType: string) => {
   let data

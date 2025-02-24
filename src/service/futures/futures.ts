@@ -1,7 +1,4 @@
 import { Attribute, Event } from '@cosmjs/stargate'
-import { MsgExecuteContract } from "cosmjs-types/cosmwasm/wasm/v1/tx";
-import { ORAI_CONTRACT } from "../../server/constant/contractAddress";
-import { ORAI_CONTRACT } from "src/server/constant/contractAddress";
 import { MsgExecuteContract } from 'cosmjs-types/cosmwasm/wasm/v1/tx'
 import Container, { Service } from 'typedi'
 import { TatumConnector } from '../../connector'

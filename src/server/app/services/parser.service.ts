@@ -103,7 +103,13 @@ const parseIbc = async (input: ParseApiInput, msgType: string) => {
 
   const response = await oraichainTatum.bridge.parseIbc({ message: msgs, events: simRes.data.result.events })
 
-  return { action: msgType, response }
+  return {
+    action: {
+      action: 'bridge',
+      msgAction: msgType,
+    },
+    response,
+  }
 }
 
 export default {

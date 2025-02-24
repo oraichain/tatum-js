@@ -14,6 +14,7 @@ import HttpException from '../../utils/exception'
 
 const parseCosmwasm = async (input: ParseApiInput, msgType: string) => {
   let data
+
   switch (msgType) {
     case COSMWASM_MSG_TYPE.EXECUTE_CONTRACT:
       data = await handleParseCosmwasmExecuteContract(input)
@@ -27,7 +28,8 @@ const parseCosmwasm = async (input: ParseApiInput, msgType: string) => {
 
 const handleParseCosmwasmExecuteContract = async (input: ParseApiInput): Promise<any> => {
   let data
-  const value = Uint8Array.from(Buffer.from(input.value, 'base64'))
+
+  const value = Uint8Array.from(Buffer.from(input.messages[0].value, 'base64'))
   const rawMsg = MsgExecuteContract.decode(value)
   const executeMsg = JSON.parse(new TextDecoder().decode(rawMsg.msg))
   const action = Object.keys(executeMsg)[0]
@@ -39,21 +41,19 @@ const handleParseCosmwasmExecuteContract = async (input: ParseApiInput): Promise
     case ORAI_CONTRACT.SWAP_OPERATIONS:
       data = await parseSwapContract({
         sender: input.sender,
-        typeUrl: input.typeUrl,
-        value: value,
+        messages: input.messages,
         action: action,
       })
       break
     case ORAI_CONTRACT.EVM_BRIDGE:
     case ORAI_CONTRACT.TON_BRIDGE:
     case ORAI_CONTRACT.BITCOIN_BRIDGE:
-      data = await parseBridgeContract({ sender: input.sender, typeUrl: input.typeUrl, value, action })
+      data = await parseBridgeContract({ sender: input.sender, messages: input.messages, action })
       break
     case ORAI_CONTRACT.FUTURES:
       data = await parseFuturesContract({
         sender: input.sender,
-        typeUrl: input.typeUrl,
-        value: value,
+        messages: input.messages,
         action: action,
       })
       break
@@ -61,7 +61,7 @@ const handleParseCosmwasmExecuteContract = async (input: ParseApiInput): Promise
       break
     default:
       if (Object.values(ORAI_TOKEN_CONTRACTS).includes(contractAddress)) {
-        data = await parseCw20({ sender: input.sender, typeUrl: input.typeUrl, value, action }, executeMsg)
+        data = await parseCw20({ sender: input.sender, messages: input.messages, action }, executeMsg)
       }
       break
   }
@@ -83,13 +83,14 @@ const parseCosmos = async (input: ParseApiInput, cosmosType: string, msgType: st
 }
 
 const parseIbc = async (input: ParseApiInput, msgType: string) => {
-  const value = Uint8Array.from(Buffer.from(input.value, 'base64'))
-  const msgs = [
-    {
-      typeUrl: input.typeUrl,
-      value,
-    },
-  ]
+  const msgs = []
+
+  for (const msg of input.messages) {
+    msgs.push({
+      typeUrl: msg.typeUrl,
+      value: Uint8Array.from(Buffer.from(msg.value, 'base64')),
+    })
+  }
 
   const simRes = await oraichainTatum.simulate.simulate(input.sender, msgs)
   if (simRes.error) {
@@ -100,7 +101,6 @@ const parseIbc = async (input: ParseApiInput, msgType: string) => {
     throw new HttpException(httpStatus.SERVICE_UNAVAILABLE, 'Simulate with undefined result')
   }
 
-  // TODO: need to parse ibc here
   const response = await oraichainTatum.bridge.parseIbc({ message: msgs, events: simRes.data.result.events })
 
   return { action: msgType, response }

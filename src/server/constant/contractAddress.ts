@@ -26,4 +26,7 @@ export const ORAI_TOKEN_CONTRACTS = {
   OCH: 'orai1hn8w33cqvysun2aujk5sv33tku4pgcxhhnsxmvnkfvdxagcx0p8qa4l98q',
 }
 
-export const SOLANA_BRIDGE_ADDRESS = 'orai1ym6qytsu7skv2flw89y0mkey4gn7wl9q4y6r5p'
+export const SOLANA_BRIDGE_ADDRESS = {
+  AGENT: 'orai1ym6qytsu7skv2flw89y0mkey4gn7wl9q4y6r5p',
+  DEFAI: 'orai1rrlmvsaukfeg874fjsuxntsl22hw2j6u65hyng',
+}

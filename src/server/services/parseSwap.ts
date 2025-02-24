@@ -5,15 +5,16 @@ import { ParseInput } from '../types/parser'
 import HttpException from '../utils/exception'
 import { oraichainTatum } from './tatum'
 
-export const parseSwapContract = async ({ sender, typeUrl, value, action }: ParseInput) => {
+export const parseSwapContract = async ({ sender, messages, action }: ParseInput) => {
   let response
+  const msgs = []
 
-  const msgs = [
-    {
-      typeUrl,
-      value,
-    },
-  ]
+  for (const msg of messages) {
+    msgs.push({
+      typeUrl: msg.typeUrl,
+      value: Uint8Array.from(Buffer.from(msg.value, 'base64')),
+    })
+  }
 
   const simRes = await oraichainTatum.simulate.simulate(sender, msgs)
   if (simRes.error) {

@@ -17,9 +17,9 @@ const main = async () => {
     //   typeUrl: '/ibc.applications.transfer.v1.MsgTransfer',
     //   value: MsgTransfer.encode({
     //     memo: ``,
-    //     receiver: 'neutaro1lwuqpj9teef8j0rjy2l4c5ay9yddw26ma9cd2d',
-    //     sender: 'orai1lwuqpj9teef8j0rjy2l4c5ay9yddw26m03tlem',
-    //     sourceChannel: 'channel-189',
+    //     receiver: 'inj1vg6acwuuydxs4kza50lr2asnqntuvhyk7zva4w',
+    //     sender: 'orai1eg9vt8af8nde8lx4flmrk7x9uvj8zd8xqyhkeh',
+    //     sourceChannel: 'channel-146',
     //     sourcePort: 'transfer',
     //     timeoutHeight: {
     //       revisionHeight: BigInt('2739967232000000000'),
@@ -27,33 +27,45 @@ const main = async () => {
     //     },
     //     timeoutTimestamp: BigInt('2739967232000000000'),
     //     token: {
-    //       amount: '123568055',
-    //       denom: 'ibc/576B1D63E401B6A9A071C78A1D1316D016EC9333D2FEB14AD503FAC4B8731CD1',
+    //       amount: '4146499000000000000',
+    //       denom: 'ibc/49D820DFDE9F885D7081725A58202ABA2F465CAEE4AFBC683DFB79A8E013E83E',
     //     },
     //   }).finish(),
     // },
+    // {
+    //   typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
+    //   value: MsgExecuteContract.encode({
+    //     sender: 'orai1eg9vt8af8nde8lx4flmrk7x9uvj8zd8xqyhkeh',
+    //     contract: 'orai1g90x3z2kss99wvmpkenjdelmpw4hf9l3yt420gpgqvpuz8lt79uq24arlv',
+    //     msg: toUtf8(
+    //       `
+    // {
+    //   "withdraw_to_bitcoin": {
+    //     "btc_address": "bc1ql4g33h25w5gg5wgvet9pvu6lvzsncsv0mpanxz",
+    //     "fee": 51192000000
+    //   }
+    // }
+    //           `,
+    //     ),
+    //     funds: [
+    //       Coin.fromJSON({
+    //         denom: 'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/obtc',
+    //         amount: '70100000000',
+    //       }),
+    //     ],
+    //   }).finish(),
+    // },
     {
-      typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
-      value: MsgExecuteContract.encode({
-        sender: 'orai1eg9vt8af8nde8lx4flmrk7x9uvj8zd8xqyhkeh',
-        contract: 'orai1g90x3z2kss99wvmpkenjdelmpw4hf9l3yt420gpgqvpuz8lt79uq24arlv',
-        msg: toUtf8(
-          `
-{
-  "withdraw_to_bitcoin": {
-    "btc_address": "bc1ql4g33h25w5gg5wgvet9pvu6lvzsncsv0mpanxz",
-    "fee": 51192000000
-  }
-}
-
-          
-          `,
-        ),
-        funds: [
-          Coin.fromJSON({
-            denom: 'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/obtc',
-            amount: '70100000000',
-          }),
+      typeUrl: '/cosmos.bank.v1beta1.MsgSend',
+      value: MsgSend.encode({
+        fromAddress: 'orai1eg9vt8af8nde8lx4flmrk7x9uvj8zd8xqyhkeh',
+        toAddress: 'orai1rrlmvsaukfeg874fjsuxntsl22hw2j6u65hyng',
+        amount: [
+          {
+            amount: '1867371174808',
+            denom:
+              'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/oraiUNrTQmeuc13JoMFSyNcJCnXYpqErfp9v5diy64b',
+          },
         ],
       }).finish(),
     },

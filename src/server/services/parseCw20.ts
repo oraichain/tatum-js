@@ -6,6 +6,7 @@ import { CW20_EXECUTE_TYPE } from '../constant/msgType'
 import { ParseInput, SimulateMsg } from '../types/parser'
 import HttpException from '../utils/exception'
 import { oraichainTatum } from './tatum'
+import { combiningEvents } from '../../util/decode'
 
 export const parseCw20 = async ({ sender, messages, action }: ParseInput, executeMsg: any) => {
   let response = {} as any
@@ -106,8 +107,14 @@ const handleParseIncreaseAllowance = async (
 
   switch(contract) {
     case ORAI_CONTRACT.FUTURES:
-      action = 'open_position'
-      response = await oraichainTatum.futures.parseOpenPosition({message, events, sender})
+      const evs = combiningEvents(events.filter(
+        (e: Event) => 
+            e.type === 'wasm' && 
+            e.attributes.some((attr) => attr.key === "_contract_address" && attr.value === ORAI_CONTRACT.FUTURES
+          )
+      ))
+      let action = evs[0].action
+      response = await oraichainTatum.futures.parseFuturesAction({message, events, sender}, action)
       break
     default:
       break

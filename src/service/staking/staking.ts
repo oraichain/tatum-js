@@ -6,7 +6,7 @@ import { StakingBondResponse, StakingData, StakingResponse, StakingUnbondRespons
 import { Attribute, Event } from "@cosmjs/stargate";
 import { ORAI_CONTRACT } from "../../server/constant/contractAddress";
 import { MsgExecuteContract } from "cosmjs-types/cosmwasm/wasm/v1/tx";
-import { decodeNestedObject, objectToMap } from "../../util/decode";
+import { decodeNestedObject, objectToMap, combiningEvents } from "../../util/decode";
 
 @Service({
     factory: (data: { id: string }) => new StakingCosmos(data.id),
@@ -96,22 +96,4 @@ export class StakingCosmos {
 
   }
 
-}
-
-function combiningEvents(evs: Event[]): any[] {
-  const messages: any[] = [];
-    if (Array.isArray(evs)) {
-      for (let e of evs) {
-        const result = e?.attributes.reduce((obj: { [key: string]: any; }, attr: Attribute) => {
-          if (attr.key in obj) {
-            obj[attr.key] = [obj[attr.key], attr.value];
-            return obj;
-          }
-          obj[attr.key] = attr.value;
-          return obj;
-        }, {} as any) || {};
-        messages.push(result);
-      }
-    }
-  return messages
 }

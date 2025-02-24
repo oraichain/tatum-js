@@ -24,7 +24,7 @@ export const parseFuturesContract = async ({ sender, messages, action }: ParseIn
     throw new HttpException(httpStatus.SERVICE_UNAVAILABLE, 'Simulate with undefined result')
   }
 
-  response = oraichainTatum.futures.parseFuturesAction({
+  response = await oraichainTatum.futures.parseFuturesAction({
     sender: sender,
     message: msgs,
     events: simRes.data.result!.events,

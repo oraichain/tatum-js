@@ -6,7 +6,8 @@ import { StakingBondResponse, StakingData, StakingResponse, StakingUnbondRespons
 import { Attribute, Event } from "@cosmjs/stargate";
 import { ORAI_CONTRACT } from "../../server/constant/contractAddress";
 import { MsgExecuteContract } from "cosmjs-types/cosmwasm/wasm/v1/tx";
-import { decodeNestedObject, objectToMap } from "../../util/decode";
+import { decodeNestedObject, objectToMap, combiningEvents } from "../../util/decode";
+import { CommonInfoCosmos } from "../common-info";
 
 @Service({
     factory: (data: { id: string }) => new StakingCosmos(data.id),
@@ -16,13 +17,15 @@ import { decodeNestedObject, objectToMap } from "../../util/decode";
 export class StakingCosmos {
   private readonly connector: TatumConnector
   private readonly config: TatumConfig
+  private commonInfo: CommonInfoCosmos
 
   constructor(private readonly id: string) {
     this.config = Container.of(id).get(CONFIG)
     this.connector = Container.of(id).get(TatumConnector)
+    this.commonInfo = Container.of(this.id).get(CommonInfoCosmos)
   }
 
-  public parseStakingAction(data: StakingData): StakingResponse {
+  public async parseStakingAction(data: StakingData): Promise<StakingResponse> {
     let response: StakingResponse = {} as any
     const evs = data.events.filter(
       (e: Event) => 
@@ -40,10 +43,10 @@ export class StakingCosmos {
 
     switch(action) {
       case 'send':
-        response = this.parseStakingBond(data)
+        response = await this.parseStakingBond(data)
         break
       case 'unbond':
-        response = this.parseStakingUnbond(data)
+        response = await this.parseStakingUnbond(data)
         break
       case 'withdraw':
         break
@@ -53,7 +56,7 @@ export class StakingCosmos {
     return response
   }
 
-  public parseStakingBond(data: StakingData): StakingBondResponse {
+  public async parseStakingBond(data: StakingData): Promise<StakingBondResponse> {
     let response: StakingBondResponse = {} as any
     
     // staking cw20 token only
@@ -69,10 +72,12 @@ export class StakingCosmos {
     response.stakingToken = e[0].staking_token
     response.amount = e[0].amount
 
+    response.tokenInfo = (await this.commonInfo.getTokenInfo({tokenId: e[0].staking_token})).data
+
     return response
   }
 
-  parseStakingUnbond(data: StakingData): StakingUnbondResponse {
+  async parseStakingUnbond(data: StakingData): Promise<StakingUnbondResponse> {
     let response: StakingUnbondResponse = {} as any
 
     // staking cw20 token only
@@ -89,6 +94,8 @@ export class StakingCosmos {
     response.unbondingAmount = e[0].amount[1]
     response.unlockTime = e[0].unlock_time
 
+    response.tokenInfo = (await this.commonInfo.getTokenInfo({tokenId: e[0].staking_token[0]})).data
+
     return response
   }
 
@@ -96,22 +103,4 @@ export class StakingCosmos {
 
   }
 
-}
-
-function combiningEvents(evs: Event[]): any[] {
-  const messages: any[] = [];
-    if (Array.isArray(evs)) {
-      for (let e of evs) {
-        const result = e?.attributes.reduce((obj: { [key: string]: any; }, attr: Attribute) => {
-          if (attr.key in obj) {
-            obj[attr.key] = [obj[attr.key], attr.value];
-            return obj;
-          }
-          obj[attr.key] = attr.value;
-          return obj;
-        }, {} as any) || {};
-        messages.push(result);
-      }
-    }
-  return messages
 }

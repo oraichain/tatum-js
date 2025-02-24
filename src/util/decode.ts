@@ -1,4 +1,6 @@
 import { fromUtf8, fromBase64 } from "@cosmjs/encoding"
+import { Event, Attribute } from '@cosmjs/stargate'
+
 
 export function decodeUInt256(hex: string): number {
   const formattedHex = hex.replace(/^0x/, '') // Remove 0x
@@ -85,4 +87,22 @@ export function objectToMap(obj: any): [string, any] {
 
   recursiveHelper(obj) // Start recursion
   return response
+}
+
+export function combiningEvents(evs: Event[]): any[] {
+  const messages: any[] = [];
+    if (Array.isArray(evs)) {
+      for (let e of evs) {
+        const result = e?.attributes.reduce((obj: { [key: string]: any; }, attr: Attribute) => {
+          if (attr.key in obj) {
+            obj[attr.key] = [obj[attr.key], attr.value];
+            return obj;
+          }
+          obj[attr.key] = attr.value;
+          return obj;
+        }, {} as any) || {};
+        messages.push(result);
+      }
+    }
+  return messages
 }

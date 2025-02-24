@@ -11,6 +11,7 @@ import { parseSwapContract } from '../../services/parseSwap'
 import { oraichainTatum } from '../../services/tatum'
 import { ParseApiInput } from '../../types/parser'
 import HttpException from '../../utils/exception'
+import { parseStakingContract } from 'src/server/services/parseStaking'
 
 const parseCosmwasm = async (input: ParseApiInput, msgType: string) => {
   let data
@@ -58,6 +59,7 @@ const handleParseCosmwasmExecuteContract = async (input: ParseApiInput): Promise
       })
       break
     case ORAI_CONTRACT.STAKING:
+      data = await parseStakingContract({sender: input})
       break
     default:
       if (Object.values(ORAI_TOKEN_CONTRACTS).includes(contractAddress)) {

@@ -71,6 +71,13 @@ const handleParseSend = async (sender: string, contract: string, message: Simula
         events,
       })
       break
+    case ORAI_CONTRACT.INJECTIVE_BRIDGE:
+      action = 'bridge'
+      response = await oraichainTatum.bridge.parseIbc({
+        message,
+        events,
+      })
+      break
     case ORAI_CONTRACT.SWAP:
     case ORAI_CONTRACT.SWAP_AND_ACTION:
     case ORAI_CONTRACT.SWAP_OPERATIONS:
@@ -91,4 +98,16 @@ const handleParseIncreaseAllowance = async (
   events: Event[],
 ) => {
   let response
+  let action
+
+  switch(contract) {
+    case ORAI_CONTRACT.FUTURES:
+      action = 'open_position'
+      response = await oraichainTatum.futures.parseOpenPosition({message, events, sender})
+      break
+    default:
+      break
+  }
+
+  return { action, response }
 }

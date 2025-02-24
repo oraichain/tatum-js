@@ -32,6 +32,7 @@ const handleParseCosmwasmExecuteContract = async (input: ParseApiInput): Promise
   const value = Uint8Array.from(Buffer.from(input.messages[0].value, 'base64'))
   const rawMsg = MsgExecuteContract.decode(value)
   const executeMsg = JSON.parse(new TextDecoder().decode(rawMsg.msg))
+  console.log(executeMsg)
   const action = Object.keys(executeMsg)[0]
   const contractAddress = rawMsg.contract
 

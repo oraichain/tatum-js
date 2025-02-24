@@ -14,7 +14,11 @@ export interface StakingBondResponse {
 }
 
 export interface StakingUnbondResponse {
-    
+    action: string
+    stakerAddress: string
+    stakingToken: string
+    unbondingAmount: string
+    unlockTime: string
 }
 
 export interface StakingWithdrawResponse {

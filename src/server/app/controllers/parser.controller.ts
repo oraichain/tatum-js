@@ -28,7 +28,7 @@ const parser = tryCatchAsync(async (req, res, _next) => {
 
   res.status(httpStatus.OK).json({
     message: 'Parse message successfully!',
-    data: data,
+    data,
     success: true,
   })
 })

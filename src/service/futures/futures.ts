@@ -43,7 +43,7 @@ export class FuturesCosmos {
         )
     )
 
-    if (futuresAction === null) {
+    if (futuresAction === undefined) {
       const msg = MsgExecuteContract.decode(data.message[0].value)
       const msgValue = JSON.parse(new TextDecoder().decode(msg.msg))
       futuresAction = Object.keys(msgValue)[0]

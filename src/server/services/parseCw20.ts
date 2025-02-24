@@ -91,4 +91,16 @@ const handleParseIncreaseAllowance = async (
   events: Event[],
 ) => {
   let response
+  let action
+
+  switch(contract) {
+    case ORAI_CONTRACT.FUTURES:
+      action = 'open_position'
+      response = await oraichainTatum.futures.parseOpenPosition({message, events, sender})
+      break
+    default:
+      break
+  }
+
+  return { action, response }
 }

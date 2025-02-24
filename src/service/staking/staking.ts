@@ -57,14 +57,18 @@ export class StakingCosmos {
     let response: StakingBondResponse = {} as any
     
     // staking cw20 token only
-    const rawMsg = MsgExecuteContract.decode(data.message[0].value)
-    const action = objectToMap(decodeNestedObject(rawMsg))
-    const actionName = action[0]
+    const e = data.events.find(
+      (e: Event) => 
+        e.type === 'wasm'
+        && e.attributes.some((attr) => 
+          attr.key === "_contract_address" &&
+          attr.value === ORAI_CONTRACT.STAKING
+      )
+    )!
 
-    if (actionName === 'bond') {
-      const stakingToken = rawMsg.contract
-      const stakingAmount = rawMsg.msg.send.
-    }
+    response.action = 'bond'
+    response.stakerAddress = e.staker_addr
+
 
     return response
   }

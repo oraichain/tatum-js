@@ -7,11 +7,14 @@ export interface StakingData {
 }
 
 export interface StakingBondResponse {
-
+    action: string
+    stakerAddress: string
+    stakingToken: string
+    amount: string
 }
 
 export interface StakingUnbondResponse {
-
+    
 }
 
 export interface StakingWithdrawResponse {

@@ -29,7 +29,7 @@ export const parseCw20 = async ({ sender, messages, action }: ParseInput, execut
 
   switch (action) {
     case USDT_CW20_EXECUTE_TYPE.SEND:
-      response = await handleParseSend(sender, executeMsg, msgs, simRes.data.result.events)
+      response = await handleParseSend(sender, executeMsg.send.contract, msgs, simRes.data.result.events)
       break
     case USDT_CW20_EXECUTE_TYPE.INCREASE_ALLOWANCE:
       response = await handleParseIncreaseAllowance(
@@ -79,7 +79,7 @@ const handleParseSend = async (sender: string, contract: string, message: Simula
       break
     case ORAI_CONTRACT.STAKING:
       action = 'staking'
-      response = await oraichainTatum.staking.parseStakingAction({sender: sender, message: message, events: events})
+      response = await oraichainTatum.staking.parseStakingBond({sender: sender, message: message, events: events})
       break
     default:
       break

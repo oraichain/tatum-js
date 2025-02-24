@@ -59,7 +59,7 @@ export class FuturesCosmos {
         break
       }
       case 'update_tp_sl': {
-        response = this.parseUpdateTpSl({ sender: data.sender, events: evs, message: data.message })
+        response = await this.parseUpdateTpSl({ sender: data.sender, events: evs, message: data.message })
         break
       }
       case 'deposit_margin': {
@@ -139,7 +139,7 @@ export class FuturesCosmos {
     return response
   }
 
-  parseUpdateTpSl(data: FuturesData): UpdateTpSlResponse {
+  async parseUpdateTpSl(data: FuturesData): Promise<UpdateTpSlResponse> {
     let response: UpdateTpSlResponse = {} as any
     const evs = combiningEvents(
       data.events.filter((e: Event) =>
@@ -157,6 +157,8 @@ export class FuturesCosmos {
         response.stopLoss = e.stop_loss
       }
     }
+
+    response.tokenInfo = (await this.commonInfo.getTokenInfo({tokenId: ORAI_TOKEN_CONTRACTS.USDC})).data
 
     return response
   }

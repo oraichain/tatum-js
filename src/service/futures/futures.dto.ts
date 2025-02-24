@@ -46,6 +46,7 @@ export interface UpdateTpSlResponse {
   positionId: string
   takeProfit: string
   stopLoss: string
+  tokenInfo: TokenInfo
 }
 
 export interface DepositMarginResponse {

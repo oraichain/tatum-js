@@ -34,7 +34,7 @@ export const parseCw20 = async ({ sender, messages, action }: ParseInput, execut
     case USDT_CW20_EXECUTE_TYPE.INCREASE_ALLOWANCE:
       response = await handleParseIncreaseAllowance(
         sender,
-        executeMsg.increase_allowance.spender,
+        executeMsg.spender,
         msgs,
         simRes.data.result.events,
       )

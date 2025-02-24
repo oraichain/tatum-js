@@ -113,7 +113,7 @@ const handleParseIncreaseAllowance = async (
             e.attributes.some((attr) => attr.key === "_contract_address" && attr.value === ORAI_CONTRACT.FUTURES
           )
       ))
-      let action = evs[0].action
+      action = evs[0].action
       response = await oraichainTatum.futures.parseFuturesAction({message, events, sender}, action)
       break
     default:

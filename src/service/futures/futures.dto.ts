@@ -1,4 +1,5 @@
 import { Event } from "@cosmjs/stargate"
+import { TokenInfo } from "../common-info"
 
 export interface FuturesData {
   sender: string
@@ -17,6 +18,7 @@ export interface OpenPositionResponse {
   tp: string
   sl: string
   entryPrice: string
+  tokenInfo: TokenInfo
 }
 
 export interface ClosePositionResponse {
@@ -34,6 +36,7 @@ export interface ClosePositionResponse {
   withdrawAmount: string
   fundingPayment: string
   badDebt: string
+  tokenInfo: TokenInfo
 }
 
 export interface UpdateTpSlResponse {
@@ -50,6 +53,7 @@ export interface DepositMarginResponse {
   trader: string
   positionId: string
   depositAmount: string
+  tokenInfo: TokenInfo
 }
 
 export type FuturesReponse = | OpenPositionResponse | ClosePositionResponse | UpdateTpSlResponse | DepositMarginResponse

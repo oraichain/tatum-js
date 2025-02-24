@@ -24,7 +24,7 @@ export const parseStakingContract = async({sender, messages, action}: ParseInput
     throw new HttpException(httpStatus.SERVICE_UNAVAILABLE, 'Simulate with undefined result')
   }
 
-  response = oraichainTatum.staking.parseStakingAction({
+  response = await oraichainTatum.staking.parseStakingAction({
     sender: sender,
     message: msgs,
     events: simRes.data.result!.events

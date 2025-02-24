@@ -2,9 +2,10 @@ import { Attribute, Event } from '@cosmjs/stargate'
 import { MsgExecuteContract } from 'cosmjs-types/cosmwasm/wasm/v1/tx'
 import Container, { Service } from 'typedi'
 import { TatumConnector } from '../../connector'
-import { ORAI_CONTRACT } from '../../server/constant/contractAddress'
+import { ORAI_CONTRACT, ORAI_TOKEN_CONTRACTS } from '../../server/constant/contractAddress'
 import { CONFIG } from '../../util'
 import { TatumConfig } from '../tatum'
+import { combiningEvents } from '../../util/decode'
 import {
   ClosePositionResponse,
   DepositMarginResponse,
@@ -13,6 +14,7 @@ import {
   OpenPositionResponse,
   UpdateTpSlResponse,
 } from './futures.dto'
+import { CommonInfoCosmos } from '../common-info'
 
 @Service({
   factory: (data: { id: string }) => new FuturesCosmos(data.id),
@@ -21,14 +23,17 @@ import {
 export class FuturesCosmos {
   private readonly connector: TatumConnector
   private readonly config: TatumConfig
+  private commonInfo: CommonInfoCosmos
 
   constructor(private readonly id: string) {
     this.config = Container.of(id).get(CONFIG)
     this.connector = Container.of(id).get(TatumConnector)
+    this.commonInfo = Container.of(this.id).get(CommonInfoCosmos)
   }
 
-  public parseFuturesAction(data: FuturesData): FuturesReponse {
+  public async parseFuturesAction(data: FuturesData, action?: string): Promise<FuturesReponse> {
     let response: FuturesReponse = {} as any
+    let futuresAction = action
     const evs = data.events.filter(
       (e: Event) => 
         e.type === 'wasm'
@@ -38,17 +43,19 @@ export class FuturesCosmos {
         )
     )
 
-    const msg = MsgExecuteContract.decode(data.message[0].value)
-    const msgValue = JSON.parse(new TextDecoder().decode(msg.msg))
-    const action = Object.keys(msgValue)[0]
+    if (futuresAction === null) {
+      const msg = MsgExecuteContract.decode(data.message[0].value)
+      const msgValue = JSON.parse(new TextDecoder().decode(msg.msg))
+      futuresAction = Object.keys(msgValue)[0]
+    }
 
-    switch (action) {
+    switch (futuresAction) {
       case 'open_position': {
-        response = this.parseOpenPosition({ sender: data.sender, events: evs, message: data.message })
+        response = await this.parseOpenPosition({ sender: data.sender, events: evs, message: data.message })
         break
       }
       case 'close_position': {
-        response = this.parseClosePosition({ sender: data.sender, events: evs, message: data.message })
+        response = await this.parseClosePosition({ sender: data.sender, events: evs, message: data.message })
         break
       }
       case 'update_tp_sl': {
@@ -56,7 +63,7 @@ export class FuturesCosmos {
         break
       }
       case 'deposit_margin': {
-        response = this.parseDepositMargin({ sender: data.sender, events: evs, message: data.message })
+        response = await this.parseDepositMargin({ sender: data.sender, events: evs, message: data.message })
         break
       }
       default:
@@ -66,7 +73,7 @@ export class FuturesCosmos {
     return response
   }
 
-  parseOpenPosition(data: FuturesData): OpenPositionResponse {
+  async parseOpenPosition(data: FuturesData): Promise<OpenPositionResponse> {
     let response: OpenPositionResponse = {} as any
     const evs = combiningEvents(
       data.events.filter(
@@ -92,10 +99,12 @@ export class FuturesCosmos {
       }
     }
 
+    response.tokenInfo = (await this.commonInfo.getTokenInfo({tokenId: ORAI_TOKEN_CONTRACTS.USDC})).data
+
     return response
   }
 
-  parseClosePosition(data: FuturesData): ClosePositionResponse {
+  async parseClosePosition(data: FuturesData): Promise<ClosePositionResponse> {
     let response: ClosePositionResponse = {} as any
     const evs = combiningEvents(
       data.events.filter(
@@ -125,6 +134,8 @@ export class FuturesCosmos {
       }
     }
 
+    response.tokenInfo = (await this.commonInfo.getTokenInfo({tokenId: ORAI_TOKEN_CONTRACTS.USDC})).data
+
     return response
   }
 
@@ -150,7 +161,7 @@ export class FuturesCosmos {
     return response
   }
 
-  parseDepositMargin(data: FuturesData): DepositMarginResponse {
+  async parseDepositMargin(data: FuturesData): Promise<DepositMarginResponse> {
     let response: DepositMarginResponse = {} as any
     const evs = combiningEvents(
       data.events.filter((e: Event) =>
@@ -167,25 +178,8 @@ export class FuturesCosmos {
       }
     }
 
+    response.tokenInfo = (await this.commonInfo.getTokenInfo({tokenId: ORAI_TOKEN_CONTRACTS.USDC})).data
+
     return response
   }
-}
-
-function combiningEvents(evs: Event[]): any[] {
-  const messages: any[] = []
-  if (Array.isArray(evs)) {
-    for (let e of evs) {
-      const result =
-        e?.attributes.reduce((obj: { [key: string]: any }, attr: Attribute) => {
-          if (attr.key in obj) {
-            obj[attr.key] = [obj[attr.key], attr.value]
-            return obj
-          }
-          obj[attr.key] = attr.value
-          return obj
-        }, {} as any) || {}
-      messages.push(result)
-    }
-  }
-  return messages
 }

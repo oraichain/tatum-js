@@ -7,6 +7,7 @@ export const ORAI_CONTRACT = {
   EVM_BRIDGE: 'orai195269awwnt5m6c843q6w7hp8rt0k7syfu9de4h0wz384slshuzps8y7ccm',
   TON_BRIDGE: 'orai159l8l9c5ckhqpuwdfgs9p4v599nqt3cjlfahalmtrhfuncnec2ms5mz60e',
   BITCOIN_BRIDGE: 'orai1g90x3z2kss99wvmpkenjdelmpw4hf9l3yt420gpgqvpuz8lt79uq24arlv',
+  INJECTIVE_BRIDGE: 'orai14wy8xndhnvjmx6zl2866xqvs7fqwv2arhhrqq9',
 }
 
 export const ORAI_TOKEN_CONTRACTS = {

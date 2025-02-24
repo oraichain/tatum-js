@@ -30,9 +30,12 @@ export class FuturesCosmos {
   public parseFuturesAction(data: FuturesData): FuturesReponse {
     let response: FuturesReponse = {} as any
     const evs = data.events.filter(
-      (e: Event) =>
-        e.type === 'wasm' &&
-        e.attributes.some((attr) => attr.key === '_contract_address' && attr.value === ORAI_CONTRACT.FUTURES),
+      (e: Event) => 
+        e.type === 'wasm'
+        && e.attributes.some((attr) => 
+          attr.key === "_contract_address" && 
+          attr.value === ORAI_CONTRACT.FUTURES
+        )
     )
 
     const msg = MsgExecuteContract.decode(data.message[0].value)

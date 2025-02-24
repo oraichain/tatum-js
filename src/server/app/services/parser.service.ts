@@ -11,6 +11,7 @@ import { parseSwapContract } from '../../services/parseSwap'
 import { oraichainTatum } from '../../services/tatum'
 import { ParseApiInput } from '../../types/parser'
 import HttpException from '../../utils/exception'
+import { parseStakingContract } from '../../../server/services/parseStaking'
 
 const parseCosmwasm = async (input: ParseApiInput, msgType: string) => {
   let data
@@ -48,7 +49,7 @@ const handleParseCosmwasmExecuteContract = async (input: ParseApiInput): Promise
     case ORAI_CONTRACT.EVM_BRIDGE:
     case ORAI_CONTRACT.TON_BRIDGE:
     case ORAI_CONTRACT.BITCOIN_BRIDGE:
-      data = await parseBridgeContract({ sender: input.sender, messages: input.messages, action })
+      data = await parseBridgeContract({ sender: input.sender, messages: input.messages, action: action })
       break
     case ORAI_CONTRACT.FUTURES:
       data = await parseFuturesContract({
@@ -58,6 +59,7 @@ const handleParseCosmwasmExecuteContract = async (input: ParseApiInput): Promise
       })
       break
     case ORAI_CONTRACT.STAKING:
+      data = await parseStakingContract({sender: input.sender, messages: input.messages, action: action})
       break
     default:
       if (Object.values(ORAI_TOKEN_CONTRACTS).includes(contractAddress)) {

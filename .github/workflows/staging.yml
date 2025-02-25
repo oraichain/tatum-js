@@ -1,5 +1,8 @@
 name: Build staging
 on:
+  push:
+    branches:
+      - feat/implement-multichain-parser
   workflow_dispatch:
 
 jobs:

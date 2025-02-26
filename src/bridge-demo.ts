@@ -13,49 +13,30 @@ interface Message {
 const main = async () => {
   const tatumCosmos = await TatumSDK.init<CosmosRosetta>({ network: Network.COSMOS_ROSETTA })
   const msgs = [
+        {
+          typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
+          value: MsgExecuteContract.encode({
+            sender: 'orai1qpuundpvtymcyq3cmcty3udf2zy0m509w4kg8w',
+            contract: 'orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh',
+            msg: toUtf8(
+              `
     {
-      typeUrl: '/ibc.applications.transfer.v1.MsgTransfer',
-      value: MsgTransfer.encode({
-        memo: ``,
-        receiver: 'inj1vg6acwuuydxs4kza50lr2asnqntuvhyk7zva4w',
-        sender: 'orai1eg9vt8af8nde8lx4flmrk7x9uvj8zd8xqyhkeh',
-        sourceChannel: 'channel-146',
-        sourcePort: 'transfer',
-        timeoutHeight: {
-          revisionHeight: BigInt('2739967232000000000'),
-          revisionNumber: BigInt('2739967232000000000'),
+  "send": {
+    "contract": "orai1yglsm0u2x3xmct9kq3lxa654cshaxj9j5d9rw5enemkkkdjgzj7sr3gwt0",
+    "amount": "1903435",
+    "msg": "eyJzd2FwX2FuZF9hY3Rpb24iOnsiYWZmaWxpYXRlcyI6W10sIm1pbl9hc3NldCI6eyJjdzIwIjp7ImFtb3VudCI6IjE4OTM3MTMiLCJhZGRyZXNzIjoib3JhaTE1dW44bXN4M241emY5YWhseG1mZXFkMmt3YTV3bTBucnB4ZXIzMDRtOW5kNXE2cXEwZzZza3U1cGRkIn19LCJwb3N0X3N3YXBfYWN0aW9uIjp7InRyYW5zZmVyIjp7InRvX2FkZHJlc3MiOiJvcmFpMXFwdXVuZHB2dHltY3lxM2NtY3R5M3VkZjJ6eTBtNTA5dzRrZzh3In19LCJ0aW1lb3V0X3RpbWVzdGFtcCI6MTc0MDU0NDk1NjAwMDAwMDAwMCwidXNlcl9zd2FwIjp7InN3YXBfZXhhY3RfYXNzZXRfaW4iOnsic3dhcF92ZW51ZV9uYW1lIjoib3JhaWRleCIsIm9wZXJhdGlvbnMiOlt7ImRlbm9tX2luIjoib3JhaTEyaHpqeGZoNzd3bDU3MmdkemN0MmZ4djJhcnhjd2g2Z3lrYzdxaCIsImRlbm9tX291dCI6Im9yYWkxbHVzMGYwcmh4OHMwM2dkbGx4Mm42dmhrbWYwNTM2ZHY1N3dmZ2UiLCJwb29sIjoib3JhaTEyaHpqeGZoNzd3bDU3MmdkemN0MmZ4djJhcnhjd2g2Z3lrYzdxaC1vcmFpMWx1czBmMHJoeDhzMDNnZGxseDJuNnZoa21mMDUzNmR2NTd3ZmdlLTMwMDAwMDAwMDAtMTAwIn0seyJkZW5vbV9pbiI6Im9yYWkxbHVzMGYwcmh4OHMwM2dkbGx4Mm42dmhrbWYwNTM2ZHY1N3dmZ2UiLCJkZW5vbV9vdXQiOiJvcmFpMTV1bjhtc3gzbjV6ZjlhaGx4bWZlcWQya3dhNXdtMG5ycHhlcjMwNG05bmQ1cTZxcTBnNnNrdTVwZGQiLCJwb29sIjoib3JhaTE1dW44bXN4M241emY5YWhseG1mZXFkMmt3YTV3bTBucnB4ZXIzMDRtOW5kNXE2cXEwZzZza3U1cGRkLW9yYWkxbHVzMGYwcmh4OHMwM2dkbGx4Mm42dmhrbWYwNTM2ZHY1N3dmZ2UtMzAwMDAwMDAwMC0xMDAifV19fX19"
+  }
+}
+                  `,
+            ),
+            funds: [
+              Coin.fromJSON({
+                denom: 'orai',
+                amount: '1000',
+              }),
+            ],
+          }).finish(),
         },
-        timeoutTimestamp: BigInt('2739967232000000000'),
-        token: {
-          amount: '1000000000000000000',
-          denom: 'ibc/49D820DFDE9F885D7081725A58202ABA2F465CAEE4AFBC683DFB79A8E013E83E',
-        },
-      }).finish(),
-    },
-    //     {
-    //       typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
-    //       value: MsgExecuteContract.encode({
-    //         sender: 'orai1eg9vt8af8nde8lx4flmrk7x9uvj8zd8xqyhkeh',
-    //         contract: 'orai19rtmkk6sn4tppvjmp5d5zj6gfsdykrl5rw2euu5gwur3luheuuusesqn49',
-    //         msg: toUtf8(
-    //           `
-    // {
-    //   "send": {
-    //     "contract": "orai14wy8xndhnvjmx6zl2866xqvs7fqwv2arhhrqq9",
-    //     "amount": "3350474",
-    //     "msg": "eyJjb252ZXJ0X3JldmVyc2UiOnsiZnJvbSI6eyJuYXRpdmVfdG9rZW4iOnsiZGVub20iOiJpYmMvNDlEODIwREZERTlGODg1RDcwODE3MjVBNTgyMDJBQkEyRjQ2NUNBRUU0QUZCQzY4M0RGQjc5QThFMDEzRTgzRSJ9fX19"
-    //   }
-    // }
-    //               `,
-    //         ),
-    //         funds: [
-    //           Coin.fromJSON({
-    //             denom: 'orai',
-    //             amount: '10000',
-    //           }),
-    //         ],
-    //       }).finish(),
-    //     },
     // {
     //   typeUrl: '/cosmos.bank.v1beta1.MsgSend',
     //   value: MsgSend.encode({

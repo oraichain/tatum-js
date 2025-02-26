@@ -50,14 +50,6 @@ export const parseSwapContract = async ({ sender, messages, action }: ParseInput
       })
       break
     }
-    case SWAP_EXECUTE_TYPE.SEND: {
-      response = await oraichainTatum.ammV2.parseSend({
-        sender: sender,
-        events: simRes.data.result!.events,
-        message: msgs,
-      })
-      break
-    }
     default:
       break
   }

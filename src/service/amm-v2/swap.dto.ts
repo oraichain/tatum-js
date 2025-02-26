@@ -7,13 +7,14 @@ export interface OraiSwapData {
 }
 
 export interface OraiSwapOperations {
-  contractAddress?: string
-  sender?: string
-  receiver?: string
-  askAsset?: string
-  offerAsset?: string
-  offerAmount?: string
-  returnAmount?: string
+  contractAddress: string
+  sender: string
+  receiver: string
+  askAsset: string
+  offerAsset: string
+  offerAmount: string
+  returnAmount: string
+  msgIndex: string
 }
 
 export interface SwapAction {

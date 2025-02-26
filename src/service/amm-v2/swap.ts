@@ -9,6 +9,7 @@ import { CommonInfoCosmos } from '../common-info'
 import { TatumConfig } from '../tatum'
 import { OraiSwapData, OraiSwapOperations, SwapResponse } from './swap.dto'
 import { ORAI_CONTRACT } from '../../server/constant/contractAddress'
+import { number } from 'joi'
 
 const ORAI_SWAP_CONTRACT_ADDRESS = 'orai10s0c75gw5y5eftms5ncfknw6lzmx0dyhedn75uz793m8zwz4g8zq4d9x9a'
 
@@ -37,43 +38,64 @@ export class AmmV2Cosmos {
         e.type === 'wasm' && e.attributes.some((attr) => attr.key === 'action' && attr.value === 'swap'),
     )
 
-    console.log(data.events)
-    console.dir(data.events, {depth: null})
-
-    let ops: OraiSwapOperations[] = []
+    const ops = new Map<string, OraiSwapOperations[]>();
+    // const ops: OraiSwapOperations[] = []
 
     if (Array.isArray(evs)) {
       for (let ev of evs) {
+        let op
         if (
           ev.attributes.some(
             (attr) => attr.key === '_contract_address' && attr.value === ORAI_SWAP_CONTRACT_ADDRESS,
           )
         ) {
-          let op = this.parseSwapCw20(ev)
-          ops.push(op)
+          op = this.parseSwapCw20(ev)
         } else {
-          let op = this.parseSwapNative(ev)
-          ops.push(op)
+          op = this.parseSwapNative(ev)
         }
+
+        if (!ops.has(op.msgIndex)) {
+          ops.set(op.msgIndex, []);
+        }
+        ops.get(op.msgIndex)?.push(op)
       }
     }
 
-    const inAsset = ops[0].offerAsset!
-    const outAsset = ops[ops.length - 1].askAsset!
+    let inAsset: string = "", outAsset: string = ""
+    let inAssetAmount: number = 0, outAssetAmount: number = 0
+
+    ops.forEach((op, msgIndex) => {
+      let swapRes = this.getFinalSwapResult(op)
+      inAsset = swapRes.inAsset
+      outAsset = swapRes.outAsset
+      inAssetAmount += +swapRes.inAmount
+      outAssetAmount += +swapRes.outAmount
+    })
 
     const [inAssetInfo, outAssetInfo] = (
-      await this.commonInfo.getTokenInfos({ tokenIds: [inAsset, outAsset] })
+      await this.commonInfo.getTokenInfos({ tokenIds: [inAsset!, outAsset!] })
     ).data
 
     let res: SwapResponse = {
       fromAddress: data.sender,
       toAddress: data.sender!,
-      inAsset: inAsset,
-      inAmount: ops[0].offerAmount!,
-      outAsset: outAsset,
-      outAmount: ops[ops.length - 1].returnAmount!,
+      inAsset: inAsset!,
+      inAmount: inAssetAmount!.toString(),
+      outAsset: outAsset!,
+      outAmount: outAssetAmount!.toString(),
       inAssetInfo: inAssetInfo,
       outAssetInfo: outAssetInfo,
+    }
+
+    return res
+  }
+
+  private getFinalSwapResult(ops: OraiSwapOperations[]): SwapResponse {
+    let res: SwapResponse = {
+      inAsset: ops[0].offerAsset!,
+      inAmount: ops[0].offerAmount!,
+      outAsset: ops[ops.length - 1].askAsset!,
+      outAmount: ops[ops.length - 1].returnAmount!,
     }
 
     return res
@@ -83,9 +105,6 @@ export class AmmV2Cosmos {
     // decode events
     let swapInfo = await this.parseSwap(data)
     let postSwapAction: any = postAction
-
-    console.log(data.events)
-    console.dir(data.events, {depth: null})
 
     // decode messages
     if (data.message != null) {
@@ -147,12 +166,12 @@ export class AmmV2Cosmos {
       default:
         break
     }
-    console.log(response)
+    
     return response
   }
 
   private parseSwapNative(event: Event): OraiSwapOperations {
-    let res: OraiSwapOperations = {}
+    let res: OraiSwapOperations = {} as any
     for (let attr of event.attributes) {
       switch (attr.key) {
         case '_contract_address': {
@@ -183,7 +202,10 @@ export class AmmV2Cosmos {
           res.returnAmount = attr.value
           break
         }
-
+        case 'msg_index': {
+          res.msgIndex = attr.value
+          break
+        }
         default:
           break
       }
@@ -192,7 +214,7 @@ export class AmmV2Cosmos {
   }
 
   private parseSwapCw20(event: Event): OraiSwapOperations {
-    let res: OraiSwapOperations = {}
+    let res: OraiSwapOperations = {} as any
     let x_to_y: boolean = false
     let poolKey: string[] = []
     for (let attr of event.attributes) {
@@ -220,6 +242,10 @@ export class AmmV2Cosmos {
         }
         case 'x_to_y': {
           x_to_y = JSON.parse(attr.value)
+          break
+        }
+        case 'msg_index': {
+          res.msgIndex = attr.value
           break
         }
         default:

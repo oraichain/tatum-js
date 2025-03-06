@@ -55,7 +55,7 @@ export class BridgeCosmos {
    */
   async parseTransferToRemote(
     data: CosmosTransferToRemoteData,
-  ): Promise<ResponseDto<TransferToRemoteResponse>> {
+  ): Promise<ResponseDto<TransferToRemoteResponse | null>> {
     let returnData: TransferToRemoteResponse = {} as any
     let error = null
     let status = Status.SUCCESS
@@ -186,7 +186,7 @@ export class BridgeCosmos {
     }
 
     return {
-      data: returnData,
+      data: Object.keys(returnData).length === 0 ? null : returnData,
       error,
       status,
     }
@@ -195,7 +195,7 @@ export class BridgeCosmos {
   /**
    * Parse Solana bridge msg
    */
-  async parseSolana(data: CosmosBridgeSolanaData): Promise<ResponseDto<BridgeSolanaResponse>> {
+  async parseSolana(data: CosmosBridgeSolanaData): Promise<ResponseDto<BridgeSolanaResponse | null>> {
     let returnData: BridgeSolanaResponse = {} as any
     let error = null
     let status = Status.SUCCESS
@@ -253,7 +253,7 @@ export class BridgeCosmos {
     }
 
     return {
-      data: returnData,
+      data: Object.keys(returnData).length === 0 ? null : returnData,
       error,
       status,
     }
@@ -262,7 +262,7 @@ export class BridgeCosmos {
   /**
    * Parse ibc message
    */
-  async parseIbc(data: CosmosIbcData): Promise<ResponseDto<IbcDataResponse>> {
+  async parseIbc(data: CosmosIbcData): Promise<ResponseDto<IbcDataResponse | null>> {
     let returnData: IbcDataResponse = {} as any
     let error = null
     let status = Status.SUCCESS
@@ -333,7 +333,7 @@ export class BridgeCosmos {
     }
 
     return {
-      data: returnData,
+      data: Object.keys(returnData).length === 0 ? null : returnData,
       error,
       status,
     }
@@ -342,7 +342,7 @@ export class BridgeCosmos {
   /**
    * Parse bridge to ton
    */
-  async parseTonBridge(data: BridgeTonData): Promise<ResponseDto<BridgeTonDataResponse>> {
+  async parseTonBridge(data: BridgeTonData): Promise<ResponseDto<BridgeTonDataResponse | null>> {
     let returnData: BridgeTonDataResponse = {} as any
     let error = null
     let status = Status.SUCCESS
@@ -454,7 +454,7 @@ export class BridgeCosmos {
     }
 
     return {
-      data: returnData,
+      data: Object.keys(returnData).length === 0 ? null : returnData,
       error,
       status,
     }
@@ -463,7 +463,7 @@ export class BridgeCosmos {
   /**
    * Parse bridge to btc
    */
-  async parseBtcBridge(data: BridgeBtcData): Promise<ResponseDto<BridgeBtcDataResponse>> {
+  async parseBtcBridge(data: BridgeBtcData): Promise<ResponseDto<BridgeBtcDataResponse | null>> {
     let returnData: BridgeBtcDataResponse = {} as any
     let error = null
     let status = Status.SUCCESS
@@ -505,7 +505,7 @@ export class BridgeCosmos {
     }
 
     return {
-      data: returnData,
+      data: Object.keys(returnData).length === 0 ? null : returnData,
       error,
       status,
     }

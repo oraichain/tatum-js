@@ -2,9 +2,9 @@ import Container, { Service } from "typedi";
 import { TatumConnector } from "../../connector";
 import { TatumConfig } from "../tatum";
 import { CONFIG } from '../../util';
-import { StakingBondResponse, StakingData, StakingResponse, StakingUnbondResponse } from "./staking.dto";
+import { StakingBondResponse, StakingData, StakingResponse, StakingUnbondResponse, StakingWithdrawResponse } from "./staking.dto";
 import { Attribute, Event } from "@cosmjs/stargate";
-import { ORAI_CONTRACT } from "../../server/constant/contractAddress";
+import { ORAI_CONTRACT, ORAI_TOKEN_CONTRACTS } from "../../server/constant/contractAddress";
 import { MsgExecuteContract } from "cosmjs-types/cosmwasm/wasm/v1/tx";
 import { decodeNestedObject, objectToMap } from "../../util/decode";
 
@@ -24,15 +24,6 @@ export class StakingCosmos {
 
   public parseStakingAction(data: StakingData): StakingResponse {
     let response: StakingResponse = {} as any
-    const evs = data.events.filter(
-      (e: Event) => 
-        e.type === 'wasm'
-        && e.attributes.some((attr) => 
-          attr.key === "_contract_address" &&
-          attr.value === ORAI_CONTRACT.STAKING
-        )
-        
-    )
 
     const msg = MsgExecuteContract.decode(data.message[0].value)
     const msgValue = JSON.parse(new TextDecoder().decode(msg.msg))
@@ -46,6 +37,7 @@ export class StakingCosmos {
         response = this.parseStakingUnbond(data)
         break
       case 'withdraw':
+        response = this.parseStakingWithdraw(data, msgValue.withdraw.staking_token)
         break
       default:
         break
@@ -92,8 +84,22 @@ export class StakingCosmos {
     return response
   }
 
-  parseStakingWithdraw(data: StakingData) {
+  parseStakingWithdraw(data: StakingData, token: string): StakingWithdrawResponse {
+    let response: StakingWithdrawResponse = {} as any
+    const e = combiningEvents(data.events.filter(
+      (e: Event) => 
+        e.attributes.some((attr) => attr.key === '_contract_address' && attr.value === ORAI_TOKEN_CONTRACTS.USDC) && // withdraw rewards always is usdc
+        e.attributes.some((attr) => attr.key === 'action' && attr.value === 'transfer') &&
+        e.attributes.some((attr) => attr.key === 'from' && attr.value === ORAI_CONTRACT.STAKING)
+      )
+    );
 
+    response.action = "withdraw_reward"
+    response.address = e[0].to
+    response.withdrawAmount = e[0].amount
+    response.withdrawToken = ORAI_TOKEN_CONTRACTS.USDC
+    
+    return response
   }
 
 }

@@ -22,7 +22,10 @@ export interface StakingUnbondResponse {
 }
 
 export interface StakingWithdrawResponse {
-
+    action: string
+    address: string
+    withdrawToken: string
+    withdrawAmount: string
 }
 
 export type StakingResponse = StakingBondResponse | StakingUnbondResponse | StakingWithdrawResponse

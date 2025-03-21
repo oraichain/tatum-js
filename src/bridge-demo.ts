@@ -21,7 +21,7 @@ const main = async () => {
         msg: toUtf8(
           `
 {
-  "submit_market_order": {
+  "cancel_order": {
     "asset_infos": [
       {
         "native_token": {
@@ -34,10 +34,10 @@ const main = async () => {
         }
       }
     ],
-    "direction": "sell",
-    "slippage": "0.005"
+    "order_id": 4963219
   }
 }
+
 
                   `,
         ),

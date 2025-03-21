@@ -7,6 +7,8 @@ export interface OpenOrderbookCosmosData {
     events: Event[]
 }
 
+export interface CloseOrderbookCosmosData extends OpenOrderbookCosmosData { }
+
 export interface OpenOrderbookEvmData {
 }
 
@@ -21,3 +23,5 @@ export interface OpenOrderbookResponse {
     askAssetInfo: TokenInfoExtend | null
     offerAssetInfo: TokenInfoExtend
 }
+
+export interface CloseOrderbookResponse extends Omit<OpenOrderbookResponse, "orderType"> { }

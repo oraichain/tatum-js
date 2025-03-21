@@ -5,7 +5,12 @@ import { TatumConnector } from '../../connector'
 import { CONFIG, ResponseDto, Status } from '../../util'
 import { CommonInfoCosmos } from '../common-info'
 import { TatumConfig } from '../tatum'
-import { OpenOrderbookCosmosData, OpenOrderbookResponse } from './orderbook.dto'
+import {
+	CloseOrderbookCosmosData,
+	CloseOrderbookResponse,
+	OpenOrderbookCosmosData,
+	OpenOrderbookResponse,
+} from './orderbook.dto'
 
 @Service({
 	factory: (data: { id: string }) => new OrderbookCosmos(data.id),
@@ -23,9 +28,11 @@ export class OrderbookCosmos {
 	}
 
 	/**
-	 * Parse Orderbook msg
+	 * Parse Open Orderbook msg
 	 */
-	async parseOpenOrderbook(data: OpenOrderbookCosmosData): Promise<ResponseDto<OpenOrderbookResponse | null>> {
+	async parseOpenOrderbook(
+		data: OpenOrderbookCosmosData,
+	): Promise<ResponseDto<OpenOrderbookResponse | null>> {
 		let returnData: OpenOrderbookResponse = {} as any
 		let error = null
 		let status = Status.SUCCESS
@@ -84,22 +91,122 @@ export class OrderbookCosmos {
 				}
 			}
 
-			if (askTokenId !== "") {
+			if (askTokenId !== '') {
 				tokenIds.push(askTokenId)
 			}
-			if (offerTokenId !== "") {
+			if (offerTokenId !== '') {
 				tokenIds.push(offerTokenId)
 			}
 			const tokenInfos = (await this.commonInfo.getTokenInfos({ tokenIds })).data
 
-			returnData.askAssetInfo = tokenIds.length === 2 ? {
+			returnData.askAssetInfo =
+				tokenIds.length === 2
+					? {
+						amount: askAmount,
+						name: tokenInfos[0].name,
+						denom: tokenInfos[0].denom,
+						decimal: tokenInfos[0].decimal,
+						icon: tokenInfos[0].icon,
+						coinGeckoId: tokenInfos[0].coinGeckoId,
+					}
+					: null
+
+			returnData.offerAssetInfo = {
+				amount: offerAmount,
+				name: tokenInfos[tokenIds.length - 1].name,
+				denom: tokenInfos[tokenIds.length - 1].denom,
+				decimal: tokenInfos[tokenIds.length - 1].decimal,
+				icon: tokenInfos[tokenIds.length - 1].icon,
+				coinGeckoId: tokenInfos[tokenIds.length - 1].coinGeckoId,
+			}
+		} catch (err: any) {
+			error = err
+			status = Status.ERROR
+		}
+
+		return {
+			data: Object.keys(returnData).length === 0 ? null : returnData,
+			error,
+			status,
+		}
+	}
+
+	/**
+	 * Parse Close Orderbook msg
+	 */
+	async parseCloseOrderbook(
+		data: CloseOrderbookCosmosData,
+	): Promise<ResponseDto<CloseOrderbookResponse | null>> {
+		let returnData: CloseOrderbookResponse = {} as any
+		let error = null
+		let status = Status.SUCCESS
+
+		try {
+			const wasmEvents: Event[] = []
+
+			for (const event of data.events) {
+				if (event.type === 'wasm') {
+					wasmEvents.push(event)
+				}
+			}
+
+			const orderbookEvent = wasmEvents.find((event) => {
+				for (const attribute of event.attributes) {
+					if (
+						attribute.key === '_contract_address' &&
+						attribute.value === 'orai1nt58gcu4e63v7k55phnr3gaym9tvk3q4apqzqccjuwppgjuyjy6sxk8yzp'
+					) {
+						return event
+					}
+				}
+
+				return undefined
+			})
+
+			if (!orderbookEvent) {
+				throw new Error('Orderbook event not found')
+			}
+
+			let askAmount: string = ''
+			let offerAmount: string = ''
+			const askTokenId: string = 'orai'
+			const offerTokenId: string = 'orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh'
+			const tokenIds: string[] = []
+
+			for (const attribute of orderbookEvent.attributes) {
+				switch (attribute.key) {
+					case 'ask_amount':
+						askAmount = attribute.value
+						break
+					case 'offer_amount':
+						offerAmount = attribute.value
+						break
+					case 'bidder_addr':
+						returnData.bidderAddress = attribute.value
+						break
+					case 'direction':
+						returnData.orderDirection = attribute.value
+						break
+				}
+			}
+
+			if (returnData.orderDirection === 'Buy') {
+				tokenIds.push(askTokenId)
+				tokenIds.push(offerTokenId)
+			} else {
+				tokenIds.push(offerTokenId)
+				tokenIds.push(askTokenId)
+			}
+			const tokenInfos = (await this.commonInfo.getTokenInfos({ tokenIds })).data
+
+			returnData.askAssetInfo = {
 				amount: askAmount,
 				name: tokenInfos[0].name,
 				denom: tokenInfos[0].denom,
 				decimal: tokenInfos[0].decimal,
 				icon: tokenInfos[0].icon,
 				coinGeckoId: tokenInfos[0].coinGeckoId,
-			} : null
+			}
 
 			returnData.offerAssetInfo = {
 				amount: offerAmount,

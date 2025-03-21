@@ -32,6 +32,7 @@ export const BRIDGE_EXECUTE_TYPE = {
 export const ORDERBOOK_EXECUTE_TYPE = {
   SUBMIT_ORDER: 'submit_order',
   SUBMIT_MARKET_ORDER: 'submit_market_order',
+  CANCEL_ORDER: 'cancel_order',
 }
 
 export const CW20_EXECUTE_TYPE = {

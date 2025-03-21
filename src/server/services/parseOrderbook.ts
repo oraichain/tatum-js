@@ -33,6 +33,12 @@ export const parseOrderbookContract = async ({ sender, messages, action }: Parse
                 events: simRes.data.result!.events
             })
             break
+        case ORDERBOOK_EXECUTE_TYPE.CANCEL_ORDER:
+            response = await oraichainTatum.orderbook.parseCloseOrderbook({
+                message: msgs,
+                events: simRes.data.result!.events
+            })
+            break
         default:
             break
     }

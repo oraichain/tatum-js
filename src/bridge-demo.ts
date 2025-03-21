@@ -13,13 +13,13 @@ interface Message {
 const main = async () => {
   const tatumCosmos = await TatumSDK.init<CosmosRosetta>({ network: Network.COSMOS_ROSETTA })
   const msgs = [
-        {
-          typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
-          value: MsgExecuteContract.encode({
-            sender: 'orai1eg9vt8af8nde8lx4flmrk7x9uvj8zd8xqyhkeh',
-            contract: 'orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh',
-            msg: toUtf8(
-              `
+    {
+      typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
+      value: MsgExecuteContract.encode({
+        sender: 'orai1eg9vt8af8nde8lx4flmrk7x9uvj8zd8xqyhkeh',
+        contract: 'orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh',
+        msg: toUtf8(
+          `
     {
   "send": {
     "amount": "1666492",
@@ -28,15 +28,15 @@ const main = async () => {
   }
             }
                   `,
-            ),
-            funds: [
-              Coin.fromJSON({
-                denom: 'orai',
-                amount: '1000',
-              }),
-            ],
-          }).finish(),
-        },
+        ),
+        funds: [
+          Coin.fromJSON({
+            denom: 'orai',
+            amount: '1000',
+          }),
+        ],
+      }).finish(),
+    },
     // {
     //   typeUrl: '/cosmos.bank.v1beta1.MsgSend',
     //   value: MsgSend.encode({

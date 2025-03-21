@@ -24,6 +24,7 @@ import { TatumSdkChain } from './tatum'
 import { SimulateCosmos } from '../simulate'
 import { FuturesCosmos } from '../futures/futures'
 import { StakingCosmos } from '../staking/staking'
+import { OrderbookCosmos } from '../orderbook'
 
 export abstract class BaseOther extends TatumSdkChain {
   ipfs: Ipfs
@@ -186,6 +187,7 @@ export class CosmosRosetta extends BaseOther {
   futures: FuturesCosmos
   staking: StakingCosmos
   simulate: SimulateCosmos
+  orderbook: OrderbookCosmos
 
   constructor(id: string) {
     super(id)
@@ -195,6 +197,7 @@ export class CosmosRosetta extends BaseOther {
     this.simulate = Container.of(id).get(SimulateCosmos)
     this.futures = Container.of(id).get(FuturesCosmos)
     this.staking = Container.of(id).get(StakingCosmos)
+    this.orderbook = Container.of(id).get(OrderbookCosmos)
   }
 }
 

@@ -59,7 +59,7 @@ const handleParseCosmwasmExecuteContract = async (input: ParseApiInput): Promise
       })
       break
     case ORAI_CONTRACT.STAKING:
-      data = await parseStakingContract({sender: input.sender, messages: input.messages, action: action})
+      data = await parseStakingContract({ sender: input.sender, messages: input.messages, action: action })
       break
     default:
       if (Object.values(ORAI_TOKEN_CONTRACTS).includes(contractAddress)) {

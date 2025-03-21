@@ -20,13 +20,14 @@ const main = async () => {
         contract: 'orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh',
         msg: toUtf8(
           `
-    {
+{
   "send": {
     "amount": "1666492",
     "contract": "orai1nt58gcu4e63v7k55phnr3gaym9tvk3q4apqzqccjuwppgjuyjy6sxk8yzp",
     "msg": "eyJzdWJtaXRfb3JkZXIiOnsiYXNzZXRzIjpbeyJhbW91bnQiOiI1NjgxODciLCJpbmZvIjp7Im5hdGl2ZV90b2tlbiI6eyJkZW5vbSI6Im9yYWkifX19LHsiYW1vdW50IjoiMTY2NjQ5MiIsImluZm8iOnsidG9rZW4iOnsiY29udHJhY3RfYWRkciI6Im9yYWkxMmh6anhmaDc3d2w1NzJnZHpjdDJmeHYyYXJ4Y3doNmd5a2M3cWgifX19XSwiZGlyZWN0aW9uIjoiYnV5In19"
   }
-            }
+}
+
                   `,
         ),
         funds: [

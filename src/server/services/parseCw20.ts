@@ -91,7 +91,7 @@ const handleParseSend = async (sender: string, contract: string, message: Simula
       break
     case ORAI_CONTRACT.ORDERBOOK:
       action = 'orderbook'
-      // TODO: add orderbook parse
+      response = await oraichainTatum.orderbook.parseOrderbook({ message, events })
       break
     default:
       break

@@ -17,14 +17,25 @@ const main = async () => {
       typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
       value: MsgExecuteContract.encode({
         sender: 'orai1eg9vt8af8nde8lx4flmrk7x9uvj8zd8xqyhkeh',
-        contract: 'orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh',
+        contract: 'orai1nt58gcu4e63v7k55phnr3gaym9tvk3q4apqzqccjuwppgjuyjy6sxk8yzp',
         msg: toUtf8(
           `
 {
-  "send": {
-    "amount": "1666492",
-    "contract": "orai1nt58gcu4e63v7k55phnr3gaym9tvk3q4apqzqccjuwppgjuyjy6sxk8yzp",
-    "msg": "eyJzdWJtaXRfb3JkZXIiOnsiYXNzZXRzIjpbeyJhbW91bnQiOiI1NjgxODciLCJpbmZvIjp7Im5hdGl2ZV90b2tlbiI6eyJkZW5vbSI6Im9yYWkifX19LHsiYW1vdW50IjoiMTY2NjQ5MiIsImluZm8iOnsidG9rZW4iOnsiY29udHJhY3RfYWRkciI6Im9yYWkxMmh6anhmaDc3d2w1NzJnZHpjdDJmeHYyYXJ4Y3doNmd5a2M3cWgifX19XSwiZGlyZWN0aW9uIjoiYnV5In19"
+  "submit_market_order": {
+    "asset_infos": [
+      {
+        "native_token": {
+          "denom": "orai"
+        }
+      },
+      {
+        "token": {
+          "contract_addr": "orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh"
+        }
+      }
+    ],
+    "direction": "sell",
+    "slippage": "0.005"
   }
 }
 
@@ -33,7 +44,7 @@ const main = async () => {
         funds: [
           Coin.fromJSON({
             denom: 'orai',
-            amount: '1000',
+            amount: '1960187',
           }),
         ],
       }).finish(),

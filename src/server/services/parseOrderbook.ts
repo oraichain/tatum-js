@@ -3,6 +3,7 @@ import httpStatus from 'http-status'
 import { ParseInput } from '../types/parser'
 import HttpException from '../utils/exception'
 import { oraichainTatum } from './tatum'
+import { ORDERBOOK_EXECUTE_TYPE } from '../constant/msgType'
 
 export const parseOrderbookContract = async ({ sender, messages, action }: ParseInput) => {
     let response
@@ -24,10 +25,17 @@ export const parseOrderbookContract = async ({ sender, messages, action }: Parse
         throw new HttpException(httpStatus.SERVICE_UNAVAILABLE, 'Simulate with undefined result')
     }
 
-    response = await oraichainTatum.orderbook.parseOrderbook({
-        message: msgs,
-        events: simRes.data.result!.events
-    })
+    switch (action) {
+        case ORDERBOOK_EXECUTE_TYPE.SUBMIT_ORDER:
+        case ORDERBOOK_EXECUTE_TYPE.SUBMIT_MARKET_ORDER:
+            response = await oraichainTatum.orderbook.parseOpenOrderbook({
+                message: msgs,
+                events: simRes.data.result!.events
+            })
+            break
+        default:
+            break
+    }
 
     return {
         action: {

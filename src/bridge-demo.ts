@@ -44,7 +44,7 @@ const main = async () => {
         funds: [
           Coin.fromJSON({
             denom: 'orai',
-            amount: '1960187',
+            amount: '1959805',
           }),
         ],
       }).finish(),

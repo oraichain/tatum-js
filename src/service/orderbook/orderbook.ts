@@ -5,7 +5,7 @@ import { TatumConnector } from '../../connector'
 import { CONFIG, ResponseDto, Status } from '../../util'
 import { CommonInfoCosmos } from '../common-info'
 import { TatumConfig } from '../tatum'
-import { OrderbookCosmosData, OrderbookResponse } from './orderbook.dto'
+import { OpenOrderbookCosmosData, OpenOrderbookResponse } from './orderbook.dto'
 
 @Service({
 	factory: (data: { id: string }) => new OrderbookCosmos(data.id),
@@ -25,8 +25,8 @@ export class OrderbookCosmos {
 	/**
 	 * Parse Orderbook msg
 	 */
-	async parseOrderbook(data: OrderbookCosmosData): Promise<ResponseDto<OrderbookResponse | null>> {
-		let returnData: OrderbookResponse = {} as any
+	async parseOpenOrderbook(data: OpenOrderbookCosmosData): Promise<ResponseDto<OpenOrderbookResponse | null>> {
+		let returnData: OpenOrderbookResponse = {} as any
 		let error = null
 		let status = Status.SUCCESS
 

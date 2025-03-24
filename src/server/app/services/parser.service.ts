@@ -1,74 +1,23 @@
-import { MsgExecuteContract } from 'cosmjs-types/cosmwasm/wasm/v1/tx'
 import httpStatus from 'http-status'
 
-import { ORAI_CONTRACT, ORAI_TOKEN_CONTRACTS } from '../../constant/contractAddress'
-import { COSMOS_TYPE, COSMWASM_MSG_TYPE } from '../../constant/msgType'
-import { parseBank } from '../../services/parseBank'
-import { parseBridgeContract } from '../../services/parseBridge'
-import { parseCw20 } from '../../services/parseCw20'
-import { parseFuturesContract } from '../../services/parseFutures'
-import { parseSwapContract } from '../../services/parseSwap'
+import { COSMOS_TYPE, COSMWASM_TYPE } from '../../constant/msgType'
 import { oraichainTatum } from '../../services/tatum'
 import { ParseApiInput } from '../../types/parser'
 import HttpException from '../../utils/exception'
-import { parseStakingContract } from '../../../server/services/parseStaking'
-import { parseOrderbookContract } from '../../../server/services/parseOrderbook'
+import { parseWasm } from 'src/server/services/parseWasm'
+import { parseBank } from 'src/server/services/parseBank'
 
-const parseCosmwasm = async (input: ParseApiInput, msgType: string) => {
+const parseCosmwasm = async (input: ParseApiInput, cosmwasmType: string, msgType: string) => {
   let data
 
-  switch (msgType) {
-    case COSMWASM_MSG_TYPE.EXECUTE_CONTRACT:
-      data = await handleParseCosmwasmExecuteContract(input)
+  switch (cosmwasmType) {
+    case COSMWASM_TYPE.WASM:
+      data = await parseWasm(input, msgType)
+      break
+    case COSMWASM_TYPE.TOKEN_FACTORY:
+      // TODO: Implement token factory parser
       break
     default:
-      break
-  }
-
-  return data
-}
-
-const handleParseCosmwasmExecuteContract = async (input: ParseApiInput): Promise<any> => {
-  let data
-
-  const value = Uint8Array.from(Buffer.from(input.messages[0].value, 'base64'))
-  const rawMsg = MsgExecuteContract.decode(value)
-  const executeMsg = JSON.parse(new TextDecoder().decode(rawMsg.msg))
-  const action = Object.keys(executeMsg)[0]
-  const contractAddress = rawMsg.contract
-
-  switch (contractAddress) {
-    case ORAI_CONTRACT.SWAP:
-    case ORAI_CONTRACT.SWAP_AND_ACTION:
-    case ORAI_CONTRACT.SWAP_OPERATIONS:
-      data = await parseSwapContract({
-        sender: input.sender,
-        messages: input.messages,
-        action: action,
-      })
-      break
-    case ORAI_CONTRACT.EVM_BRIDGE:
-    case ORAI_CONTRACT.TON_BRIDGE:
-    case ORAI_CONTRACT.BITCOIN_BRIDGE:
-      data = await parseBridgeContract({ sender: input.sender, messages: input.messages, action: action })
-      break
-    case ORAI_CONTRACT.FUTURES:
-      data = await parseFuturesContract({
-        sender: input.sender,
-        messages: input.messages,
-        action: action,
-      })
-      break
-    case ORAI_CONTRACT.STAKING:
-      data = await parseStakingContract({ sender: input.sender, messages: input.messages, action: action })
-      break
-    case ORAI_CONTRACT.ORDERBOOK:
-      data = await parseOrderbookContract({ sender: input.sender, messages: input.messages, action: action })
-      break
-    default:
-      if (Object.values(ORAI_TOKEN_CONTRACTS).includes(contractAddress)) {
-        data = await parseCw20({ sender: input.sender, messages: input.messages, action }, executeMsg)
-      }
       break
   }
 

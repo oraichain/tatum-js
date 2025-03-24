@@ -35,7 +35,7 @@ export const parsePool = async ({ sender, messages, action }: ParseInput) => {
 
   return {
     action: {
-      action: 'pools',
+      action: 'pool',
       msgAction: action,
     },
     response,

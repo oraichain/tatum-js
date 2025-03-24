@@ -14,6 +14,7 @@ import { Rates } from '../rate'
 import { Token } from '../token'
 import { TatumSdkChain } from './tatum'
 import { OrderbookEvm } from '../orderbook'
+import { PoolEvm } from '../pool'
 
 export abstract class BaseEvm extends TatumSdkChain {
   rpc: EvmBasedRpcSuite
@@ -23,6 +24,7 @@ export abstract class BaseEvm extends TatumSdkChain {
   ammV2: AmmV2Evm
   bridge: BridgeEvm
   orderbook: OrderbookEvm
+  pool: PoolEvm
 
   constructor(id: string) {
     super(id)
@@ -33,6 +35,7 @@ export abstract class BaseEvm extends TatumSdkChain {
     this.ammV2 = Container.of(id).get(AmmV2Evm)
     this.bridge = Container.of(id).get(BridgeEvm)
     this.orderbook = Container.of(id).get(OrderbookEvm)
+    this.pool = Container.of(id).get(PoolEvm)
   }
 }
 

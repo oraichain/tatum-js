@@ -4,9 +4,15 @@ export const MSG_TYPE = {
   IBC_MSG: 'ibc',
 }
 
-export const COSMWASM_MSG_TYPE = {
+export const WASM_MSG_TYPE = {
   EXECUTE_CONTRACT: 'MsgExecuteContract',
 }
+
+export const COSMWASM_TYPE = {
+  WASM: 'wasm',
+  TOKEN_FACTORY: 'tokenfactory',
+}
+
 
 export const COSMOS_TYPE = {
   BANK: 'bank',

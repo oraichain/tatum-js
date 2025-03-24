@@ -87,7 +87,11 @@ const handleParseSend = async (sender: string, contract: string, message: Simula
       break
     case ORAI_CONTRACT.STAKING:
       action = 'staking'
-      response = await oraichainTatum.staking.parseStakingBond({sender: sender, message: message, events: events})
+      response = await oraichainTatum.staking.parseStakingBond({ sender: sender, message: message, events: events })
+      break
+    case ORAI_CONTRACT.ORDERBOOK:
+      action = 'orderbook'
+      response = await oraichainTatum.orderbook.parseOpenOrderbook({ message, events })
       break
     default:
       break
@@ -105,16 +109,16 @@ const handleParseIncreaseAllowance = async (
   let response
   let action
 
-  switch(contract) {
+  switch (contract) {
     case ORAI_CONTRACT.FUTURES:
       const evs = combiningEvents(events.filter(
-        (e: Event) => 
-            e.type === 'wasm' && 
-            e.attributes.some((attr) => attr.key === "_contract_address" && attr.value === ORAI_CONTRACT.FUTURES
+        (e: Event) =>
+          e.type === 'wasm' &&
+          e.attributes.some((attr) => attr.key === "_contract_address" && attr.value === ORAI_CONTRACT.FUTURES
           )
       ))
       action = evs[0].action
-      response = await oraichainTatum.futures.parseFuturesAction({message, events, sender}, action)
+      response = await oraichainTatum.futures.parseFuturesAction({ message, events, sender }, action)
       break
     default:
       break

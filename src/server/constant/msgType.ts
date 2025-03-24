@@ -29,6 +29,12 @@ export const BRIDGE_EXECUTE_TYPE = {
   WITHDRAW_TO_BITCOIN: 'withdraw_to_bitcoin',
 }
 
+export const ORDERBOOK_EXECUTE_TYPE = {
+  SUBMIT_ORDER: 'submit_order',
+  SUBMIT_MARKET_ORDER: 'submit_market_order',
+  CANCEL_ORDER: 'cancel_order',
+}
+
 export const CW20_EXECUTE_TYPE = {
   SEND: 'send',
   INCREASE_ALLOWANCE: 'increase_allowance',

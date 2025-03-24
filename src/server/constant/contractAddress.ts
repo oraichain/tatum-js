@@ -8,6 +8,7 @@ export const ORAI_CONTRACT = {
   TON_BRIDGE: 'orai159l8l9c5ckhqpuwdfgs9p4v599nqt3cjlfahalmtrhfuncnec2ms5mz60e',
   BITCOIN_BRIDGE: 'orai1g90x3z2kss99wvmpkenjdelmpw4hf9l3yt420gpgqvpuz8lt79uq24arlv',
   INJECTIVE_BRIDGE: 'orai14wy8xndhnvjmx6zl2866xqvs7fqwv2arhhrqq9',
+  ORDERBOOK: "orai1nt58gcu4e63v7k55phnr3gaym9tvk3q4apqzqccjuwppgjuyjy6sxk8yzp"
 }
 
 export const ORAI_TOKEN_CONTRACTS = {

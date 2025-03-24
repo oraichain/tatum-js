@@ -2,6 +2,7 @@ import { toUtf8 } from '@cosmjs/encoding'
 import { MsgSend } from 'cosmjs-types/cosmos/bank/v1beta1/tx'
 import { Coin } from 'cosmjs-types/cosmos/base/v1beta1/coin'
 import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx'
+import { cosmwasm } from "@oraichain/proto"
 
 import { MsgExecuteContract } from 'cosmjs-types/cosmwasm/wasm/v1/tx'
 import { CosmosRosetta, Ethereum, Network, TatumSDK } from './service'
@@ -13,42 +14,40 @@ interface Message {
 const main = async () => {
   const tatumCosmos = await TatumSDK.init<CosmosRosetta>({ network: Network.COSMOS_ROSETTA })
   const msgs = [
-    {
-      typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
-      value: MsgExecuteContract.encode({
-        sender: 'orai1eg9vt8af8nde8lx4flmrk7x9uvj8zd8xqyhkeh',
-        contract: 'orai1nt58gcu4e63v7k55phnr3gaym9tvk3q4apqzqccjuwppgjuyjy6sxk8yzp',
-        msg: toUtf8(
-          `
-{
-  "cancel_order": {
-    "asset_infos": [
-      {
-        "native_token": {
-          "denom": "orai"
-        }
-      },
-      {
-        "token": {
-          "contract_addr": "orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh"
-        }
-      }
-    ],
-    "order_id": 4963219
-  }
-}
-
-
-                  `,
-        ),
-        funds: [
-          Coin.fromJSON({
-            denom: 'orai',
-            amount: '1959805',
-          }),
-        ],
-      }).finish(),
-    },
+    //     {
+    //       typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
+    //       value: MsgExecuteContract.encode({
+    //         sender: 'orai1eg9vt8af8nde8lx4flmrk7x9uvj8zd8xqyhkeh',
+    //         contract: 'orai1nt58gcu4e63v7k55phnr3gaym9tvk3q4apqzqccjuwppgjuyjy6sxk8yzp',
+    //         msg: toUtf8(
+    //        `
+    // {
+    //   "cancel_order": {
+    //     "asset_infos": [
+    //       {
+    //         "native_token": {
+    //           "denom": "orai"
+    //         }
+    //       },
+    //       {
+    //         "token": {
+    //           "contract_addr": "orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh"
+    //         }
+    //       }
+    //     ],
+    //     "order_id": 4963219
+    //   }
+    // }
+    //                   `,
+    //         ),
+    //         funds: [
+    //           Coin.fromJSON({
+    //             denom: 'orai',
+    //             amount: '1959805',
+    //           }),
+    //         ],
+    //       }).finish(),
+    //     },
     // {
     //   typeUrl: '/cosmos.bank.v1beta1.MsgSend',
     //   value: MsgSend.encode({
@@ -63,6 +62,14 @@ const main = async () => {
     //     ],
     //   }).finish(),
     // },
+    {
+      typeUrl: '/cosmwasm.tokenfactory.v1beta1.MsgCreateDenom',
+      value: cosmwasm.tokenfactory.v1beta1.MsgCreateDenom.encode({
+        sender: "orai1eg9vt8af8nde8lx4flmrk7x9uvj8zd8xqyhkeh",
+        subdenom: "huy"
+      }).finish(),
+    },
+    
   ]
 
   // const res = await tatumCosmos.simulate.simulate('orai1qpuundpvtymcyq3cmcty3udf2zy0m509w4kg8w', msgs)

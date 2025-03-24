@@ -35,6 +35,7 @@
     "@cosmjs/stargate": "^0.33.0",
     "@cosmjs/tendermint-rpc": "^0.33.0",
     "@oraichain/common": "^1.2.10",
+    "@oraichain/proto": "^0.1.2",
     "@types/compression": "^1.7.5",
     "@types/cookie-parser": "^1.4.8",
     "@types/cors": "^2.8.17",

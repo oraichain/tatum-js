@@ -4,8 +4,9 @@ import { COSMOS_TYPE, COSMWASM_TYPE } from '../../constant/msgType'
 import { oraichainTatum } from '../../services/tatum'
 import { ParseApiInput } from '../../types/parser'
 import HttpException from '../../utils/exception'
-import { parseWasm } from 'src/server/services/parseWasm'
-import { parseBank } from 'src/server/services/parseBank'
+import { parseWasm } from '../../../server/services/parseWasm'
+import { parseBank } from '../../../server/services/parseBank'
+import { parsePool } from '../../../server/services/parsePool'
 
 const parseCosmwasm = async (input: ParseApiInput, cosmwasmType: string, msgType: string) => {
   let data
@@ -15,7 +16,7 @@ const parseCosmwasm = async (input: ParseApiInput, cosmwasmType: string, msgType
       data = await parseWasm(input, msgType)
       break
     case COSMWASM_TYPE.TOKEN_FACTORY:
-      // TODO: Implement token factory parser
+      data = await parsePool({ sender: input.sender, messages: input.messages, action: msgType })
       break
     default:
       break

@@ -45,3 +45,7 @@ export const CW20_EXECUTE_TYPE = {
   SEND: 'send',
   INCREASE_ALLOWANCE: 'increase_allowance',
 }
+
+export const POOL_EXECUTE_TYPE = {
+  CREATE_DENOM: 'MsgCreateDenom',
+}

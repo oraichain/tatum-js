@@ -27,7 +27,10 @@ export const parsePool = async ({ sender, messages, action }: ParseInput) => {
 
   switch (action) {
     case POOL_EXECUTE_TYPE.CREATE_DENOM:
-      // TODO: Implement create denom parser
+      response = await oraichainTatum.pool.parseCreateDenom({
+        message: msgs,
+        events: simRes.data.result!.events
+      })
       break
     default:
       break

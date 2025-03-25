@@ -1,9 +1,9 @@
 import httpStatus from 'http-status'
 
+import { POOL_EXECUTE_TYPE } from '../constant/msgType'
 import { ParseInput } from '../types/parser'
 import HttpException from '../utils/exception'
 import { oraichainTatum } from './tatum'
-import { POOL_EXECUTE_TYPE } from '../constant/msgType'
 
 export const parsePool = async ({ sender, messages, action }: ParseInput) => {
   let response
@@ -29,7 +29,13 @@ export const parsePool = async ({ sender, messages, action }: ParseInput) => {
     case POOL_EXECUTE_TYPE.CREATE_DENOM:
       response = await oraichainTatum.pool.parseCreateDenom({
         message: msgs,
-        events: simRes.data.result!.events
+        events: simRes.data.result!.events,
+      })
+      break
+    case POOL_EXECUTE_TYPE.CREATE_POOL_V2:
+      response = await oraichainTatum.pool.parseCreatePoolV2({
+        message: msgs,
+        events: simRes.data.result!.events,
       })
       break
     default:

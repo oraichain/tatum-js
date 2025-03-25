@@ -1,5 +1,6 @@
 import { MsgExecuteContract } from 'cosmjs-types/cosmwasm/wasm/v1/tx'
 
+import { Status } from '../../util'
 import { ORAI_CONTRACT, ORAI_TOKEN_CONTRACTS } from '../constant/contractAddress'
 import { WASM_MSG_TYPE } from '../constant/msgType'
 import { ParseApiInput } from '../types/parser'
@@ -68,7 +69,15 @@ const handleParseCosmwasmExecuteContract = async (input: ParseApiInput): Promise
     default:
       if (Object.values(ORAI_TOKEN_CONTRACTS).includes(contractAddress)) {
         data = await parseCw20({ sender: input.sender, messages: input.messages, action }, executeMsg)
+        break
       }
+
+      // we catch parse add liquidity msg here
+      data = await parsePool({ sender: input.sender, messages: input.messages, action })
+      if (data.response && data.response.status === Status.SUCCESS) {
+        break
+      }
+
       break
   }
 

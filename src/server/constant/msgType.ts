@@ -48,4 +48,5 @@ export const CW20_EXECUTE_TYPE = {
 export const POOL_EXECUTE_TYPE = {
   CREATE_DENOM: 'MsgCreateDenom',
   CREATE_POOL_V2: 'create_pair',
+  ADD_LIQUIDITY_V2: 'provide_liquidity',
 }

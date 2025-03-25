@@ -38,6 +38,12 @@ export const parsePool = async ({ sender, messages, action }: ParseInput) => {
         events: simRes.data.result!.events,
       })
       break
+    case POOL_EXECUTE_TYPE.ADD_LIQUIDITY_V2:
+      response = await oraichainTatum.pool.parseAddLiquidityV2({
+        message: msgs,
+        events: simRes.data.result!.events,
+      })
+      break
     default:
       break
   }

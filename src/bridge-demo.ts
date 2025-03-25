@@ -18,13 +18,13 @@ const main = async () => {
       typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
       value: MsgExecuteContract.encode({
         sender: 'orai1eg9vt8af8nde8lx4flmrk7x9uvj8zd8xqyhkeh',
-        contract: 'orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh',
+        contract: 'orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge',
         msg: toUtf8(
           `
 {
   "increase_allowance": {
-    "amount": "1601798",
-    "spender": "orai1c5s03c3l336dgesne7dylnmhszw8554tsyy9yt"
+    "amount": "897566291",
+    "spender": "orai1m6q5k5nr2eh8q0rdrf57wr7phk7uvlpg7mwfv5"
   }
 }
                       `,
@@ -36,7 +36,7 @@ const main = async () => {
       typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
       value: MsgExecuteContract.encode({
         sender: 'orai1eg9vt8af8nde8lx4flmrk7x9uvj8zd8xqyhkeh',
-        contract: 'orai1c5s03c3l336dgesne7dylnmhszw8554tsyy9yt',
+        contract: 'orai1zh3a8lewaf7pq7jcwf720ujlvkzxfw2v3pvhqnycrxjtkf8w6amsssmez0',
         msg: toUtf8(
           `
 {
@@ -45,18 +45,18 @@ const main = async () => {
       {
         "info": {
           "native_token": {
+            "denom": "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/oraim8c9d1nkfuQk9EzGYEUGxqL3MHQYndRw1huVo5h"
+          }
+        },
+        "amount": "280673120"
+      },
+      {
+        "info": {
+          "native_token": {
             "denom": "orai"
           }
         },
         "amount": "500000"
-      },
-      {
-        "info": {
-          "token": {
-            "contract_addr": "orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh"
-          }
-        },
-        "amount": "1601798"
       }
     ],
     "slippage_tolerance": "0.01"
@@ -66,6 +66,11 @@ const main = async () => {
                       `,
         ),
         funds: [
+          Coin.fromJSON({
+            amount: '280673120',
+            denom:
+              'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/oraim8c9d1nkfuQk9EzGYEUGxqL3MHQYndRw1huVo5h',
+          }),
           Coin.fromJSON({
             amount: '500000',
             denom: 'orai',

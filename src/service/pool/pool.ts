@@ -1,4 +1,5 @@
 import { Event } from '@cosmjs/stargate'
+import { MsgExecuteContract } from 'cosmjs-types/cosmwasm/wasm/v1/tx'
 import Container, { Service } from 'typedi'
 
 import { TatumConnector } from '../../connector'
@@ -6,6 +7,8 @@ import { CONFIG, ResponseDto, Status } from '../../util'
 import { CommonInfoCosmos } from '../common-info'
 import { TatumConfig } from '../tatum'
 import {
+  AddLiquidityV2CosmosData,
+  AddLiquidityV2Response,
   CreateDenomCosmosData,
   CreateDenomResponse,
   CreatePoolV2CosmosData,
@@ -165,6 +168,93 @@ export class PoolCosmos {
         name: tokenInfos[1].name,
         denom: tokenInfos[1].denom,
         amount: tokenYAmount,
+        decimal: tokenInfos[1].decimal,
+        coinGeckoId: tokenInfos[1].coinGeckoId,
+        icon: tokenInfos[1].icon,
+      }
+    } catch (err: any) {
+      error = err
+      status = Status.ERROR
+    }
+
+    return {
+      data: Object.keys(returnData).length === 0 ? null : returnData,
+      error,
+      status,
+    }
+  }
+
+  /**
+   * Parse Add Liquidity V2 msg
+   */
+  async parseAddLiquidityV2(
+    data: AddLiquidityV2CosmosData,
+  ): Promise<ResponseDto<AddLiquidityV2Response | null>> {
+    let returnData: AddLiquidityV2Response = {} as any
+    let error = null
+    let status = Status.SUCCESS
+
+    try {
+      const lastMsgRaw = data.message[data.message.length - 1]
+      const value = Uint8Array.from(Buffer.from(lastMsgRaw.value, 'base64'))
+      const rawMsg = MsgExecuteContract.decode(value)
+      const executeMsg = JSON.parse(new TextDecoder().decode(rawMsg.msg))
+
+      const [assetX, assetY] = executeMsg.provide_liquidity.assets
+      const tokenXId = assetX.info.native_token
+        ? assetX.info.native_token.denom
+        : assetX.info.token.contract_addr
+      const tokenYId = assetY.info.native_token
+        ? assetY.info.native_token.denom
+        : assetY.info.token.contract_addr
+
+      const wasmEvents: Event[] = []
+      for (const event of data.events) {
+        if (event.type === 'wasm') {
+          wasmEvents.push(event)
+        }
+      }
+
+      let addLiquidityEvent: Event | null = null
+      for (const event of wasmEvents) {
+        for (const attr of event.attributes) {
+          if (attr.key === 'action' && attr.value === 'provide_liquidity') {
+            addLiquidityEvent = event
+          }
+        }
+      }
+
+      if (!addLiquidityEvent) {
+        throw new Error('Add Liquidity Event not found')
+      }
+
+      for (const attr of addLiquidityEvent.attributes) {
+        switch (attr.key) {
+          case 'receiver':
+            returnData.adder = attr.value
+            break
+          case 'share':
+            returnData.liquidityShare = attr.value
+            break
+          default:
+            break
+        }
+      }
+
+      const tokenInfos = (await this.commonInfo.getTokenInfos({ tokenIds: [tokenXId, tokenYId] })).data
+      returnData.tokenXInfo = {
+        name: tokenInfos[0].name,
+        denom: tokenInfos[0].denom,
+        amount: assetX.amount,
+        decimal: tokenInfos[0].decimal,
+        coinGeckoId: tokenInfos[0].coinGeckoId,
+        icon: tokenInfos[0].icon,
+      }
+
+      returnData.tokenYInfo = {
+        name: tokenInfos[1].name,
+        denom: tokenInfos[1].denom,
+        amount: assetY.amount,
         decimal: tokenInfos[1].decimal,
         coinGeckoId: tokenInfos[1].coinGeckoId,
         icon: tokenInfos[1].icon,

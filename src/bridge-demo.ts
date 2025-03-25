@@ -18,13 +18,13 @@ const main = async () => {
       typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
       value: MsgExecuteContract.encode({
         sender: 'orai1eg9vt8af8nde8lx4flmrk7x9uvj8zd8xqyhkeh',
-        contract: 'orai1ty9dgugt0swra7k0nu2kdp35tf7q7d60jy29u9n6vt5lfff2jj0qs4p6r7',
+        contract: 'orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh',
         msg: toUtf8(
           `
 {
   "increase_allowance": {
-    "amount": "300000000000",
-    "spender": "orai167r4ut7avvgpp3rlzksz6vw5spmykluzagvmj3ht845fjschwugqjsqhst"
+    "amount": "1601798",
+    "spender": "orai1c5s03c3l336dgesne7dylnmhszw8554tsyy9yt"
   }
 }
                       `,
@@ -36,43 +36,30 @@ const main = async () => {
       typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
       value: MsgExecuteContract.encode({
         sender: 'orai1eg9vt8af8nde8lx4flmrk7x9uvj8zd8xqyhkeh',
-        contract: 'orai167r4ut7avvgpp3rlzksz6vw5spmykluzagvmj3ht845fjschwugqjsqhst',
+        contract: 'orai1c5s03c3l336dgesne7dylnmhszw8554tsyy9yt',
         msg: toUtf8(
           `
 {
-  "create_pair": {
-    "asset_infos": [
+  "provide_liquidity": {
+    "assets": [
       {
-        "native_token": {
-          "denom": "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/extPEPE"
-        }
+        "info": {
+          "native_token": {
+            "denom": "orai"
+          }
+        },
+        "amount": "500000"
       },
       {
-        "native_token": {
-          "denom": "orai"
-        }
+        "info": {
+          "token": {
+            "contract_addr": "orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh"
+          }
+        },
+        "amount": "1601798"
       }
     ],
-    "provide_liquidity": {
-      "assets": [
-        {
-          "info": {
-            "native_token": {
-              "denom": "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/extPEPE"
-            }
-          },
-          "amount": "300000000"
-        },
-        {
-          "info": {
-            "native_token": {
-              "denom": "orai"
-            }
-          },
-          "amount": "1000000"
-        }
-      ]
-    }
+    "slippage_tolerance": "0.01"
   }
 }
 
@@ -80,11 +67,7 @@ const main = async () => {
         ),
         funds: [
           Coin.fromJSON({
-            amount: '300000000',
-            denom: 'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/extPEPE',
-          }),
-          Coin.fromJSON({
-            amount: '1000000',
+            amount: '500000',
             denom: 'orai',
           }),
         ],

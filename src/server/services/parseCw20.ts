@@ -2,6 +2,7 @@ import { Event } from '@cosmjs/stargate'
 import httpStatus from 'http-status'
 
 import { combiningEvents } from '../../util/decode'
+import { Status } from '../../util/error'
 import { ORAI_CONTRACT } from '../constant/contractAddress'
 import { CW20_EXECUTE_TYPE } from '../constant/msgType'
 import { ParseInput, SimulateMsg } from '../types/parser'
@@ -132,6 +133,13 @@ const handleParseIncreaseAllowance = async (
       response = await oraichainTatum.pool.parseCreatePoolV2({ message, events })
       break
     default:
+      // we assume that this msg is abount add liquidity
+      action = 'pool'
+      response = await oraichainTatum.pool.parseAddLiquidityV2({ message, events })
+      if (response.status === Status.SUCCESS) {
+        break
+      }
+
       break
   }
 

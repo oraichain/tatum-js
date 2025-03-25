@@ -25,3 +25,12 @@ export interface CreatePoolV2Response {
   tokenXInfo: { amount: string } & TokenInfo
   tokenYInfo: { amount: string } & TokenInfo
 }
+
+export interface AddLiquidityV2CosmosData extends CreateDenomCosmosData {}
+
+export interface AddLiquidityV2Response {
+  adder: string
+  liquidityShare: string
+  tokenXInfo: { amount: string } & TokenInfo
+  tokenYInfo: { amount: string } & TokenInfo
+}

@@ -1,8 +1,8 @@
 import { toUtf8 } from '@cosmjs/encoding'
+import { cosmwasm } from '@oraichain/proto'
 import { MsgSend } from 'cosmjs-types/cosmos/bank/v1beta1/tx'
 import { Coin } from 'cosmjs-types/cosmos/base/v1beta1/coin'
 import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx'
-import { cosmwasm } from "@oraichain/proto"
 
 import { MsgExecuteContract } from 'cosmjs-types/cosmwasm/wasm/v1/tx'
 import { CosmosRosetta, Ethereum, Network, TatumSDK } from './service'
@@ -18,12 +18,12 @@ const main = async () => {
       typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
       value: MsgExecuteContract.encode({
         sender: 'orai1eg9vt8af8nde8lx4flmrk7x9uvj8zd8xqyhkeh',
-        contract: 'orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh',
+        contract: 'orai1ty9dgugt0swra7k0nu2kdp35tf7q7d60jy29u9n6vt5lfff2jj0qs4p6r7',
         msg: toUtf8(
           `
-    {
+{
   "increase_allowance": {
-    "amount": "1500000",
+    "amount": "300000000000",
     "spender": "orai167r4ut7avvgpp3rlzksz6vw5spmykluzagvmj3ht845fjschwugqjsqhst"
   }
 }
@@ -39,17 +39,17 @@ const main = async () => {
         contract: 'orai167r4ut7avvgpp3rlzksz6vw5spmykluzagvmj3ht845fjschwugqjsqhst',
         msg: toUtf8(
           `
-    {
+{
   "create_pair": {
     "asset_infos": [
       {
         "native_token": {
-          "denom": "orai"
+          "denom": "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/extPEPE"
         }
       },
       {
-        "token": {
-          "contract_addr": "orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh"
+        "native_token": {
+          "denom": "orai"
         }
       }
     ],
@@ -58,29 +58,34 @@ const main = async () => {
         {
           "info": {
             "native_token": {
+              "denom": "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/extPEPE"
+            }
+          },
+          "amount": "300000000"
+        },
+        {
+          "info": {
+            "native_token": {
               "denom": "orai"
             }
           },
           "amount": "1000000"
-        },
-        {
-          "info": {
-            "token": {
-              "contract_addr": "orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh"
-            }
-          },
-          "amount": "1500000"
         }
       ]
     }
   }
 }
+
                       `,
         ),
         funds: [
           Coin.fromJSON({
-            denom: 'orai',
+            amount: '300000000',
+            denom: 'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/extPEPE',
+          }),
+          Coin.fromJSON({
             amount: '1000000',
+            denom: 'orai',
           }),
         ],
       }).finish(),
@@ -111,7 +116,7 @@ const main = async () => {
   // const res = await tatumCosmos.simulate.simulate('orai1qpuundpvtymcyq3cmcty3udf2zy0m509w4kg8w', msgs)
 
   console.log(Buffer.from(msgs[0].value).toString('base64'))
-  console.log("split")
+  console.log('split')
   console.log(Buffer.from(msgs[1].value).toString('base64'))
 
   // const res1 = await tatumCosmos.ammV2.parseSwapAndAction({

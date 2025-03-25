@@ -7,6 +7,7 @@ import { parseBridgeContract } from './parseBridge'
 import { parseCw20 } from './parseCw20'
 import { parseFuturesContract } from './parseFutures'
 import { parseOrderbookContract } from './parseOrderbook'
+import { parsePool } from './parsePool'
 import { parseStakingContract } from './parseStaking'
 import { parseSwapContract } from './parseSwap'
 
@@ -60,6 +61,9 @@ const handleParseCosmwasmExecuteContract = async (input: ParseApiInput): Promise
       break
     case ORAI_CONTRACT.ORDERBOOK:
       data = await parseOrderbookContract({ sender: input.sender, messages: input.messages, action: action })
+      break
+    case ORAI_CONTRACT.POOL_V2:
+      data = await parsePool({ sender: input.sender, messages: input.messages, action: action })
       break
     default:
       if (Object.values(ORAI_TOKEN_CONTRACTS).includes(contractAddress)) {

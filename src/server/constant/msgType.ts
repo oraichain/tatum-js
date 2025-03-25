@@ -13,7 +13,6 @@ export const COSMWASM_TYPE = {
   TOKEN_FACTORY: 'tokenfactory',
 }
 
-
 export const COSMOS_TYPE = {
   BANK: 'bank',
 }
@@ -48,4 +47,5 @@ export const CW20_EXECUTE_TYPE = {
 
 export const POOL_EXECUTE_TYPE = {
   CREATE_DENOM: 'MsgCreateDenom',
+  CREATE_POOL_V2: 'create_pair',
 }

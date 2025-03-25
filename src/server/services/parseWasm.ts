@@ -1,14 +1,14 @@
-import { MsgExecuteContract } from "cosmjs-types/cosmwasm/wasm/v1/tx";
+import { MsgExecuteContract } from 'cosmjs-types/cosmwasm/wasm/v1/tx'
 
-import { WASM_MSG_TYPE } from "../constant/msgType";
-import { ParseApiInput } from "../types/parser";
-import { ORAI_CONTRACT, ORAI_TOKEN_CONTRACTS } from "../constant/contractAddress";
-import { parseSwapContract } from "./parseSwap";
-import { parseBridgeContract } from "./parseBridge";
-import { parseFuturesContract } from "./parseFutures";
-import { parseStakingContract } from "./parseStaking";
-import { parseOrderbookContract } from "./parseOrderbook";
-import { parseCw20 } from "./parseCw20";
+import { ORAI_CONTRACT, ORAI_TOKEN_CONTRACTS } from '../constant/contractAddress'
+import { WASM_MSG_TYPE } from '../constant/msgType'
+import { ParseApiInput } from '../types/parser'
+import { parseBridgeContract } from './parseBridge'
+import { parseCw20 } from './parseCw20'
+import { parseFuturesContract } from './parseFutures'
+import { parseOrderbookContract } from './parseOrderbook'
+import { parseStakingContract } from './parseStaking'
+import { parseSwapContract } from './parseSwap'
 
 export const parseWasm = async (input: ParseApiInput, msgType: string) => {
   let data
@@ -21,6 +21,7 @@ export const parseWasm = async (input: ParseApiInput, msgType: string) => {
       break
   }
 
+  return data
 }
 
 const handleParseCosmwasmExecuteContract = async (input: ParseApiInput): Promise<any> => {

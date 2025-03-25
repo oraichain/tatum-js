@@ -14,40 +14,77 @@ interface Message {
 const main = async () => {
   const tatumCosmos = await TatumSDK.init<CosmosRosetta>({ network: Network.COSMOS_ROSETTA })
   const msgs = [
-    //     {
-    //       typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
-    //       value: MsgExecuteContract.encode({
-    //         sender: 'orai1eg9vt8af8nde8lx4flmrk7x9uvj8zd8xqyhkeh',
-    //         contract: 'orai1nt58gcu4e63v7k55phnr3gaym9tvk3q4apqzqccjuwppgjuyjy6sxk8yzp',
-    //         msg: toUtf8(
-    //        `
-    // {
-    //   "cancel_order": {
-    //     "asset_infos": [
-    //       {
-    //         "native_token": {
-    //           "denom": "orai"
-    //         }
-    //       },
-    //       {
-    //         "token": {
-    //           "contract_addr": "orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh"
-    //         }
-    //       }
-    //     ],
-    //     "order_id": 4963219
-    //   }
-    // }
-    //                   `,
-    //         ),
-    //         funds: [
-    //           Coin.fromJSON({
-    //             denom: 'orai',
-    //             amount: '1959805',
-    //           }),
-    //         ],
-    //       }).finish(),
-    //     },
+    {
+      typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
+      value: MsgExecuteContract.encode({
+        sender: 'orai1eg9vt8af8nde8lx4flmrk7x9uvj8zd8xqyhkeh',
+        contract: 'orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh',
+        msg: toUtf8(
+          `
+    {
+  "increase_allowance": {
+    "amount": "1500000",
+    "spender": "orai167r4ut7avvgpp3rlzksz6vw5spmykluzagvmj3ht845fjschwugqjsqhst"
+  }
+}
+                      `,
+        ),
+        funds: [],
+      }).finish(),
+    },
+    {
+      typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
+      value: MsgExecuteContract.encode({
+        sender: 'orai1eg9vt8af8nde8lx4flmrk7x9uvj8zd8xqyhkeh',
+        contract: 'orai167r4ut7avvgpp3rlzksz6vw5spmykluzagvmj3ht845fjschwugqjsqhst',
+        msg: toUtf8(
+          `
+    {
+  "create_pair": {
+    "asset_infos": [
+      {
+        "native_token": {
+          "denom": "orai"
+        }
+      },
+      {
+        "token": {
+          "contract_addr": "orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh"
+        }
+      }
+    ],
+    "provide_liquidity": {
+      "assets": [
+        {
+          "info": {
+            "native_token": {
+              "denom": "orai"
+            }
+          },
+          "amount": "1000000"
+        },
+        {
+          "info": {
+            "token": {
+              "contract_addr": "orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh"
+            }
+          },
+          "amount": "1500000"
+        }
+      ]
+    }
+  }
+}
+                      `,
+        ),
+        funds: [
+          Coin.fromJSON({
+            denom: 'orai',
+            amount: '1000000',
+          }),
+        ],
+      }).finish(),
+    },
     // {
     //   typeUrl: '/cosmos.bank.v1beta1.MsgSend',
     //   value: MsgSend.encode({
@@ -62,19 +99,20 @@ const main = async () => {
     //     ],
     //   }).finish(),
     // },
-    {
-      typeUrl: '/cosmwasm.tokenfactory.v1beta1.MsgCreateDenom',
-      value: cosmwasm.tokenfactory.v1beta1.MsgCreateDenom.encode({
-        sender: "orai1eg9vt8af8nde8lx4flmrk7x9uvj8zd8xqyhkeh",
-        subdenom: "huy"
-      }).finish(),
-    },
-    
+    // {
+    //   typeUrl: '/cosmwasm.tokenfactory.v1beta1.MsgCreateDenom',
+    //   value: cosmwasm.tokenfactory.v1beta1.MsgCreateDenom.encode({
+    //     sender: "orai1eg9vt8af8nde8lx4flmrk7x9uvj8zd8xqyhkeh",
+    //     subdenom: "huy"
+    //   }).finish(),
+    // },
   ]
 
   // const res = await tatumCosmos.simulate.simulate('orai1qpuundpvtymcyq3cmcty3udf2zy0m509w4kg8w', msgs)
 
   console.log(Buffer.from(msgs[0].value).toString('base64'))
+  console.log("split")
+  console.log(Buffer.from(msgs[1].value).toString('base64'))
 
   // const res1 = await tatumCosmos.ammV2.parseSwapAndAction({
   //   sender: 'orai1qpuundpvtymcyq3cmcty3udf2zy0m509w4kg8w',

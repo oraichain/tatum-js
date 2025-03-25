@@ -1,12 +1,12 @@
 import { Event } from '@cosmjs/stargate'
 import httpStatus from 'http-status'
 
+import { combiningEvents } from '../../util/decode'
 import { ORAI_CONTRACT } from '../constant/contractAddress'
 import { CW20_EXECUTE_TYPE } from '../constant/msgType'
 import { ParseInput, SimulateMsg } from '../types/parser'
 import HttpException from '../utils/exception'
 import { oraichainTatum } from './tatum'
-import { combiningEvents } from '../../util/decode'
 
 export const parseCw20 = async ({ sender, messages, action }: ParseInput, executeMsg: any) => {
   let response = {} as any
@@ -87,7 +87,11 @@ const handleParseSend = async (sender: string, contract: string, message: Simula
       break
     case ORAI_CONTRACT.STAKING:
       action = 'staking'
-      response = await oraichainTatum.staking.parseStakingBond({ sender: sender, message: message, events: events })
+      response = await oraichainTatum.staking.parseStakingBond({
+        sender: sender,
+        message: message,
+        events: events,
+      })
       break
     case ORAI_CONTRACT.ORDERBOOK:
       action = 'orderbook'
@@ -111,14 +115,21 @@ const handleParseIncreaseAllowance = async (
 
   switch (contract) {
     case ORAI_CONTRACT.FUTURES:
-      const evs = combiningEvents(events.filter(
-        (e: Event) =>
-          e.type === 'wasm' &&
-          e.attributes.some((attr) => attr.key === "_contract_address" && attr.value === ORAI_CONTRACT.FUTURES
-          )
-      ))
+      const evs = combiningEvents(
+        events.filter(
+          (e: Event) =>
+            e.type === 'wasm' &&
+            e.attributes.some(
+              (attr) => attr.key === '_contract_address' && attr.value === ORAI_CONTRACT.FUTURES,
+            ),
+        ),
+      )
       action = evs[0].action
       response = await oraichainTatum.futures.parseFuturesAction({ message, events, sender }, action)
+      break
+    case ORAI_CONTRACT.POOL_V2:
+      action = 'pool'
+      response = await oraichainTatum.pool.parseCreatePoolV2({ message, events })
       break
     default:
       break

@@ -6,6 +6,7 @@ import { TatumConnector } from '../../connector'
 import { CONFIG, ResponseDto, Status } from '../../util'
 import { CommonInfoCosmos } from '../common-info'
 import { TatumConfig } from '../tatum'
+import { splitAmountAndId } from './helpers'
 import {
   AddLiquidityV2CosmosData,
   AddLiquidityV2Response,
@@ -13,6 +14,8 @@ import {
   CreateDenomResponse,
   CreatePoolV2CosmosData,
   CreatePoolV2Response,
+  WithdrawLiquidityV2CosmosData,
+  WithdrawLiquidityV2Response,
 } from './pool.dto'
 
 @Service({
@@ -255,6 +258,93 @@ export class PoolCosmos {
         name: tokenInfos[1].name,
         denom: tokenInfos[1].denom,
         amount: assetY.amount,
+        decimal: tokenInfos[1].decimal,
+        coinGeckoId: tokenInfos[1].coinGeckoId,
+        icon: tokenInfos[1].icon,
+      }
+    } catch (err: any) {
+      error = err
+      status = Status.ERROR
+    }
+
+    return {
+      data: Object.keys(returnData).length === 0 ? null : returnData,
+      error,
+      status,
+    }
+  }
+
+  /**
+   * Parse Withdraw Liquidity V2 msg
+   */
+  async parseWithdrawLiquidityV2(
+    data: WithdrawLiquidityV2CosmosData,
+  ): Promise<ResponseDto<WithdrawLiquidityV2Response | null>> {
+    let returnData: WithdrawLiquidityV2Response = {} as any
+    let error = null
+    let status = Status.SUCCESS
+
+    try {
+      const wasmEvents: Event[] = []
+      for (const event of data.events) {
+        if (event.type === 'wasm') {
+          wasmEvents.push(event)
+        }
+      }
+
+      let withdrawLiquidityEvent: Event | null = null
+      for (const event of wasmEvents) {
+        for (const attr of event.attributes) {
+          if (attr.key === 'action' && attr.value === 'withdraw_liquidity') {
+            withdrawLiquidityEvent = event
+          }
+        }
+      }
+
+      if (!withdrawLiquidityEvent) {
+        throw new Error('Withdraw Liquidity Event not found')
+      }
+
+      let splitAssetX: { amount: string; id: string } | undefined
+      let splitAssetY: { amount: string; id: string } | undefined
+      for (const attr of withdrawLiquidityEvent.attributes) {
+        switch (attr.key) {
+          case 'sender':
+            returnData.withdrawer = attr.value
+            break
+          case 'withdrawn_share':
+            returnData.liquidityShare = attr.value
+            break
+          case 'refund_assets':
+            const [assetX, assetY] = attr.value.split(',')
+            splitAssetX = splitAmountAndId(assetX.trim())
+            splitAssetY = splitAmountAndId(assetY.trim())
+            break
+          default:
+            break
+        }
+      }
+
+      if (!splitAssetX || !splitAssetY) {
+        throw new Error('Invalid asset')
+      }
+
+      const tokenInfos = (await this.commonInfo.getTokenInfos({ tokenIds: [splitAssetX.id, splitAssetY.id] }))
+        .data
+
+      returnData.tokenXInfo = {
+        name: tokenInfos[0].name,
+        amount: splitAssetX.amount,
+        denom: tokenInfos[0].denom,
+        decimal: tokenInfos[0].decimal,
+        coinGeckoId: tokenInfos[0].coinGeckoId,
+        icon: tokenInfos[0].icon,
+      }
+
+      returnData.tokenYInfo = {
+        name: tokenInfos[1].name,
+        amount: splitAssetY.amount,
+        denom: tokenInfos[1].denom,
         decimal: tokenInfos[1].decimal,
         coinGeckoId: tokenInfos[1].coinGeckoId,
         icon: tokenInfos[1].icon,

@@ -18,15 +18,17 @@ const main = async () => {
       typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
       value: MsgExecuteContract.encode({
         sender: 'orai1eg9vt8af8nde8lx4flmrk7x9uvj8zd8xqyhkeh',
-        contract: 'orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge',
+        contract: 'orai1qmy3uuxktflvreanaqph6yua7stjn6j65rur62',
         msg: toUtf8(
           `
 {
-  "increase_allowance": {
-    "amount": "897566291",
-    "spender": "orai1m6q5k5nr2eh8q0rdrf57wr7phk7uvlpg7mwfv5"
+  "send": {
+    "contract": "orai1m6q5k5nr2eh8q0rdrf57wr7phk7uvlpg7mwfv5",
+    "amount": "4022412",
+    "msg": "eyJ3aXRoZHJhd19saXF1aWRpdHkiOnt9fQ=="
   }
 }
+
                       `,
         ),
         funds: [],
@@ -36,7 +38,7 @@ const main = async () => {
       typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
       value: MsgExecuteContract.encode({
         sender: 'orai1eg9vt8af8nde8lx4flmrk7x9uvj8zd8xqyhkeh',
-        contract: 'orai1zh3a8lewaf7pq7jcwf720ujlvkzxfw2v3pvhqnycrxjtkf8w6amsssmez0',
+        contract: 'orai1n4edv5h86rawzrvhy8lmrmnnmmherxnhuwqnk3yuvt0wgclh75usyn3md6',
         msg: toUtf8(
           `
 {
@@ -44,19 +46,19 @@ const main = async () => {
     "assets": [
       {
         "info": {
-          "native_token": {
-            "denom": "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/oraim8c9d1nkfuQk9EzGYEUGxqL3MHQYndRw1huVo5h"
+          "token": {
+            "contract_addr": "orai15un8msx3n5zf9ahlxmfeqd2kwa5wm0nrpxer304m9nd5q6qq0g6sku5pdd"
           }
         },
-        "amount": "280673120"
+        "amount": "1000000"
       },
       {
         "info": {
-          "native_token": {
-            "denom": "orai"
+          "token": {
+            "contract_addr": "orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge"
           }
         },
-        "amount": "500000"
+        "amount": "559656058"
       }
     ],
     "slippage_tolerance": "0.01"
@@ -66,11 +68,6 @@ const main = async () => {
                       `,
         ),
         funds: [
-          Coin.fromJSON({
-            amount: '280673120',
-            denom:
-              'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/oraim8c9d1nkfuQk9EzGYEUGxqL3MHQYndRw1huVo5h',
-          }),
           Coin.fromJSON({
             amount: '500000',
             denom: 'orai',

@@ -72,8 +72,14 @@ const handleParseCosmwasmExecuteContract = async (input: ParseApiInput): Promise
         break
       }
 
-      // we catch parse add liquidity msg here
+      // catch parse add liquidity v2 msg here
       data = await parsePool({ sender: input.sender, messages: input.messages, action })
+      if (data.response && data.response.status === Status.SUCCESS) {
+        break
+      }
+
+      // catch parse withdraw liquidity v2 msg here
+      data = await parseCw20({ sender: input.sender, messages: input.messages, action }, executeMsg)
       if (data.response && data.response.status === Status.SUCCESS) {
         break
       }

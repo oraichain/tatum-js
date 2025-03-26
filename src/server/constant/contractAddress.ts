@@ -10,6 +10,7 @@ export const ORAI_CONTRACT = {
   INJECTIVE_BRIDGE: 'orai14wy8xndhnvjmx6zl2866xqvs7fqwv2arhhrqq9',
   ORDERBOOK: 'orai1nt58gcu4e63v7k55phnr3gaym9tvk3q4apqzqccjuwppgjuyjy6sxk8yzp',
   POOL_V2: 'orai167r4ut7avvgpp3rlzksz6vw5spmykluzagvmj3ht845fjschwugqjsqhst',
+  POOL_V3: 'orai10s0c75gw5y5eftms5ncfknw6lzmx0dyhedn75uz793m8zwz4g8zq4d9x9a',
 }
 
 export const ORAI_TOKEN_CONTRACTS = {

@@ -10,6 +10,8 @@ import { splitAmountAndId } from './helpers'
 import {
   AddLiquidityV2CosmosData,
   AddLiquidityV2Response,
+  ClaimFeeCosmosData,
+  ClaimFeeResponse,
   CreateDenomCosmosData,
   CreateDenomResponse,
   CreatePoolV2CosmosData,
@@ -458,6 +460,110 @@ export class PoolCosmos {
         decimal: tokenInfos[1].decimal,
         coinGeckoId: tokenInfos[1].coinGeckoId,
         icon: tokenInfos[1].icon,
+      }
+    } catch (err: any) {
+      error = err
+      status = Status.ERROR
+    }
+
+    return {
+      data: Object.keys(returnData).length === 0 ? null : returnData,
+      error,
+      status,
+    }
+  }
+
+  /**
+   * Parse Claim Fee msg
+   */
+  async parseClaimFee(data: ClaimFeeCosmosData): Promise<ResponseDto<ClaimFeeResponse | null>> {
+    let returnData: ClaimFeeResponse = {} as any
+    let error = null
+    let status = Status.SUCCESS
+
+    try {
+      const wasmEvents: Event[] = []
+      for (const event of data.events) {
+        if (event.type === 'wasm') {
+          wasmEvents.push(event)
+        }
+      }
+
+      let claimFeeEvent: Event | null = null
+      for (const event of wasmEvents) {
+        for (const attr of event.attributes) {
+          if (attr.key === 'action' && attr.value === 'claim_fee') {
+            claimFeeEvent = event
+          }
+        }
+      }
+
+      if (!claimFeeEvent) {
+        throw new Error('Claim Fee Event not found')
+      }
+
+      let incentiveTokenId: string = ''
+      let incentiveAmount: string = ''
+      let tokenXId: string = ''
+      let tokenXAmount: string = ''
+      let tokenYId: string = ''
+      let tokenYAmount: string = ''
+      for (const attr of claimFeeEvent.attributes) {
+        switch (attr.key) {
+          case 'owner':
+            returnData.claimer = attr.value
+            break
+          case 'incentives_amount':
+            incentiveAmount = attr.value
+            break
+          case 'incentives_token_address':
+            incentiveTokenId = attr.value
+            break
+          case 'pool_key':
+            const splitTokenIds = attr.value.split('-')
+            tokenXId = splitTokenIds[0]
+            tokenYId = splitTokenIds[1]
+            break
+          case 'amount_x':
+            tokenXAmount = attr.value
+            break
+          case 'amount_y':
+            tokenYAmount = attr.value
+            break
+          default:
+            break
+        }
+      }
+
+      const tokenInfos = (
+        await this.commonInfo.getTokenInfos({ tokenIds: [tokenXId, tokenYId, incentiveTokenId] })
+      ).data
+
+      returnData.tokenXInfo = {
+        name: tokenInfos[0].name,
+        amount: tokenXAmount,
+        denom: tokenInfos[0].denom,
+        decimal: tokenInfos[0].decimal,
+        coinGeckoId: tokenInfos[0].coinGeckoId,
+        icon: tokenInfos[0].icon,
+      }
+
+      returnData.tokenYInfo = {
+        name: tokenInfos[1].name,
+        amount: tokenYAmount,
+        denom: tokenInfos[1].denom,
+        decimal: tokenInfos[1].decimal,
+        coinGeckoId: tokenInfos[1].coinGeckoId,
+        icon: tokenInfos[1].icon,
+      }
+
+      returnData.incentiveInfo = {
+        name: tokenInfos[2].name,
+        amount: incentiveAmount,
+        denom: tokenInfos[2].denom,
+        decimal: tokenInfos[2].decimal,
+        coinGeckoId: tokenInfos[2].coinGeckoId,
+        icon: tokenInfos[2].icon,
       }
     } catch (err: any) {
       error = err

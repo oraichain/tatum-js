@@ -18,13 +18,13 @@ const main = async () => {
       typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
       value: MsgExecuteContract.encode({
         sender: 'orai1eg9vt8af8nde8lx4flmrk7x9uvj8zd8xqyhkeh',
-        contract: 'orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge',
+        contract: 'orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh',
         msg: toUtf8(
           `
 {
   "increase_allowance": {
-    "amount": "2000001",
-    "spender": "orai10s0c75gw5y5eftms5ncfknw6lzmx0dyhedn75uz793m8zwz4g8zq4d9x9a"
+    "amount": "1000000",
+    "spender": "orai19r5wlt3ruc5xmkfvkwx5l3pul5h8kslexptyqyk5u6acue0ly9yqqpwmtp"
   }
 }
 
@@ -37,11 +37,20 @@ const main = async () => {
       typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
       value: MsgExecuteContract.encode({
         sender: 'orai1eg9vt8af8nde8lx4flmrk7x9uvj8zd8xqyhkeh',
-        contract: 'orai10s0c75gw5y5eftms5ncfknw6lzmx0dyhedn75uz793m8zwz4g8zq4d9x9a',
+        contract: 'orai19r5wlt3ruc5xmkfvkwx5l3pul5h8kslexptyqyk5u6acue0ly9yqqpwmtp',
         msg: toUtf8(
           `
 {
-  "create_position": {
+  "zap_in_liquidity": {
+    "asset_in": {
+      "amount": "1000000",
+      "info": {
+        "token": {
+          "contract_addr": "orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh"
+        }
+      }
+    },
+    "minimum_liquidity": "206228865061367",
     "pool_key": {
       "token_x": "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/oraim8c9d1nkfuQk9EzGYEUGxqL3MHQYndRw1huVo5h",
       "token_y": "orai",
@@ -50,22 +59,95 @@ const main = async () => {
         "tick_spacing": 100
       }
     },
-    "lower_tick": -63300,
-    "upper_tick": -62800,
-    "liquidity_delta": "684528933201317",
-    "slippage_limit_lower": "42951251641305874382695",
-    "slippage_limit_upper": "42951251641348825634336"
+    "routes": [
+      {
+        "offer_amount": "346668",
+        "operations": [
+          {
+            "swap_v3": {
+              "pool_key": {
+                "token_x": "orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh",
+                "token_y": "orai15un8msx3n5zf9ahlxmfeqd2kwa5wm0nrpxer304m9nd5q6qq0g6sku5pdd",
+                "fee_tier": {
+                  "fee": 500000000,
+                  "tick_spacing": 10
+                }
+              },
+              "x_to_y": true
+            }
+          },
+          {
+            "swap_v3": {
+              "pool_key": {
+                "token_x": "orai",
+                "token_y": "orai15un8msx3n5zf9ahlxmfeqd2kwa5wm0nrpxer304m9nd5q6qq0g6sku5pdd",
+                "fee_tier": {
+                  "fee": 3000000000,
+                  "tick_spacing": 100
+                }
+              },
+              "x_to_y": false
+            }
+          },
+          {
+            "swap_v3": {
+              "pool_key": {
+                "token_x": "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/oraim8c9d1nkfuQk9EzGYEUGxqL3MHQYndRw1huVo5h",
+                "token_y": "orai",
+                "fee_tier": {
+                  "fee": 3000000000,
+                  "tick_spacing": 100
+                }
+              },
+              "x_to_y": false
+            }
+          }
+        ],
+        "token_in": "orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh",
+        "minimum_receive": "57054486"
+      },
+      {
+        "offer_amount": "653332",
+        "operations": [
+          {
+            "swap_v3": {
+              "pool_key": {
+                "token_x": "orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh",
+                "token_y": "orai15un8msx3n5zf9ahlxmfeqd2kwa5wm0nrpxer304m9nd5q6qq0g6sku5pdd",
+                "fee_tier": {
+                  "fee": 500000000,
+                  "tick_spacing": 10
+                }
+              },
+              "x_to_y": true
+            }
+          },
+          {
+            "swap_v3": {
+              "pool_key": {
+                "token_x": "orai",
+                "token_y": "orai15un8msx3n5zf9ahlxmfeqd2kwa5wm0nrpxer304m9nd5q6qq0g6sku5pdd",
+                "fee_tier": {
+                  "fee": 3000000000,
+                  "tick_spacing": 100
+                }
+              },
+              "x_to_y": false
+            }
+          }
+        ],
+        "token_in": "orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh",
+        "minimum_receive": "203289"
+      }
+    ],
+    "tick_lower_index": -63200,
+    "tick_upper_index": -62500
   }
 }
 
                       `,
         ),
         funds: [
-          Coin.fromJSON({
-            amount: '124562729',
-            denom:
-              'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/oraim8c9d1nkfuQk9EzGYEUGxqL3MHQYndRw1huVo5h',
-          }),
           Coin.fromJSON({
             amount: '500000',
             denom: 'orai',

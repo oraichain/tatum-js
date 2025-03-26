@@ -11,6 +11,7 @@ export const ORAI_CONTRACT = {
   ORDERBOOK: 'orai1nt58gcu4e63v7k55phnr3gaym9tvk3q4apqzqccjuwppgjuyjy6sxk8yzp',
   POOL_V2: 'orai167r4ut7avvgpp3rlzksz6vw5spmykluzagvmj3ht845fjschwugqjsqhst',
   POOL_V3: 'orai10s0c75gw5y5eftms5ncfknw6lzmx0dyhedn75uz793m8zwz4g8zq4d9x9a',
+  ZAP: 'orai19r5wlt3ruc5xmkfvkwx5l3pul5h8kslexptyqyk5u6acue0ly9yqqpwmtp',
 }
 
 export const ORAI_TOKEN_CONTRACTS = {

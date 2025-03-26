@@ -57,6 +57,13 @@ export const parseSwapContract = async ({ sender, messages, action }: ParseInput
         message: msgs,
       })
       break
+    case SWAP_EXECUTE_TYPE.CLAIM_FEE:
+      mainAction = 'pool'
+      response = await oraichainTatum.pool.parseClaimFee({
+        events: simRes.data.result!.events,
+        message: msgs,
+      })
+      break
     default:
       break
   }

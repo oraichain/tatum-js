@@ -59,3 +59,12 @@ export interface CreatePoolV3Response {
   tokenXInfo: { amount: string } & TokenInfo
   tokenYInfo: { amount: string } & TokenInfo
 }
+
+export interface ClaimFeeCosmosData extends CreateDenomCosmosData {}
+
+export interface ClaimFeeResponse {
+  claimer: string
+  incentiveInfo: { amount: string } & TokenInfo
+  tokenXInfo: { amount: string } & TokenInfo
+  tokenYInfo: { amount: string } & TokenInfo
+}

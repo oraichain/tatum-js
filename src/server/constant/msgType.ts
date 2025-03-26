@@ -28,6 +28,7 @@ export const SWAP_EXECUTE_TYPE = {
   SEND: 'send',
   CREATE_POOL_V3: 'create_pool',
   ANOTHER_CREATE_POOL_V3: 'create_position',
+  CLAIM_FEE: 'claim_fee',
 }
 
 export const BRIDGE_EXECUTE_TYPE = {

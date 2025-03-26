@@ -419,10 +419,12 @@ export class PoolCosmos {
             poolInfo.positionLiquidity = attr.value
             break
           case 'lower_tick':
-            poolInfo.lowerTick = attr.value
+            const lowerTick = parseInt(attr.value)
+            poolInfo.lowerTick = Math.pow(1.0001, lowerTick).toString()
             break
           case 'upper_tick':
-            poolInfo.upperTick = attr.value
+            const upperTick = parseInt(attr.value)
+            poolInfo.upperTick = Math.pow(1.0001, upperTick).toString()
             break
           case 'current_sqrt_price':
             poolInfo.currentSqrtPrice = attr.value
@@ -646,10 +648,12 @@ export class PoolCosmos {
             poolInfo.positionLiquidity = attr.value
             break
           case 'lower_tick':
-            poolInfo.lowerTick = attr.value
+            const lowerTick = parseInt(attr.value)
+            poolInfo.lowerTick = Math.pow(1.0001, lowerTick).toString()
             break
           case 'upper_tick':
-            poolInfo.upperTick = attr.value
+            const upperTick = parseInt(attr.value)
+            poolInfo.upperTick = Math.pow(1.0001, upperTick).toString()
             break
           case 'current_sqrt_price':
             poolInfo.currentSqrtPrice = attr.value

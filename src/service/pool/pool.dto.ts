@@ -34,3 +34,9 @@ export interface AddLiquidityV2Response {
   tokenXInfo: { amount: string } & TokenInfo
   tokenYInfo: { amount: string } & TokenInfo
 }
+
+export interface WithdrawLiquidityV2CosmosData extends CreateDenomCosmosData {}
+
+export interface WithdrawLiquidityV2Response extends Omit<AddLiquidityV2Response, 'adder'> {
+  withdrawer: string
+}

@@ -99,6 +99,13 @@ const handleParseSend = async (sender: string, contract: string, message: Simula
       response = await oraichainTatum.orderbook.parseOpenOrderbook({ message, events })
       break
     default:
+      // catch parse withdraw liquidity v2 msg here
+      action = 'pool'
+      response = await oraichainTatum.pool.parseWithdrawLiquidityV2({ message, events })
+      if (response.status === Status.SUCCESS) {
+        break
+      }
+
       break
   }
 

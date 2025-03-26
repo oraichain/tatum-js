@@ -1,4 +1,5 @@
 import { toUtf8 } from '@cosmjs/encoding'
+import { cosmwasm } from '@oraichain/proto'
 import { MsgSend } from 'cosmjs-types/cosmos/bank/v1beta1/tx'
 import { Coin } from 'cosmjs-types/cosmos/base/v1beta1/coin'
 import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx'
@@ -17,34 +18,96 @@ const main = async () => {
       typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
       value: MsgExecuteContract.encode({
         sender: 'orai1eg9vt8af8nde8lx4flmrk7x9uvj8zd8xqyhkeh',
-        contract: 'orai1nt58gcu4e63v7k55phnr3gaym9tvk3q4apqzqccjuwppgjuyjy6sxk8yzp',
+        contract: 'orai10s0c75gw5y5eftms5ncfknw6lzmx0dyhedn75uz793m8zwz4g8zq4d9x9a',
         msg: toUtf8(
           `
 {
-  "cancel_order": {
-    "asset_infos": [
+  "approve": {
+    "spender": "orai19r5wlt3ruc5xmkfvkwx5l3pul5h8kslexptyqyk5u6acue0ly9yqqpwmtp",
+    "token_id": 45118
+  }
+}
+
+                      `,
+        ),
+        funds: [],
+      }).finish(),
+    },
+    {
+      typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
+      value: MsgExecuteContract.encode({
+        sender: 'orai1eg9vt8af8nde8lx4flmrk7x9uvj8zd8xqyhkeh',
+        contract: 'orai19r5wlt3ruc5xmkfvkwx5l3pul5h8kslexptyqyk5u6acue0ly9yqqpwmtp',
+        msg: toUtf8(
+          `
+{
+  "zap_out_liquidity": {
+    "position_index": 0,
+    "routes": [
       {
-        "native_token": {
-          "denom": "orai"
-        }
+        "offer_amount": "58303",
+        "operations": [
+          {
+            "swap_v3": {
+              "pool_key": {
+                "token_x": "orai",
+                "token_y": "orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh",
+                "fee_tier": {
+                  "fee": 3000000000,
+                  "tick_spacing": 100
+                }
+              },
+              "x_to_y": true
+            }
+          }
+        ],
+        "token_in": "orai",
+        "minimum_receive": "185134"
       },
       {
-        "token": {
-          "contract_addr": "orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh"
-        }
+        "offer_amount": "1305135881",
+        "operations": [
+          {
+            "swap_v3": {
+              "pool_key": {
+                "token_x": "orai15un8msx3n5zf9ahlxmfeqd2kwa5wm0nrpxer304m9nd5q6qq0g6sku5pdd",
+                "token_y": "orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge",
+                "fee_tier": {
+                  "fee": 3000000000,
+                  "tick_spacing": 100
+                }
+              },
+              "x_to_y": false
+            }
+          },
+          {
+            "swap_v3": {
+              "pool_key": {
+                "token_x": "orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh",
+                "token_y": "orai15un8msx3n5zf9ahlxmfeqd2kwa5wm0nrpxer304m9nd5q6qq0g6sku5pdd",
+                "fee_tier": {
+                  "fee": 500000000,
+                  "tick_spacing": 10
+                }
+              },
+              "x_to_y": false
+            }
+          }
+        ],
+        "token_in": "orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge",
+        "minimum_receive": "2329833"
       }
-    ],
-    "order_id": 4963219
+    ]
   }
 }
 
 
-                  `,
+                      `,
         ),
         funds: [
           Coin.fromJSON({
+            amount: '500000',
             denom: 'orai',
-            amount: '1959805',
           }),
         ],
       }).finish(),
@@ -63,11 +126,20 @@ const main = async () => {
     //     ],
     //   }).finish(),
     // },
+    // {
+    //   typeUrl: '/cosmwasm.tokenfactory.v1beta1.MsgCreateDenom',
+    //   value: cosmwasm.tokenfactory.v1beta1.MsgCreateDenom.encode({
+    //     sender: "orai1eg9vt8af8nde8lx4flmrk7x9uvj8zd8xqyhkeh",
+    //     subdenom: "huy"
+    //   }).finish(),
+    // },
   ]
 
   // const res = await tatumCosmos.simulate.simulate('orai1qpuundpvtymcyq3cmcty3udf2zy0m509w4kg8w', msgs)
 
   console.log(Buffer.from(msgs[0].value).toString('base64'))
+  console.log('split')
+  console.log(Buffer.from(msgs[1].value).toString('base64'))
 
   // const res1 = await tatumCosmos.ammV2.parseSwapAndAction({
   //   sender: 'orai1qpuundpvtymcyq3cmcty3udf2zy0m509w4kg8w',

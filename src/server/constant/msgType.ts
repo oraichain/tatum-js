@@ -4,8 +4,13 @@ export const MSG_TYPE = {
   IBC_MSG: 'ibc',
 }
 
-export const COSMWASM_MSG_TYPE = {
+export const WASM_MSG_TYPE = {
   EXECUTE_CONTRACT: 'MsgExecuteContract',
+}
+
+export const COSMWASM_TYPE = {
+  WASM: 'wasm',
+  TOKEN_FACTORY: 'tokenfactory',
 }
 
 export const COSMOS_TYPE = {
@@ -21,6 +26,11 @@ export const SWAP_EXECUTE_TYPE = {
   SWAP_AND_ACTION: 'swap_and_action',
   SWAP_OPERATIONS: 'execute_swap_operations',
   SEND: 'send',
+  CREATE_POOL_V3: 'create_pool',
+  ANOTHER_CREATE_POOL_V3: 'create_position',
+  CLAIM_FEE: 'claim_fee',
+  REMOVE_POSITION: 'remove_position',
+  APPROVE: 'approve',
 }
 
 export const BRIDGE_EXECUTE_TYPE = {
@@ -38,4 +48,12 @@ export const ORDERBOOK_EXECUTE_TYPE = {
 export const CW20_EXECUTE_TYPE = {
   SEND: 'send',
   INCREASE_ALLOWANCE: 'increase_allowance',
+}
+
+export const POOL_EXECUTE_TYPE = {
+  CREATE_DENOM: 'MsgCreateDenom',
+  CREATE_POOL_V2: 'create_pair',
+  ADD_LIQUIDITY_V2: 'provide_liquidity',
+  CREATE_POOL_V3: 'create_pool',
+  ANOTHER_CREATE_POOL_V3: 'create_position',
 }

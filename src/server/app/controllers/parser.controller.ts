@@ -17,7 +17,7 @@ const parser = tryCatchAsync(async (req, res, _next) => {
       data = await parserService.parseCosmos({ sender, messages }, typeMsg[1], typeMsg[3])
       break
     case MSG_TYPE.COSMWASM_MSG:
-      data = await parserService.parseCosmwasm({ sender, messages }, typeMsg[3])
+      data = await parserService.parseCosmwasm({ sender, messages }, typeMsg[1], typeMsg[3])
       break
     case MSG_TYPE.IBC_MSG:
       data = await parserService.parseIbc({ sender, messages }, typeMsg[4])

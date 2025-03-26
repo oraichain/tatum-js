@@ -64,6 +64,7 @@ export const parseSwapContract = async ({ sender, messages, action }: ParseInput
         message: msgs,
       })
       break
+    case SWAP_EXECUTE_TYPE.APPROVE:
     case SWAP_EXECUTE_TYPE.REMOVE_POSITION:
       mainAction = 'pool'
       response = await oraichainTatum.pool.parseRemovePositionV3({

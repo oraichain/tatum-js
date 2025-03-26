@@ -26,6 +26,8 @@ export const SWAP_EXECUTE_TYPE = {
   SWAP_AND_ACTION: 'swap_and_action',
   SWAP_OPERATIONS: 'execute_swap_operations',
   SEND: 'send',
+  CREATE_POOL_V3: 'create_pool',
+  ANOTHER_CREATE_POOL_V3: 'create_position',
 }
 
 export const BRIDGE_EXECUTE_TYPE = {
@@ -49,4 +51,6 @@ export const POOL_EXECUTE_TYPE = {
   CREATE_DENOM: 'MsgCreateDenom',
   CREATE_POOL_V2: 'create_pair',
   ADD_LIQUIDITY_V2: 'provide_liquidity',
+  CREATE_POOL_V3: 'create_pool',
+  ANOTHER_CREATE_POOL_V3: 'create_position',
 }

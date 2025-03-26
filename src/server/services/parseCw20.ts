@@ -143,6 +143,10 @@ const handleParseIncreaseAllowance = async (
       action = 'pool'
       response = await oraichainTatum.pool.parseCreatePoolV3({ message, events })
       break
+    case ORAI_CONTRACT.ZAP:
+      action = 'pool'
+      response = await oraichainTatum.pool.parseCreatePoolV3({ message, events })
+      break
     default:
       // we assume that this msg is abount add liquidity
       action = 'pool'

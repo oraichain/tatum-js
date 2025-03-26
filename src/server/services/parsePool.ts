@@ -44,6 +44,13 @@ export const parsePool = async ({ sender, messages, action }: ParseInput) => {
         events: simRes.data.result!.events,
       })
       break
+    case POOL_EXECUTE_TYPE.CREATE_POOL_V3:
+    case POOL_EXECUTE_TYPE.ANOTHER_CREATE_POOL_V3:
+      response = await oraichainTatum.pool.parseCreatePoolV3({
+        message: msgs,
+        events: simRes.data.result!.events,
+      })
+      break
     default:
       break
   }

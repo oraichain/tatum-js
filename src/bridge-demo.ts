@@ -23,7 +23,7 @@ const main = async () => {
           `
 {
   "increase_allowance": {
-    "amount": "715318759",
+    "amount": "2000001",
     "spender": "orai10s0c75gw5y5eftms5ncfknw6lzmx0dyhedn75uz793m8zwz4g8zq4d9x9a"
   }
 }
@@ -43,18 +43,18 @@ const main = async () => {
 {
   "create_position": {
     "pool_key": {
-      "token_x": "orai",
-      "token_y": "orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge",
+      "token_x": "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/oraim8c9d1nkfuQk9EzGYEUGxqL3MHQYndRw1huVo5h",
+      "token_y": "orai",
       "fee_tier": {
         "fee": 3000000000,
         "tick_spacing": 100
       }
     },
-    "lower_tick": 74400,
-    "upper_tick": 75000,
-    "liquidity_delta": "854216269500450",
-    "slippage_limit_lower": "42094117831220812242311634",
-    "slippage_limit_upper": "42094117831262906360142876"
+    "lower_tick": -63300,
+    "upper_tick": -62800,
+    "liquidity_delta": "684528933201317",
+    "slippage_limit_lower": "42951251641305874382695",
+    "slippage_limit_upper": "42951251641348825634336"
   }
 }
 
@@ -62,7 +62,12 @@ const main = async () => {
         ),
         funds: [
           Coin.fromJSON({
-            amount: '200000',
+            amount: '124562729',
+            denom:
+              'factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/oraim8c9d1nkfuQk9EzGYEUGxqL3MHQYndRw1huVo5h',
+          }),
+          Coin.fromJSON({
+            amount: '500000',
             denom: 'orai',
           }),
         ],

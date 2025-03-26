@@ -68,3 +68,13 @@ export interface ClaimFeeResponse {
   tokenXInfo: { amount: string } & TokenInfo
   tokenYInfo: { amount: string } & TokenInfo
 }
+
+export interface RemovePositionV3CosmosData extends CreateDenomCosmosData {}
+
+export interface RemovePositionV3Response {
+  remover: string
+  poolInfo: PoolV3Info
+  incentiveInfo: { amount: string } & TokenInfo
+  tokenXInfo: { amount: string } & TokenInfo
+  tokenYInfo: { amount: string } & TokenInfo
+}

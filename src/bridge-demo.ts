@@ -41,7 +41,7 @@ const main = async () => {
         msg: toUtf8(
           `
 {
-  "claim_fee": {
+  "remove_position": {
     "index": 0
   }
 }

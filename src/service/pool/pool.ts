@@ -19,6 +19,8 @@ import {
   CreatePoolV3CosmosData,
   CreatePoolV3Response,
   PoolV3Info,
+  RemovePositionV3CosmosData,
+  RemovePositionV3Response,
   WithdrawLiquidityV2CosmosData,
   WithdrawLiquidityV2Response,
 } from './pool.dto'
@@ -534,6 +536,136 @@ export class PoolCosmos {
             break
         }
       }
+
+      const tokenInfos = (
+        await this.commonInfo.getTokenInfos({ tokenIds: [tokenXId, tokenYId, incentiveTokenId] })
+      ).data
+
+      returnData.tokenXInfo = {
+        name: tokenInfos[0].name,
+        amount: tokenXAmount,
+        denom: tokenInfos[0].denom,
+        decimal: tokenInfos[0].decimal,
+        coinGeckoId: tokenInfos[0].coinGeckoId,
+        icon: tokenInfos[0].icon,
+      }
+
+      returnData.tokenYInfo = {
+        name: tokenInfos[1].name,
+        amount: tokenYAmount,
+        denom: tokenInfos[1].denom,
+        decimal: tokenInfos[1].decimal,
+        coinGeckoId: tokenInfos[1].coinGeckoId,
+        icon: tokenInfos[1].icon,
+      }
+
+      returnData.incentiveInfo = {
+        name: tokenInfos[2].name,
+        amount: incentiveAmount,
+        denom: tokenInfos[2].denom,
+        decimal: tokenInfos[2].decimal,
+        coinGeckoId: tokenInfos[2].coinGeckoId,
+        icon: tokenInfos[2].icon,
+      }
+    } catch (err: any) {
+      error = err
+      status = Status.ERROR
+    }
+
+    return {
+      data: Object.keys(returnData).length === 0 ? null : returnData,
+      error,
+      status,
+    }
+  }
+
+  /**
+   * Parse Remove Position V3 msg
+   */
+  async parseRemovePositionV3(
+    data: RemovePositionV3CosmosData,
+  ): Promise<ResponseDto<RemovePositionV3Response | null>> {
+    let returnData: RemovePositionV3Response = {} as any
+    let poolInfo: PoolV3Info = {} as any
+    let error = null
+    let status = Status.SUCCESS
+
+    try {
+      const wasmEvents: Event[] = []
+      for (const event of data.events) {
+        if (event.type === 'wasm') {
+          wasmEvents.push(event)
+        }
+      }
+
+      let removePositionEvent: Event | null = null
+      for (const event of wasmEvents) {
+        for (const attr of event.attributes) {
+          if (attr.key === 'action' && attr.value === 'remove_position') {
+            removePositionEvent = event
+          }
+        }
+      }
+
+      if (!removePositionEvent) {
+        throw new Error('Remove Position Event not found')
+      }
+
+      let incentiveTokenId: string = ''
+      let incentiveAmount: string = ''
+      let tokenXId: string = ''
+      let tokenXAmount: string = ''
+      let tokenYId: string = ''
+      let tokenYAmount: string = ''
+      for (const attr of removePositionEvent.attributes) {
+        switch (attr.key) {
+          case 'owner':
+            returnData.remover = attr.value
+            break
+          case 'incentives_token_address':
+            incentiveTokenId = attr.value
+            break
+          case 'incentives_amount':
+            incentiveAmount = attr.value
+            break
+          case 'pool_key':
+            const splitTokenIds = attr.value.split('-')
+            tokenXId = splitTokenIds[0]
+            tokenYId = splitTokenIds[1]
+            break
+          case 'liquidity_x':
+            tokenXAmount = attr.value
+            break
+          case 'liquidity_y':
+            tokenYAmount = attr.value
+            break
+          case 'token_id':
+            poolInfo.tokenId = attr.value
+            break
+          case 'position_liquidity':
+            poolInfo.positionLiquidity = attr.value
+            break
+          case 'lower_tick':
+            poolInfo.lowerTick = attr.value
+            break
+          case 'upper_tick':
+            poolInfo.upperTick = attr.value
+            break
+          case 'current_sqrt_price':
+            poolInfo.currentSqrtPrice = attr.value
+            break
+          case 'after_liquidity':
+            poolInfo.afterLiquidity = attr.value
+            break
+          case 'ater_tick_index':
+            poolInfo.aterTickIndex = attr.value
+            break
+          default:
+            break
+        }
+      }
+
+      returnData.poolInfo = poolInfo
 
       const tokenInfos = (
         await this.commonInfo.getTokenInfos({ tokenIds: [tokenXId, tokenYId, incentiveTokenId] })

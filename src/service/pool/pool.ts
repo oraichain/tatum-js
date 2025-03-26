@@ -14,6 +14,9 @@ import {
   CreateDenomResponse,
   CreatePoolV2CosmosData,
   CreatePoolV2Response,
+  CreatePoolV3CosmosData,
+  CreatePoolV3Response,
+  PoolV3Info,
   WithdrawLiquidityV2CosmosData,
   WithdrawLiquidityV2Response,
 } from './pool.dto'
@@ -345,6 +348,113 @@ export class PoolCosmos {
         name: tokenInfos[1].name,
         amount: splitAssetY.amount,
         denom: tokenInfos[1].denom,
+        decimal: tokenInfos[1].decimal,
+        coinGeckoId: tokenInfos[1].coinGeckoId,
+        icon: tokenInfos[1].icon,
+      }
+    } catch (err: any) {
+      error = err
+      status = Status.ERROR
+    }
+
+    return {
+      data: Object.keys(returnData).length === 0 ? null : returnData,
+      error,
+      status,
+    }
+  }
+
+  /**
+   * Parse Create Pool V3 msg
+   */
+  async parseCreatePoolV3(data: CreatePoolV3CosmosData): Promise<ResponseDto<CreatePoolV3Response | null>> {
+    let returnData: CreatePoolV3Response = {} as any
+    let poolInfo: PoolV3Info = {} as any
+    let error = null
+    let status = Status.SUCCESS
+
+    try {
+      const wasmEvents: Event[] = []
+      for (const event of data.events) {
+        if (event.type === 'wasm') {
+          wasmEvents.push(event)
+        }
+      }
+
+      let createPoolEvent: Event | null = null
+      for (const event of wasmEvents) {
+        for (const attr of event.attributes) {
+          if (attr.key === 'action' && attr.value === 'create_position') {
+            createPoolEvent = event
+          }
+        }
+      }
+
+      if (!createPoolEvent) {
+        throw new Error('Create Pool Event not found')
+      }
+
+      let tokenXId: string = ''
+      let tokenYId: string = ''
+      let tokenXAmount: string = ''
+      let tokenYAmount: string = ''
+      for (const attr of createPoolEvent.attributes) {
+        switch (attr.key) {
+          case 'pool_key':
+            const tokenSplits = attr.value.split('-')
+            tokenXId = tokenSplits[0]
+            tokenYId = tokenSplits[1]
+            break
+          case 'token_id':
+            poolInfo.tokenId = attr.value
+            break
+          case 'owner':
+            returnData.creator = attr.value
+            break
+          case 'position_liquidity':
+            poolInfo.positionLiquidity = attr.value
+            break
+          case 'lower_tick':
+            poolInfo.lowerTick = attr.value
+            break
+          case 'upper_tick':
+            poolInfo.upperTick = attr.value
+            break
+          case 'current_sqrt_price':
+            poolInfo.currentSqrtPrice = attr.value
+            break
+          case 'after_liquidity':
+            poolInfo.afterLiquidity = attr.value
+            break
+          case 'ater_tick_index':
+            poolInfo.aterTickIndex = attr.value
+            break
+          case 'liquidity_x':
+            tokenXAmount = attr.value
+            break
+          case 'liquidity_y':
+            tokenYAmount = attr.value
+            break
+          default:
+            break
+        }
+      }
+
+      returnData.poolInfo = poolInfo
+
+      const tokenInfos = (await this.commonInfo.getTokenInfos({ tokenIds: [tokenXId, tokenYId] })).data
+      returnData.tokenXInfo = {
+        name: tokenInfos[0].name,
+        denom: tokenInfos[0].denom,
+        amount: tokenXAmount,
+        decimal: tokenInfos[0].decimal,
+        coinGeckoId: tokenInfos[0].coinGeckoId,
+        icon: tokenInfos[0].icon,
+      }
+      returnData.tokenYInfo = {
+        name: tokenInfos[1].name,
+        denom: tokenInfos[1].denom,
+        amount: tokenYAmount,
         decimal: tokenInfos[1].decimal,
         coinGeckoId: tokenInfos[1].coinGeckoId,
         icon: tokenInfos[1].icon,

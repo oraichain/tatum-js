@@ -56,4 +56,5 @@ export const POOL_EXECUTE_TYPE = {
   ADD_LIQUIDITY_V2: 'provide_liquidity',
   CREATE_POOL_V3: 'create_pool',
   ANOTHER_CREATE_POOL_V3: 'create_position',
+  UNBOND: 'unbond',
 }

@@ -21,6 +21,8 @@ import {
   PoolV3Info,
   RemovePositionV3CosmosData,
   RemovePositionV3Response,
+  UnbondPoolV2CosmosData,
+  UnbondPoolV2Response,
   WithdrawLiquidityV2CosmosData,
   WithdrawLiquidityV2Response,
 } from './pool.dto'
@@ -355,6 +357,62 @@ export class PoolCosmos {
         decimal: tokenInfos[1].decimal,
         coinGeckoId: tokenInfos[1].coinGeckoId,
         icon: tokenInfos[1].icon,
+      }
+    } catch (err: any) {
+      error = err
+      status = Status.ERROR
+    }
+
+    return {
+      data: Object.keys(returnData).length === 0 ? null : returnData,
+      error,
+      status,
+    }
+  }
+
+  /**
+   * Parse Unbond Pool V2 msg
+   */
+  async parseUnbondPoolV2(data: UnbondPoolV2CosmosData): Promise<ResponseDto<UnbondPoolV2Response | null>> {
+    let returnData: UnbondPoolV2Response = {} as any
+    let error = null
+    let status = Status.SUCCESS
+
+    try {
+      const wasmEvents: Event[] = []
+      for (const event of data.events) {
+        if (event.type === 'wasm') {
+          wasmEvents.push(event)
+        }
+      }
+
+      let unbondPoolEvent: Event | null = null
+      for (const event of wasmEvents) {
+        for (const attr of event.attributes) {
+          if (attr.key === 'action' && attr.value === 'unbond') {
+            unbondPoolEvent = event
+          }
+        }
+      }
+
+      if (!unbondPoolEvent) {
+        throw new Error('Unbond Pool Event not found')
+      }
+
+      for (const attr of unbondPoolEvent.attributes) {
+        switch (attr.key) {
+          case 'staker_addr':
+            returnData.staker = attr.value
+            break
+          case 'staking_token':
+            returnData.stakingToken = attr.value
+            break
+          case 'amount':
+            returnData.stakingAmount = attr.value
+            break
+          default:
+            break
+        }
       }
     } catch (err: any) {
       error = err

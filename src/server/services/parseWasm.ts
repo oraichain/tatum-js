@@ -65,6 +65,7 @@ const handleParseCosmwasmExecuteContract = async (input: ParseApiInput): Promise
       break
     case ORAI_CONTRACT.POOL_V2:
     case ORAI_CONTRACT.POOL_V3:
+    case ORAI_CONTRACT.ORAISWAP_STAKING:
       data = await parsePool({ sender: input.sender, messages: input.messages, action: action })
       break
     default:

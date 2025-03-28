@@ -41,6 +41,14 @@ export interface WithdrawLiquidityV2Response extends Omit<AddLiquidityV2Response
   withdrawer: string
 }
 
+export interface UnbondPoolV2CosmosData extends CreateDenomCosmosData {}
+
+export interface UnbondPoolV2Response {
+  staker: string
+  stakingToken: string
+  stakingAmount: string
+}
+
 export interface CreatePoolV3CosmosData extends CreateDenomCosmosData {}
 
 export interface PoolV3Info {

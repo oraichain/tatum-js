@@ -51,6 +51,12 @@ export const parsePool = async ({ sender, messages, action }: ParseInput) => {
         events: simRes.data.result!.events,
       })
       break
+    case POOL_EXECUTE_TYPE.UNBOND:
+      response = await oraichainTatum.pool.parseUnbondPoolV2({
+        message: msgs,
+        events: simRes.data.result!.events,
+      })
+      break
     default:
       break
   }

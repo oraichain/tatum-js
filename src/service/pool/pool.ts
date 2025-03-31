@@ -25,6 +25,8 @@ import {
   UnbondPoolV2Response,
   WithdrawLiquidityV2CosmosData,
   WithdrawLiquidityV2Response,
+  ZapInPoolV3CosmosData,
+  ZapInPoolV3Response,
 } from './pool.dto'
 
 @Service({
@@ -538,6 +540,137 @@ export class PoolCosmos {
         decimal: tokenInfos[1].decimal,
         coinGeckoId: tokenInfos[1].coinGeckoId,
         icon: tokenInfos[1].icon,
+      }
+    } catch (err: any) {
+      error = err
+      status = Status.ERROR
+    }
+
+    return {
+      data: Object.keys(returnData).length === 0 ? null : returnData,
+      error,
+      status,
+    }
+  }
+
+  /**
+   * Parse Zap Pool V3 msg
+   */
+  async parseZapPoolV3(data: ZapInPoolV3CosmosData): Promise<ResponseDto<ZapInPoolV3Response | null>> {
+    let returnData: ZapInPoolV3Response = {} as any
+    let poolInfo: PoolV3Info = {} as any
+    let error = null
+    let status = Status.SUCCESS
+
+    try {
+      const wasmEvents: Event[] = []
+      const txEvents: Event[] = []
+      for (const event of data.events) {
+        if (event.type === 'wasm') {
+          wasmEvents.push(event)
+        }
+
+        if (event.type === 'tx') {
+          txEvents.push(event)
+        }
+      }
+
+      let createPoolEvent: Event | null = null
+      for (const event of wasmEvents) {
+        for (const attr of event.attributes) {
+          if (attr.key === 'action' && attr.value === 'create_position') {
+            createPoolEvent = event
+          }
+        }
+      }
+      if (!createPoolEvent) {
+        throw new Error('Create Pool Event not found')
+      }
+
+      for (const event of txEvents) {
+        for (const attr of event.attributes) {
+          if (attr.key === 'fee_payer') {
+            returnData.zapper = attr.value
+          }
+        }
+      }
+
+      for (const attr of createPoolEvent.attributes) {
+        switch (attr.key) {
+          case 'token_id':
+            poolInfo.tokenId = attr.value
+            break
+          case 'position_liquidity':
+            poolInfo.positionLiquidity = attr.value
+            break
+          case 'lower_tick':
+            const lowerTick = parseInt(attr.value)
+            poolInfo.lowerTick = Math.pow(1.0001, lowerTick).toString()
+            break
+          case 'upper_tick':
+            const upperTick = parseInt(attr.value)
+            poolInfo.upperTick = Math.pow(1.0001, upperTick).toString()
+            break
+          case 'current_sqrt_price':
+            poolInfo.currentSqrtPrice = attr.value
+            break
+          case 'after_liquidity':
+            poolInfo.afterLiquidity = attr.value
+            break
+          case 'ater_tick_index':
+            poolInfo.aterTickIndex = attr.value
+            break
+          default:
+            break
+        }
+      }
+
+      returnData.poolInfo = poolInfo
+
+      let usdtEvent: Event | null = null
+      for (const event of wasmEvents) {
+        let isUsdtContract = false
+        let transferFromAction = false
+        let isOwner = false
+
+        for (const attr of event.attributes) {
+          if (
+            attr.key === '_contract_address' &&
+            attr.value === 'orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh'
+          ) {
+            isUsdtContract = true
+          }
+
+          if (attr.key === 'action' && attr.value === 'transfer_from') {
+            transferFromAction = true
+          }
+
+          if (attr.key === 'from' && attr.value === returnData.zapper) {
+            isOwner = true
+          }
+        }
+
+        if (isUsdtContract && transferFromAction && isOwner) {
+          usdtEvent = event
+        }
+      }
+
+      if (!usdtEvent) {
+        throw new Error('USDT Event not found')
+      }
+
+      const usdtAmount = usdtEvent.attributes.find((attr) => attr.key === 'amount')?.value!
+      const usdtInfo = (
+        await this.commonInfo.getTokenInfo({ tokenId: 'orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh' })
+      ).data
+
+      returnData.tokenInfo = {
+        name: usdtInfo.name,
+        denom: usdtInfo.denom,
+        amount: usdtAmount,
+        decimal: usdtInfo.decimal,
+        coinGeckoId: usdtInfo.coinGeckoId,
+        icon: usdtInfo.icon,
       }
     } catch (err: any) {
       error = err

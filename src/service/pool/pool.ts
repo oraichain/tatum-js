@@ -399,20 +399,36 @@ export class PoolCosmos {
         throw new Error('Unbond Pool Event not found')
       }
 
+      let tokenAmount: string = ''
+      let tokenId: string = ''
       for (const attr of unbondPoolEvent.attributes) {
         switch (attr.key) {
           case 'staker_addr':
             returnData.staker = attr.value
             break
           case 'staking_token':
-            returnData.stakingToken = attr.value
+            tokenId = attr.value
             break
           case 'amount':
-            returnData.stakingAmount = attr.value
+            tokenAmount = attr.value
             break
           default:
             break
         }
+      }
+
+      const tokenResponse = await this.commonInfo.getTokenInfo({ tokenId })
+      if (tokenResponse.status === Status.ERROR) {
+        throw new Error('Token not found')
+      }
+
+      returnData.tokenInfo = {
+        name: tokenResponse.data.name,
+        denom: tokenResponse.data.denom,
+        amount: tokenAmount,
+        decimal: tokenResponse.data.decimal,
+        coinGeckoId: tokenResponse.data.coinGeckoId,
+        icon: tokenResponse.data.icon,
       }
     } catch (err: any) {
       error = err

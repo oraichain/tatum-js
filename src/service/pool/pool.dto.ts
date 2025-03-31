@@ -45,8 +45,7 @@ export interface UnbondPoolV2CosmosData extends CreateDenomCosmosData {}
 
 export interface UnbondPoolV2Response {
   staker: string
-  stakingToken: string
-  stakingAmount: string
+  tokenInfo: { amount: string } & TokenInfo
 }
 
 export interface CreatePoolV3CosmosData extends CreateDenomCosmosData {}

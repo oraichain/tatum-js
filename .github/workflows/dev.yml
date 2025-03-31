@@ -49,4 +49,4 @@ jobs:
           token: ${{ secrets.PAT }}
           repository: oraichain/infra-deployments
           event-type: image-tag
-          client-payload: '{"chart_name": "multichain-parser", "tag": "${{ env.DOCKER_METADATA_OUTPUT_VERSION }}", "target": "dev", "env": "dev"}'
+          client-payload: '{"chart_name": "multichain-parser", "tag": "${{ env.DOCKER_METADATA_OUTPUT_VERSION }}", "target": "dev", "env": "staging"}'

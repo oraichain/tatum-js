@@ -18,13 +18,13 @@ const main = async () => {
       typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
       value: MsgExecuteContract.encode({
         sender: 'orai1eg9vt8af8nde8lx4flmrk7x9uvj8zd8xqyhkeh',
-        contract: 'orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh',
+        contract: 'orai10s0c75gw5y5eftms5ncfknw6lzmx0dyhedn75uz793m8zwz4g8zq4d9x9a',
         msg: toUtf8(
           `
 {
-  "increase_allowance": {
-    "amount": "1000000",
-    "spender": "orai19r5wlt3ruc5xmkfvkwx5l3pul5h8kslexptyqyk5u6acue0ly9yqqpwmtp"
+  "approve": {
+    "spender": "orai19r5wlt3ruc5xmkfvkwx5l3pul5h8kslexptyqyk5u6acue0ly9yqqpwmtp",
+    "token_id": 45836
   }
 }
 
@@ -41,48 +41,38 @@ const main = async () => {
         msg: toUtf8(
           `
 {
-  "zap_in_liquidity": {
-    "asset_in": {
-      "amount": "1000000",
-      "info": {
-        "token": {
-          "contract_addr": "orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh"
-        }
-      }
-    },
-    "minimum_liquidity": "526229406130120",
-    "pool_key": {
-      "token_x": "orai",
-      "token_y": "orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge",
-      "fee_tier": {
-        "fee": 3000000000,
-        "tick_spacing": 100
-      }
-    },
+  "zap_out_liquidity": {
+    "position_index": 0,
     "routes": [
       {
-        "offer_amount": "303075",
+        "offer_amount": "73118",
         "operations": [
           {
             "swap_v3": {
               "pool_key": {
                 "token_x": "orai",
-                "token_y": "orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh",
+                "token_y": "orai1hn8w33cqvysun2aujk5sv33tku4pgcxhhnsxmvnkfvdxagcx0p8qa4l98q",
                 "fee_tier": {
                   "fee": 3000000000,
                   "tick_spacing": 100
                 }
               },
-              "x_to_y": false
+              "x_to_y": true
             }
-          }
-        ],
-        "token_in": "orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh",
-        "minimum_receive": "114705"
-      },
-      {
-        "offer_amount": "696925",
-        "operations": [
+          },
+          {
+            "swap_v3": {
+              "pool_key": {
+                "token_x": "orai1hn8w33cqvysun2aujk5sv33tku4pgcxhhnsxmvnkfvdxagcx0p8qa4l98q",
+                "token_y": "orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge",
+                "fee_tier": {
+                  "fee": 3000000000,
+                  "tick_spacing": 100
+                }
+              },
+              "x_to_y": true
+            }
+          },
           {
             "swap_v3": {
               "pool_key": {
@@ -93,16 +83,47 @@ const main = async () => {
                   "tick_spacing": 100
                 }
               },
-              "x_to_y": true
+              "x_to_y": false
             }
           }
         ],
-        "token_in": "orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh",
-        "minimum_receive": "451940035"
+        "token_in": "orai",
+        "minimum_receive": "186944"
+      },
+      {
+        "offer_amount": "535944141",
+        "operations": [
+          {
+            "swap_v3": {
+              "pool_key": {
+                "token_x": "orai15un8msx3n5zf9ahlxmfeqd2kwa5wm0nrpxer304m9nd5q6qq0g6sku5pdd",
+                "token_y": "orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge",
+                "fee_tier": {
+                  "fee": 3000000000,
+                  "tick_spacing": 100
+                }
+              },
+              "x_to_y": false
+            }
+          },
+          {
+            "swap_v3": {
+              "pool_key": {
+                "token_x": "orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh",
+                "token_y": "orai15un8msx3n5zf9ahlxmfeqd2kwa5wm0nrpxer304m9nd5q6qq0g6sku5pdd",
+                "fee_tier": {
+                  "fee": 500000000,
+                  "tick_spacing": 10
+                }
+              },
+              "x_to_y": false
+            }
+          }
+        ],
+        "token_in": "orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge",
+        "minimum_receive": "802459"
       }
-    ],
-    "tick_lower_index": 74100,
-    "tick_upper_index": 74700
+    ]
   }
 }
                       `,

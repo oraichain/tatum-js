@@ -27,6 +27,8 @@ import {
   WithdrawLiquidityV2Response,
   ZapInPoolV3CosmosData,
   ZapInPoolV3Response,
+  ZapOutPoolV3CosmosData,
+  ZapOutPoolV3Response,
 } from './pool.dto'
 
 @Service({
@@ -556,7 +558,7 @@ export class PoolCosmos {
   /**
    * Parse Zap Pool V3 msg
    */
-  async parseZapPoolV3(data: ZapInPoolV3CosmosData): Promise<ResponseDto<ZapInPoolV3Response | null>> {
+  async parseZapInPoolV3(data: ZapInPoolV3CosmosData): Promise<ResponseDto<ZapInPoolV3Response | null>> {
     let returnData: ZapInPoolV3Response = {} as any
     let poolInfo: PoolV3Info = {} as any
     let error = null
@@ -660,9 +662,8 @@ export class PoolCosmos {
       }
 
       const usdtAmount = usdtEvent.attributes.find((attr) => attr.key === 'amount')?.value!
-      const usdtInfo = (
-        await this.commonInfo.getTokenInfo({ tokenId: 'orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh' })
-      ).data
+      const usdtTokenId = 'orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh'
+      const usdtInfo = (await this.commonInfo.getTokenInfo({ tokenId: usdtTokenId })).data
 
       returnData.tokenInfo = {
         name: usdtInfo.name,
@@ -907,6 +908,159 @@ export class PoolCosmos {
         decimal: tokenInfos[2].decimal,
         coinGeckoId: tokenInfos[2].coinGeckoId,
         icon: tokenInfos[2].icon,
+      }
+    } catch (err: any) {
+      error = err
+      status = Status.ERROR
+    }
+
+    return {
+      data: Object.keys(returnData).length === 0 ? null : returnData,
+      error,
+      status,
+    }
+  }
+
+  /**
+   * Parse Zap Out Pool V3 msg
+   */
+  async parseZapOutPoolV3(data: ZapOutPoolV3CosmosData): Promise<ResponseDto<ZapOutPoolV3Response | null>> {
+    let returnData: ZapOutPoolV3Response = {} as any
+    let poolInfo: PoolV3Info = {} as any
+    let error = null
+    let status = Status.SUCCESS
+
+    try {
+      const wasmEvents: Event[] = []
+      const txEvents: Event[] = []
+      for (const event of data.events) {
+        if (event.type === 'wasm') {
+          wasmEvents.push(event)
+        }
+
+        if (event.type === 'tx') {
+          txEvents.push(event)
+        }
+      }
+
+      let removePositionEvent: Event | null = null
+      for (const event of wasmEvents) {
+        for (const attr of event.attributes) {
+          if (attr.key === 'action' && attr.value === 'remove_position') {
+            removePositionEvent = event
+          }
+        }
+      }
+
+      if (!removePositionEvent) {
+        throw new Error('Remove Position Event not found')
+      }
+
+      for (const event of txEvents) {
+        for (const attr of event.attributes) {
+          if (attr.key === 'fee_payer') {
+            returnData.zapper = attr.value
+          }
+        }
+      }
+
+      let incentiveTokenId: string = ''
+      let incentiveAmount: string = ''
+      for (const attr of removePositionEvent.attributes) {
+        switch (attr.key) {
+          case 'incentives_token_address':
+            incentiveTokenId = attr.value
+            break
+          case 'incentives_amount':
+            incentiveAmount = attr.value
+            break
+          case 'token_id':
+            poolInfo.tokenId = attr.value
+            break
+          case 'position_liquidity':
+            poolInfo.positionLiquidity = attr.value
+            break
+          case 'lower_tick':
+            const lowerTick = parseInt(attr.value)
+            poolInfo.lowerTick = Math.pow(1.0001, lowerTick).toString()
+            break
+          case 'upper_tick':
+            const upperTick = parseInt(attr.value)
+            poolInfo.upperTick = Math.pow(1.0001, upperTick).toString()
+            break
+          case 'current_sqrt_price':
+            poolInfo.currentSqrtPrice = attr.value
+            break
+          case 'after_liquidity':
+            poolInfo.afterLiquidity = attr.value
+            break
+          case 'ater_tick_index':
+            poolInfo.aterTickIndex = attr.value
+            break
+          default:
+            break
+        }
+      }
+
+      returnData.poolInfo = poolInfo
+
+      let usdtEvents: Event[] = []
+      for (const event of wasmEvents) {
+        let isUsdtContract = false
+        let transferAction = false
+        let isOwner = false
+
+        for (const attr of event.attributes) {
+          if (
+            attr.key === '_contract_address' &&
+            attr.value === 'orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh'
+          ) {
+            isUsdtContract = true
+          }
+
+          if (attr.key === 'action' && attr.value === 'transfer') {
+            transferAction = true
+          }
+
+          if (attr.key === 'to' && attr.value === returnData.zapper) {
+            isOwner = true
+          }
+        }
+
+        if (isUsdtContract && transferAction && isOwner) {
+          usdtEvents.push(event)
+        }
+      }
+
+      let usdtAmount: number = 0
+      for (const event of usdtEvents) {
+        for (const attr of event.attributes) {
+          if (attr.key === 'amount') {
+            usdtAmount += parseInt(attr.value)
+          }
+        }
+      }
+
+      const usdtTokenId = 'orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh'
+      const tokenInfos = (await this.commonInfo.getTokenInfos({ tokenIds: [usdtTokenId, incentiveTokenId] }))
+        .data
+
+      returnData.tokenInfo = {
+        name: tokenInfos[0].name,
+        amount: usdtAmount.toString(),
+        denom: tokenInfos[0].denom,
+        decimal: tokenInfos[0].decimal,
+        coinGeckoId: tokenInfos[0].coinGeckoId,
+        icon: tokenInfos[0].icon,
+      }
+
+      returnData.incentiveInfo = {
+        name: tokenInfos[1].name,
+        amount: incentiveAmount,
+        denom: tokenInfos[1].denom,
+        decimal: tokenInfos[1].decimal,
+        coinGeckoId: tokenInfos[1].coinGeckoId,
+        icon: tokenInfos[1].icon,
       }
     } catch (err: any) {
       error = err

@@ -65,6 +65,12 @@ export const parseSwapContract = async ({ sender, messages, action }: ParseInput
       })
       break
     case SWAP_EXECUTE_TYPE.APPROVE:
+      mainAction = 'pool'
+      response = await oraichainTatum.pool.parseZapOutPoolV3({
+        events: simRes.data.result!.events,
+        message: msgs,
+      })
+      break
     case SWAP_EXECUTE_TYPE.REMOVE_POSITION:
       mainAction = 'pool'
       response = await oraichainTatum.pool.parseRemovePositionV3({

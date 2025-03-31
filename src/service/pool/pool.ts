@@ -747,9 +747,8 @@ export class PoolCosmos {
         }
       }
 
-      const tokenInfos = (
-        await this.commonInfo.getTokenInfos({ tokenIds: [tokenXId, tokenYId, incentiveTokenId] })
-      ).data
+      const tokenIds = incentiveTokenId === '' ? [tokenXId, tokenYId] : [tokenXId, tokenYId, incentiveTokenId]
+      const tokenInfos = (await this.commonInfo.getTokenInfos({ tokenIds })).data
 
       returnData.tokenXInfo = {
         name: tokenInfos[0].name,
@@ -769,14 +768,17 @@ export class PoolCosmos {
         icon: tokenInfos[1].icon,
       }
 
-      returnData.incentiveInfo = {
-        name: tokenInfos[2].name,
-        amount: incentiveAmount,
-        denom: tokenInfos[2].denom,
-        decimal: tokenInfos[2].decimal,
-        coinGeckoId: tokenInfos[2].coinGeckoId,
-        icon: tokenInfos[2].icon,
-      }
+      returnData.incentiveInfo =
+        incentiveTokenId === ''
+          ? (null as any)
+          : {
+              name: tokenInfos[2].name,
+              amount: incentiveAmount,
+              denom: tokenInfos[2].denom,
+              decimal: tokenInfos[2].decimal,
+              coinGeckoId: tokenInfos[2].coinGeckoId,
+              icon: tokenInfos[2].icon,
+            }
     } catch (err: any) {
       error = err
       status = Status.ERROR
@@ -879,9 +881,8 @@ export class PoolCosmos {
 
       returnData.poolInfo = poolInfo
 
-      const tokenInfos = (
-        await this.commonInfo.getTokenInfos({ tokenIds: [tokenXId, tokenYId, incentiveTokenId] })
-      ).data
+      const tokenIds = incentiveTokenId === '' ? [tokenXId, tokenYId] : [tokenXId, tokenYId, incentiveTokenId]
+      const tokenInfos = (await this.commonInfo.getTokenInfos({ tokenIds })).data
 
       returnData.tokenXInfo = {
         name: tokenInfos[0].name,
@@ -901,14 +902,17 @@ export class PoolCosmos {
         icon: tokenInfos[1].icon,
       }
 
-      returnData.incentiveInfo = {
-        name: tokenInfos[2].name,
-        amount: incentiveAmount,
-        denom: tokenInfos[2].denom,
-        decimal: tokenInfos[2].decimal,
-        coinGeckoId: tokenInfos[2].coinGeckoId,
-        icon: tokenInfos[2].icon,
-      }
+      returnData.incentiveInfo =
+        incentiveTokenId === ''
+          ? (null as any)
+          : {
+              name: tokenInfos[2].name,
+              amount: incentiveAmount,
+              denom: tokenInfos[2].denom,
+              decimal: tokenInfos[2].decimal,
+              coinGeckoId: tokenInfos[2].coinGeckoId,
+              icon: tokenInfos[2].icon,
+            }
     } catch (err: any) {
       error = err
       status = Status.ERROR
@@ -1042,8 +1046,8 @@ export class PoolCosmos {
       }
 
       const usdtTokenId = 'orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh'
-      const tokenInfos = (await this.commonInfo.getTokenInfos({ tokenIds: [usdtTokenId, incentiveTokenId] }))
-        .data
+      const tokenIds = incentiveTokenId === '' ? [usdtTokenId] : [usdtTokenId, incentiveTokenId]
+      const tokenInfos = (await this.commonInfo.getTokenInfos({ tokenIds })).data
 
       returnData.tokenInfo = {
         name: tokenInfos[0].name,
@@ -1054,14 +1058,17 @@ export class PoolCosmos {
         icon: tokenInfos[0].icon,
       }
 
-      returnData.incentiveInfo = {
-        name: tokenInfos[1].name,
-        amount: incentiveAmount,
-        denom: tokenInfos[1].denom,
-        decimal: tokenInfos[1].decimal,
-        coinGeckoId: tokenInfos[1].coinGeckoId,
-        icon: tokenInfos[1].icon,
-      }
+      returnData.incentiveInfo =
+        incentiveTokenId === ''
+          ? (null as any)
+          : {
+              name: tokenInfos[1].name,
+              amount: incentiveAmount,
+              denom: tokenInfos[1].denom,
+              decimal: tokenInfos[1].decimal,
+              coinGeckoId: tokenInfos[1].coinGeckoId,
+              icon: tokenInfos[1].icon,
+            }
     } catch (err: any) {
       error = err
       status = Status.ERROR

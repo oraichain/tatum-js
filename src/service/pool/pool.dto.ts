@@ -67,6 +67,14 @@ export interface CreatePoolV3Response {
   tokenYInfo: { amount: string } & TokenInfo
 }
 
+export interface ZapInPoolV3CosmosData extends CreateDenomCosmosData {}
+
+export interface ZapInPoolV3Response {
+  zapper: string
+  poolInfo: PoolV3Info
+  tokenInfo: { amount: string } & TokenInfo
+}
+
 export interface ClaimFeeCosmosData extends CreateDenomCosmosData {}
 
 export interface ClaimFeeResponse {
@@ -84,4 +92,13 @@ export interface RemovePositionV3Response {
   incentiveInfo: { amount: string } & TokenInfo
   tokenXInfo: { amount: string } & TokenInfo
   tokenYInfo: { amount: string } & TokenInfo
+}
+
+export interface ZapOutPoolV3CosmosData extends CreateDenomCosmosData {}
+
+export interface ZapOutPoolV3Response {
+  zapper: string
+  poolInfo: PoolV3Info
+  incentiveInfo: { amount: string } & TokenInfo
+  tokenInfo: { amount: string } & TokenInfo
 }

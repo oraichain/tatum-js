@@ -24,7 +24,7 @@ const main = async () => {
 {
   "approve": {
     "spender": "orai19r5wlt3ruc5xmkfvkwx5l3pul5h8kslexptyqyk5u6acue0ly9yqqpwmtp",
-    "token_id": 45118
+    "token_id": 45836
   }
 }
 
@@ -45,13 +45,13 @@ const main = async () => {
     "position_index": 0,
     "routes": [
       {
-        "offer_amount": "58303",
+        "offer_amount": "73118",
         "operations": [
           {
             "swap_v3": {
               "pool_key": {
                 "token_x": "orai",
-                "token_y": "orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh",
+                "token_y": "orai1hn8w33cqvysun2aujk5sv33tku4pgcxhhnsxmvnkfvdxagcx0p8qa4l98q",
                 "fee_tier": {
                   "fee": 3000000000,
                   "tick_spacing": 100
@@ -59,13 +59,39 @@ const main = async () => {
               },
               "x_to_y": true
             }
+          },
+          {
+            "swap_v3": {
+              "pool_key": {
+                "token_x": "orai1hn8w33cqvysun2aujk5sv33tku4pgcxhhnsxmvnkfvdxagcx0p8qa4l98q",
+                "token_y": "orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge",
+                "fee_tier": {
+                  "fee": 3000000000,
+                  "tick_spacing": 100
+                }
+              },
+              "x_to_y": true
+            }
+          },
+          {
+            "swap_v3": {
+              "pool_key": {
+                "token_x": "orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh",
+                "token_y": "orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge",
+                "fee_tier": {
+                  "fee": 3000000000,
+                  "tick_spacing": 100
+                }
+              },
+              "x_to_y": false
+            }
           }
         ],
         "token_in": "orai",
-        "minimum_receive": "185134"
+        "minimum_receive": "186944"
       },
       {
-        "offer_amount": "1305135881",
+        "offer_amount": "535944141",
         "operations": [
           {
             "swap_v3": {
@@ -95,13 +121,11 @@ const main = async () => {
           }
         ],
         "token_in": "orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge",
-        "minimum_receive": "2329833"
+        "minimum_receive": "802459"
       }
     ]
   }
 }
-
-
                       `,
         ),
         funds: [

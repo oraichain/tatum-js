@@ -93,3 +93,12 @@ export interface RemovePositionV3Response {
   tokenXInfo: { amount: string } & TokenInfo
   tokenYInfo: { amount: string } & TokenInfo
 }
+
+export interface ZapOutPoolV3CosmosData extends CreateDenomCosmosData {}
+
+export interface ZapOutPoolV3Response {
+  zapper: string
+  poolInfo: PoolV3Info
+  incentiveInfo: { amount: string } & TokenInfo
+  tokenInfo: { amount: string } & TokenInfo
+}

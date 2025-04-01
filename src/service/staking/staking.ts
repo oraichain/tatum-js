@@ -36,10 +36,23 @@ export class StakingCosmos {
         )
         
     )
-
     const msg = MsgExecuteContract.decode(data.message[0].value)
     const msgValue = JSON.parse(new TextDecoder().decode(msg.msg))
-    const action = Object.keys(msgValue)[0]
+    let action = Object.keys(msgValue)[0]
+
+    // check case compound
+    if (action === 'withdraw') {
+      const e = combiningEvents(data.events.filter(
+        (e: Event) => 
+          e.attributes.some((attr) => attr.key === '_contract_address' && attr.value === ORAI_CONTRACT.STAKING) &&
+          e.attributes.some((attr) => attr.key === 'action' && attr.value === 'bond')
+        )
+      );
+      
+      if (e.length > 0) {
+        action = 'compound'
+      }
+    }
 
     switch(action) {
       case 'send':
@@ -128,14 +141,17 @@ export class StakingCosmos {
     const e = combiningEvents(data.events.filter(
       (e: Event) => 
         e.attributes.some((attr) => attr.key === '_contract_address') &&
-        e.attributes.some((attr) => attr.key === 'action' && attr.value === 'compound')
+        e.attributes.some((attr) => attr.key === 'action' && attr.value === 'bond')
       )
     );
 
-    console.log('e', e)
-    
+    response.action = 'compound'
+    response.stakerAddress = e[0].staker_addr
+    response.stakingToken = e[0].staking_token
+    response.amount = e[0].amount
 
-    return response
+    response.tokenInfo = (await this.commonInfo.getTokenInfo({tokenId: e[0].staking_token})).data
+    return response 
   }
 
 }

@@ -25,7 +25,18 @@ export interface StakingUnbondResponse {
 }
 
 export interface StakingWithdrawResponse {
-
+    action: string
+    claimer: string,
+    claimAmount: string,
+    tokenInfo: TokenInfo
 }
 
-export type StakingResponse = StakingBondResponse | StakingUnbondResponse | StakingWithdrawResponse
+export interface StakingCompoundResponse {
+    action: string
+    stakerAddress: string
+    stakingToken: string
+    amount: string
+    tokenInfo: TokenInfo
+}
+
+export type StakingResponse = StakingBondResponse | StakingUnbondResponse | StakingWithdrawResponse | StakingCompoundResponse

@@ -934,14 +934,14 @@ export class PoolCosmos {
 
     try {
       const wasmEvents: Event[] = []
-      const txEvents: Event[] = []
+      const messageEvents: Event[] = []
       for (const event of data.events) {
         if (event.type === 'wasm') {
           wasmEvents.push(event)
         }
 
-        if (event.type === 'tx') {
-          txEvents.push(event)
+        if (event.type === 'message') {
+          messageEvents.push(event)
         }
       }
 
@@ -958,13 +958,11 @@ export class PoolCosmos {
         throw new Error('Remove Position Event not found')
       }
 
-      for (const event of txEvents) {
-        for (const attr of event.attributes) {
-          if (attr.key === 'fee_payer') {
-            returnData.zapper = attr.value
-          }
-        }
+      const sender = messageEvents[0].attributes.find((attr) => attr.key === 'sender')?.value
+      if (!sender) {
+        throw new Error('Sender not found')
       }
+      returnData.zapper = sender
 
       let incentiveTokenId: string = ''
       let incentiveAmount: string = ''

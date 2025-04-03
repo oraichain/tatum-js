@@ -13,6 +13,8 @@ import { Notification } from '../notification'
 import { Rates } from '../rate'
 import { Token } from '../token'
 import { TatumSdkChain } from './tatum'
+import { OrderbookEvm } from '../orderbook'
+import { PoolEvm } from '../pool'
 
 export abstract class BaseEvm extends TatumSdkChain {
   rpc: EvmBasedRpcSuite
@@ -21,6 +23,8 @@ export abstract class BaseEvm extends TatumSdkChain {
   rates: Rates
   ammV2: AmmV2Evm
   bridge: BridgeEvm
+  orderbook: OrderbookEvm
+  pool: PoolEvm
 
   constructor(id: string) {
     super(id)
@@ -30,6 +34,8 @@ export abstract class BaseEvm extends TatumSdkChain {
     this.rates = Container.of(id).get(Rates)
     this.ammV2 = Container.of(id).get(AmmV2Evm)
     this.bridge = Container.of(id).get(BridgeEvm)
+    this.orderbook = Container.of(id).get(OrderbookEvm)
+    this.pool = Container.of(id).get(PoolEvm)
   }
 }
 
@@ -56,26 +62,26 @@ export class FullEvm extends NotificationEvm {
 }
 
 // Base class for all EVM based chains
-export class ArbitrumNova extends BaseEvm {}
-export class ArbitrumOne extends BaseEvm {}
-export class Aurora extends BaseEvm {}
-export class AvalancheC extends NotificationEvm {}
-export class Cronos extends NotificationEvm {}
-export class EthereumClassic extends BaseEvm {}
-export class Fantom extends NotificationEvm {}
-export class Gnosis extends BaseEvm {}
-export class Haqq extends BaseEvm {}
-export class HarmonyOne extends BaseEvm {}
-export class Kucoin extends BaseEvm {}
-export class Oasis extends BaseEvm {}
-export class Optimism extends NotificationEvm {}
-export class Palm extends BaseEvm {}
-export class Vechain extends BaseEvm {}
-export class XinFin extends BaseEvm {}
-export class Ronin extends BaseEvm {}
-export class Base extends NotificationEvm {}
-export class Flare extends NotificationEvm {}
-export class Chiliz extends NotificationEvm {}
+export class ArbitrumNova extends BaseEvm { }
+export class ArbitrumOne extends BaseEvm { }
+export class Aurora extends BaseEvm { }
+export class AvalancheC extends NotificationEvm { }
+export class Cronos extends NotificationEvm { }
+export class EthereumClassic extends BaseEvm { }
+export class Fantom extends NotificationEvm { }
+export class Gnosis extends BaseEvm { }
+export class Haqq extends BaseEvm { }
+export class HarmonyOne extends BaseEvm { }
+export class Kucoin extends BaseEvm { }
+export class Oasis extends BaseEvm { }
+export class Optimism extends NotificationEvm { }
+export class Palm extends BaseEvm { }
+export class Vechain extends BaseEvm { }
+export class XinFin extends BaseEvm { }
+export class Ronin extends BaseEvm { }
+export class Base extends NotificationEvm { }
+export class Flare extends NotificationEvm { }
+export class Chiliz extends NotificationEvm { }
 
 export class HorizenEon extends BaseEvm {
   address: Address
@@ -119,6 +125,6 @@ export class Ethereum extends FullEvm {
     this.rpc = Utils.getRpc<EvmBasedBeaconRpcSuite>(id, Container.of(id).get(CONFIG))
   }
 }
-export class Polygon extends FullEvm {}
-export class Celo extends FullEvm {}
-export class BinanceSmartChain extends FullEvm {}
+export class Polygon extends FullEvm { }
+export class Celo extends FullEvm { }
+export class BinanceSmartChain extends FullEvm { }

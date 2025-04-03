@@ -8,6 +8,11 @@ export const ORAI_CONTRACT = {
   TON_BRIDGE: 'orai159l8l9c5ckhqpuwdfgs9p4v599nqt3cjlfahalmtrhfuncnec2ms5mz60e',
   BITCOIN_BRIDGE: 'orai1g90x3z2kss99wvmpkenjdelmpw4hf9l3yt420gpgqvpuz8lt79uq24arlv',
   INJECTIVE_BRIDGE: 'orai14wy8xndhnvjmx6zl2866xqvs7fqwv2arhhrqq9',
+  ORDERBOOK: 'orai1nt58gcu4e63v7k55phnr3gaym9tvk3q4apqzqccjuwppgjuyjy6sxk8yzp',
+  POOL_V2: 'orai167r4ut7avvgpp3rlzksz6vw5spmykluzagvmj3ht845fjschwugqjsqhst',
+  POOL_V3: 'orai10s0c75gw5y5eftms5ncfknw6lzmx0dyhedn75uz793m8zwz4g8zq4d9x9a',
+  ZAP: 'orai19r5wlt3ruc5xmkfvkwx5l3pul5h8kslexptyqyk5u6acue0ly9yqqpwmtp',
+  ORAISWAP_STAKING: 'orai19p43y0tqnr5qlhfwnxft2u5unph5yn60y7tuvu',
 }
 
 export const ORAI_TOKEN_CONTRACTS = {
@@ -25,6 +30,7 @@ export const ORAI_TOKEN_CONTRACTS = {
   WETH: 'orai1dqa52a7hxxuv8ghe7q5v0s36ra0cthea960q2cukznleqhk0wpnshfegez',
   BTC: 'orai10g6frpysmdgw5tdqke47als6f97aqmr8s3cljsvjce4n5enjftcqtamzsd',
   OCH: 'orai1hn8w33cqvysun2aujk5sv33tku4pgcxhhnsxmvnkfvdxagcx0p8qa4l98q',
+  HONOR: 'orai1ty9dgugt0swra7k0nu2kdp35tf7q7d60jy29u9n6vt5lfff2jj0qs4p6r7',
 }
 
 export const SOLANA_BRIDGE_ADDRESS = {

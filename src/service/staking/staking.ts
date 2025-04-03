@@ -2,7 +2,7 @@ import Container, { Service } from "typedi";
 import { TatumConnector } from "../../connector";
 import { TatumConfig } from "../tatum";
 import { CONFIG } from '../../util';
-import { StakingBondResponse, StakingData, StakingResponse, StakingUnbondResponse } from "./staking.dto";
+import { StakingBondResponse, StakingCompoundResponse, StakingData, StakingResponse, StakingUnbondResponse, StakingWithdrawResponse } from "./staking.dto";
 import { Attribute, Event } from "@cosmjs/stargate";
 import { ORAI_CONTRACT } from "../../server/constant/contractAddress";
 import { MsgExecuteContract } from "cosmjs-types/cosmwasm/wasm/v1/tx";
@@ -36,10 +36,23 @@ export class StakingCosmos {
         )
         
     )
-
     const msg = MsgExecuteContract.decode(data.message[0].value)
     const msgValue = JSON.parse(new TextDecoder().decode(msg.msg))
-    const action = Object.keys(msgValue)[0]
+    let action = Object.keys(msgValue)[0]
+
+    // check case compound
+    if (action === 'withdraw') {
+      const e = combiningEvents(data.events.filter(
+        (e: Event) => 
+          e.attributes.some((attr) => attr.key === '_contract_address' && attr.value === ORAI_CONTRACT.STAKING) &&
+          e.attributes.some((attr) => attr.key === 'action' && attr.value === 'bond')
+        )
+      );
+      
+      if (e.length > 0) {
+        action = 'compound'
+      }
+    }
 
     switch(action) {
       case 'send':
@@ -49,6 +62,10 @@ export class StakingCosmos {
         response = await this.parseStakingUnbond(data)
         break
       case 'withdraw':
+        response = await this.parseStakingWithdraw(data)
+        break
+      case 'compound':
+        response = await this.parseStakingCompound(data)
         break
       default:
         break
@@ -99,8 +116,42 @@ export class StakingCosmos {
     return response
   }
 
-  parseStakingWithdraw(data: StakingData) {
+  async parseStakingWithdraw(data: StakingData): Promise<StakingWithdrawResponse> {
+    let response: StakingWithdrawResponse = {} as any
 
+    const e = combiningEvents(data.events.filter(
+      (e: Event) => 
+        e.attributes.some((attr) => attr.key === '_contract_address') &&
+        e.attributes.some((attr) => attr.key === 'action' && attr.value === 'transfer')
+      )
+    );
+    const tokenContractAddress = e[0]._contract_address
+
+    response.action = 'withdraw'
+    response.claimer = e[0].to
+    response.claimAmount = e[0].amount
+    response.tokenInfo = (await this.commonInfo.getTokenInfo({tokenId: tokenContractAddress!})).data
+
+    return response
+  }
+
+  async parseStakingCompound(data: StakingData): Promise<StakingCompoundResponse> {
+    let response: StakingCompoundResponse = {} as any
+
+    const e = combiningEvents(data.events.filter(
+      (e: Event) => 
+        e.attributes.some((attr) => attr.key === '_contract_address') &&
+        e.attributes.some((attr) => attr.key === 'action' && attr.value === 'bond')
+      )
+    );
+
+    response.action = 'compound'
+    response.stakerAddress = e[0].staker_addr
+    response.stakingToken = e[0].staking_token
+    response.amount = e[0].amount
+
+    response.tokenInfo = (await this.commonInfo.getTokenInfo({tokenId: e[0].staking_token})).data
+    return response 
   }
 
 }

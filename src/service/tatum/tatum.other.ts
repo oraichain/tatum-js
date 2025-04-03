@@ -24,6 +24,8 @@ import { TatumSdkChain } from './tatum'
 import { SimulateCosmos } from '../simulate'
 import { FuturesCosmos } from '../futures/futures'
 import { StakingCosmos } from '../staking/staking'
+import { OrderbookCosmos } from '../orderbook'
+import { PoolCosmos } from '../pool'
 
 export abstract class BaseOther extends TatumSdkChain {
   ipfs: Ipfs
@@ -186,7 +188,9 @@ export class CosmosRosetta extends BaseOther {
   futures: FuturesCosmos
   staking: StakingCosmos
   simulate: SimulateCosmos
-
+  orderbook: OrderbookCosmos
+  pool: PoolCosmos
+  
   constructor(id: string) {
     super(id)
     this.rpc = Utils.getRpc<CosmosRpcSuite>(id, Container.of(id).get(CONFIG))
@@ -195,6 +199,8 @@ export class CosmosRosetta extends BaseOther {
     this.simulate = Container.of(id).get(SimulateCosmos)
     this.futures = Container.of(id).get(FuturesCosmos)
     this.staking = Container.of(id).get(StakingCosmos)
+    this.orderbook = Container.of(id).get(OrderbookCosmos)
+    this.pool = Container.of(id).get(PoolCosmos)
   }
 }
 
